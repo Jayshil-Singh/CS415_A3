@@ -1,0 +1,12 @@
+{% extends "profile_base.html" %}
+
+{% block profile_content %}
+<h2>Address</h2>
+<form method="post">
+    <p>Street: {{ address.street or 'N/A' }}</p>
+    <p>City: {{ address.city or 'N/A' }}</p>
+    <p>State/Province: {{ address.state or 'N/A' }}</p>
+    <p>Country: {{ address.country or 'N/A' }}</p>
+    <p>Postal Code: {{ address.postal_code or 'N/A' }}</p>
+    </form>
+{% endblock %}

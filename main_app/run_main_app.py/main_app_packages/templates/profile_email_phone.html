@@ -1,0 +1,9 @@
+{% extends "profile_base.html" %}
+
+{% block profile_content %}
+<h2>Email & Phone</h2>
+<form method="post">
+    <p>Email: {{ contact.email or 'N/A' }}</p>
+    <p>Phone: {{ contact.phone or 'N/A' }}</p>
+    </form>
+{% endblock %}
