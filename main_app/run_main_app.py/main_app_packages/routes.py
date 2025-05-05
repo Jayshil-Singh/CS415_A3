@@ -1,6 +1,6 @@
 import os
 from flask import app, jsonify, request, send_from_directory
-
+from profile_service.run_profile_service import student_profiles
 from profile_service.run_profile_service import allowed_file
 
 
