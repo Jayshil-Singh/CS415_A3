@@ -1,25 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Profile - University Portal{% endblock %}</title>
+    <link rel="stylesheet" href="../static/css/university_profile_layout.css">
+    {% block head_extra %}{% endblock %}
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    {% include 'header.html' %}
+    {% include 'header.html' %} {# Assuming header.html has university branding #}
 
-    <div class="profile-nav">
-        <a href="/profile/details">Personal Details</a>
-        <a href="/profile/address">Address</a>
-        <a href="/profile/email_phone">Email & Phone</a>
-        <a href="/profile/emergency">Emergency Contact</a>
-        <a href="/profile/passport">Passport & Visa</a>
+    <div class="profile-page-container">
+        <aside class="profile-navigation-sidebar">
+            <div class="sidebar-header">
+                <h4>Profile Menu</h4>
+            </div>
+            <nav class="profile-nav-links">
+                {# Use request.path to determine active link #}
+                <a href="{{ url_for('main_app_package.profile_details') }}" class="nav-item {% if request.path == url_for('main_app_package.profile_details') %}active{% endif %}">
+                    <i class="fas fa-user-circle nav-icon"></i> Overview
+                </a>
+                <a href="{{ url_for('main_app_package.profile_address') }}" class="nav-item {% if request.path == url_for('main_app_package.profile_address') %}active{% endif %}">
+                    <i class="fas fa-map-marker-alt nav-icon"></i> Address
+                </a>
+                <a href="{{ url_for('main_app_package.profile_email_phone') }}" class="nav-item {% if request.path == url_for('main_app_package.profile_email_phone') %}active{% endif %}">
+                    <i class="fas fa-envelope nav-icon"></i> Email & Phone
+                </a>
+                {#
+                <a href="{{ url_for('main_app_package.profile_emergency') }}" class="nav-item {% if request.path == url_for('main_app_package.profile_emergency') %}active{% endif %}">
+                    <i class="fas fa-first-aid nav-icon"></i> Emergency Contact
+                </a>
+                #}
+                <a href="{{ url_for('main_app_package.profile_passport') }}" class="nav-item {% if request.path == url_for('main_app_package.profile_passport') %}active{% endif %}">
+                    <i class="fas fa-passport nav-icon"></i> Passport & Visa
+                </a>
+                </nav>
+        </aside>
+
+        <main class="profile-main-content">
+            {% block profile_content %}
+                {% endblock %}
+        </main>
     </div>
 
-    <div class="profile-content">
-        {% block profile_content %}
-        {% endblock %}
-    </div>
+    {% include 'footer.html' %} {# Assuming footer.html has university branding #}
 
-    {% include 'footer.html' %}
+    <script src="{{ url_for('static', filename='js/main_site_script.js') }}"></script>
+    {% block scripts_extra %}{% endblock %}
 </body>
 </html>

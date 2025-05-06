@@ -1,9 +1,30 @@
 {% extends "profile_base.html" %}
 
+{% block head_extra %}
+    {{ super() }} <link rel="stylesheet" href="../static/css/university_profile_sections_style.css">
+{% endblock %}
+
 {% block profile_content %}
-<h2>Email & Phone</h2>
-<form method="post">
-    <p>Email: {{ contact.email or 'N/A' }}</p>
-    <p>Phone: {{ contact.phone or 'N/A' }}</p>
-    </form>
+<div class="profile-section-container">
+    <h2 class="profile-section-title">Contact Information</h2>
+
+    <div class="profile-view-card">
+        <div class="profile-info-grid">
+            <div class="info-item">
+                <span class="info-label">University Email Address</span>
+                <span class="info-value">{{ contact.email or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Primary Phone Number</span>
+                <span class="info-value">{{ contact.phone or 'Not Provided' }}</span>
+            </div>
+            </div>
+
+        <div class="profile-actions">
+            <p class="form-text text-muted small">
+                Your university email is your official contact method. To update your phone number, please visit the Student Administrative Services office.
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}

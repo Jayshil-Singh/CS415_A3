@@ -1,10 +1,34 @@
 {% extends "profile_base.html" %}
 
+{% block head_extra %}
+    {{ super() }} <link rel="stylesheet" href="../static/css/university_profile_sections_style.css">
+{% endblock %}
+
 {% block profile_content %}
-<h2>Passport & Visa</h2>
-<form method="post">
-    <p>Passport Number: {{ visa.passport_number or 'N/A' }}</p>
-    <p>Visa Status: {{ visa.status or 'N/A' }}</p>
-    <p>Expiration Date: {{ visa.expiry_date or 'N/A' }}</p>
-    </form>
+<div class="profile-section-container">
+    <h2 class="profile-section-title">Passport & Visa Information</h2>
+
+    <div class="profile-view-card">
+        <div class="profile-info-grid">
+            <div class="info-item">
+                <span class="info-label">Passport Number</span>
+                <span class="info-value">{{ visa.passport_number or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Visa Status / Type</span>
+                <span class="info-value">{{ visa.status or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Visa Expiration Date</span>
+                <span class="info-value">{{ visa.expiry_date or 'Not Provided' }}</span>
+            </div>
+            </div>
+
+        <div class="profile-actions">
+            <p class="form-text text-muted small">
+                Ensure your passport and visa information is always up to date. For any changes or to submit new documents, please contact the International Student Support office or Student Administrative Services.
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}

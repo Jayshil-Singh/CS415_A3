@@ -1,0 +1,203 @@
+/* General Body Styles */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif; /* Professional, readable font */
+    color: #333;
+    display: flex;
+    flex-direction: column; /* To push footer down */
+}
+
+/* Background Styling */
+.page-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Option 1: Subtle Gradient (University Colors - Example: Blue and Grey) */
+    background-image: linear-gradient(135deg, #003366 0%, #004b8d 50%, #e0e0e0 100%);
+    /* Option 2: University Campus Image (Uncomment and provide path) */
+    /* background-image: url("{{ url_for('static', filename='images/campus_background.jpg') }}"); */
+    /* background-size: cover; */
+    /* background-position: center; */
+    z-index: -1; /* Keep background behind content */
+}
+
+/* Login Wrapper - Centers the login box */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* Takes up available space to center vertically */
+    padding: 20px;
+}
+
+/* Login Container Styling */
+.login-container {
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 10px; /* Softer, more modern corners */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
+    width: 100%;
+    max-width: 450px; /* Max width for the login box */
+    text-align: center;
+    border-top: 5px solid #003366; /* University primary color accent */
+}
+
+/* Login Header (Logo and Titles) */
+.login-header {
+    margin-bottom: 25px;
+}
+
+.logo {
+    max-width: 120px; /* Adjust as needed */
+    margin-bottom: 15px;
+}
+
+.login-header h1 {
+    font-family: 'Lato', sans-serif; /* A slightly more distinct font for headings */
+    font-size: 2em;
+    color: #003366; /* University primary color */
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.login-header p {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Form Styling */
+.login-form .form-group {
+    margin-bottom: 20px;
+    text-align: left; /* Align labels and inputs to the left */
+}
+
+.login-form label {
+    display: block;
+    font-weight: 600; /* Slightly bolder labels */
+    margin-bottom: 8px;
+    color: #444;
+    font-size: 0.9em;
+}
+
+.login-form input[type="email"],
+.login-form input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Important for width calculation */
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-form input[type="email"]:focus,
+.login-form input[type="password"]:focus {
+    border-color: #0056a0; /* University accent color on focus */
+    box-shadow: 0 0 0 0.2rem rgba(0, 86, 160, 0.25); /* Subtle glow on focus */
+    outline: none;
+}
+
+/* Login Button Styling */
+.btn-login {
+    background-color: #0056a0; /* University primary or secondary color */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase; /* Common for buttons */
+    letter-spacing: 0.5px;
+}
+
+.btn-login:hover {
+    background-color: #003366; /* Darker shade on hover */
+}
+
+/* Form Footer (Forgot Password Link) */
+.form-footer {
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+
+.form-footer a {
+    color: #0056a0; /* University accent color */
+    text-decoration: none;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Flash Messages Styling */
+.flash-messages {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+.alert {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.alert-info { /* Default if no category */
+    background-color: #e7f3fe;
+    border-left: 5px solid #2196F3; /* Blue for info */
+    color: #2196F3;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-left: 5px solid #28a745; /* Green for success */
+    color: #155724;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-left: 5px solid #ffc107; /* Yellow for warning */
+    color: #856404;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-left: 5px solid #dc3545; /* Red for error/danger */
+    color: #721c24;
+}
+
+/* Basic Footer Styling (if you include 'footer.html') */
+/* This is just a placeholder, adjust your actual footer.html and its CSS */
+.site-footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #f8f9fa; /* Light grey background */
+    color: #6c757d; /* Muted text color */
+    font-size: 0.85em;
+    border-top: 1px solid #e0e0e0;
+    margin-top: auto; /* Pushes footer to bottom if content is short */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 20px;
+        margin: 10px; /* Add some margin on small screens */
+    }
+
+    .login-header h1 {
+        font-size: 1.8em;
+    }
+
+    .logo {
+        max-width: 100px;
+    }
+}

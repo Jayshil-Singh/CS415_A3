@@ -1,113 +1,130 @@
-{% extends "profile_base.html" %} {% block profile_content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_style.css') }}">
+{% extends "profile_base.html" %}
 
-<div class="profile-container">
-    <h2>Personal Profile</h2>
+{% block head_extra %}
+    {{ super() }}
+    <link rel="stylesheet" href="../static/css/profile_style.css"> {# Ensure this path is correct #}
+{% endblock %}
 
-    <div class="profile-header">
-        <div class="profile-pic-container">
-            <img id="profileImage" src="{{ profile_data.profile_pic_url or url_for('static', filename='images/default_avatar.png') }}" alt="Profile Picture">
-            <form id="uploadForm" action="MICROSERVICE_UPLOAD_URL/{{ profile_data.student_id }}/picture" method="post" enctype="multipart/form-data" target="upload_iframe">
-                 <label for="photoUpload" class="upload-button">Change Photo</label>
-                 <input type="file" id="photoUpload" name="photo" accept="image/*" onchange="submitUploadForm();">
-                 <input type="hidden" name="api_key" value="your_main_app_key_here"> </form>
-             <iframe name="upload_iframe" style="display: none;"></iframe>
-            <small>Only .png, .jpg, .jpeg, .gif allowed.</small>
-             <div id="uploadStatus"></div> </div>
-        <div class="profile-main-info">
-             <h3>{{ profile_data.first_name or 'N/A' }} {{ profile_data.last_name or 'N/A' }}</h3>
-             <p>{{ profile_data.program or 'N/A' }}</p>
-             <p>{{ profile_data.student_id or 'N/A' }}</p>
+{% block profile_content %}
+<div class="profile-section-container main-profile-details"> {# Added main-profile-details for specific targeting if needed #}
+    <h2 class="profile-section-title">Personal Profile Overview</h2>
+
+    <div class="profile-summary-header">
+        <div class="profile-pic-upload-area">
+            <img id="profileImage" src="{{ profile_data.profile_pic_url or url_for('static', filename='images/default_avatar.png') }}" alt="Profile Picture" class="profile-main-pic">
+            <form id="uploadForm" action="YOUR_MICROSERVICE_UPLOAD_URL/{{ profile_data.student_id }}/picture" method="post" enctype="multipart/form-data" target="upload_iframe" class="upload-form">
+                <label for="photoUpload" class="btn btn-primary btn-sm upload-button-styled">Change Photo</label>
+                <input type="file" id="photoUpload" name="photo" accept="image/*" onchange="submitUploadForm();" style="display: none;">
+                </form>
+            <iframe name="upload_iframe" style="display: none;"></iframe>
+            <div id="uploadStatus" class="upload-status-message"></div>
+            <small class="file-type-hint">Allowed: .png, .jpg, .jpeg, .gif</small>
+        </div>
+        <div class="profile-header-main-info">
+            <h3>{{ profile_data.first_name or 'N/A' }} {{ profile_data.last_name or 'N/A' }}</h3>
+            <p><span class="info-label-inline">Program:</span> {{ profile_data.program or 'Not Provided' }}</p>
+            <p><span class="info-label-inline">Student ID:</span> {{ profile_data.student_id or 'Not Provided' }}</p>
         </div>
     </div>
 
-    <div class="profile-section">
-        <h4>Contact Information</h4>
-        <p><strong>Email:</strong> {{ profile_data.email or 'N/A' }}</p>
-        <p><strong>Phone:</strong> {{ profile_data.phone or 'N/A' }}</p>
-    </div>
-
-     <div class="profile-section">
-        <h4>Personal Details</h4>
-        <p><strong>Date of Birth:</strong> {{ profile_data.dob or 'N/A' }}</p>
-        <p><strong>Gender:</strong> {{ profile_data.gender or 'N/A' }}</p>
-        <p><strong>Citizenship:</strong> {{ profile_data.citizenship or 'N/A' }}</p>
-    </div>
-
-     <div class="profile-section">
-        <h4>Academic Details</h4>
-         <p><strong>Student Level:</strong> {{ profile_data.student_level or 'N/A' }}</p>
-         <p><strong>Campus:</strong> {{ profile_data.student_campus or 'N/A' }}</p>
-    </div>
-
-    <div class="profile-section">
-        <h4>Address</h4>
-        <p><strong>Street:</strong> {{ profile_data.address.street or 'N/A' }}</p>
-        <p><strong>City:</strong> {{ profile_data.address.city or 'N/A' }}</p>
+    <div class="profile-view-card">
+        <h4 class="card-subheader">Personal Details</h4>
+        <div class="profile-info-grid">
+            <div class="info-item">
+                <span class="info-label">Full Name</span>
+                <span class="info-value">{{ profile_data.first_name or '' }} {{ profile_data.middle_name or '' }} {{ profile_data.last_name or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Date of Birth</span>
+                <span class="info-value">{{ profile_data.dob or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Gender</span>
+                <span class="info-value">{{ profile_data.gender or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Citizenship</span>
+                <span class="info-value">{{ profile_data.citizenship or 'Not Provided' }}</span>
+            </div>
         </div>
+    </div>
 
-      <div class="profile-section">
-         <h4>Passport & Visa</h4>
-         <p><strong>Passport Number:</strong> {{ profile_data.passport_visa.passport_number or 'N/A' }}</p>
-         <p><strong>Visa Status:</strong> {{ profile_data.passport_visa.visa_status or 'N/A' }}</p>
-          </div>
+    <div class="profile-view-card">
+        <h4 class="card-subheader">Academic Details</h4>
+        <div class="profile-info-grid">
+            <div class="info-item">
+                <span class="info-label">Student Level</span>
+                <span class="info-value">{{ profile_data.student_level or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Registered Campus</span>
+                <span class="info-value">{{ profile_data.student_campus or 'Not Provided' }}</span>
+            </div>
+             </div>
+    </div>
 
-
-    <div class="verify-notice">
-        <p><strong>Please Verify</strong></p>
-        <p>If the information above is incorrect, please contact the Student Administrative Services Office, providing the appropriate documentary evidence.</p>
+    <div class="profile-view-card verification-notice-card">
+        <h4 class="card-subheader notice-header">Please Verify Your Information</h4>
+        <p>If any of the information displayed in your profile is incorrect, please contact the Student Administrative Services Office at your earliest convenience. You may need to provide appropriate documentary evidence for corrections.</p>
+        <p>Email: <a href="mailto:sas@university.example.com">sas@university.example.com</a> (Replace with actual email)</p>
+        <p>Phone: +123-456-7890 (Replace with actual phone)</p>
     </div>
 
 </div>
 
 <script>
+    // Make sure this script is here or in your profile_base.html or a linked JS file
     function submitUploadForm() {
-        // Optional: Add client-side validation (file size, type) here
         const form = document.getElementById('uploadForm');
         const statusDiv = document.getElementById('uploadStatus');
-        statusDiv.textContent = 'Uploading...';
+        const profileImage = document.getElementById('profileImage');
+        const defaultAvatar = "{{ url_for('static', filename='images/default_avatar.png') }}"; // Get default avatar URL
 
-        // The form targets the iframe, so submission happens in the background.
-        // We need to listen to the iframe's load event to know when it's done.
+        statusDiv.textContent = 'Uploading...';
+        statusDiv.style.color = '#0056a0'; // University accent color
+
         const iframe = document.querySelector('iframe[name="upload_iframe"]');
         iframe.onload = function() {
-             try {
-                 // Try to access the iframe's content
-                 const iframeDoc = iframe.contentWindow.document;
-                 const responseText = iframeDoc.body.textContent || iframeDoc.body.innerText;
-                 const response = JSON.parse(responseText);
+            try {
+                const iframeDoc = iframe.contentWindow.document;
+                const responseText = iframeDoc.body.textContent || iframeDoc.body.innerText;
+                const response = JSON.parse(responseText);
 
-                 if (response.profile_pic_url) {
-                    // Update the image source on the page
-                    document.getElementById('profileImage').src = response.profile_pic_url + '?t=' + new Date().getTime(); // Add timestamp to bust cache
+                if (response.profile_pic_url) {
+                    // Append a timestamp to prevent caching issues
+                    profileImage.src = response.profile_pic_url + '?t=' + new Date().getTime();
                     statusDiv.textContent = 'Upload successful!';
                     statusDiv.style.color = 'green';
-                     // Optionally update the main header icon too
-                     updateHeaderIcon(response.profile_pic_url);
-                 } else if (response.error) {
-                     statusDiv.textContent = 'Error: ' + response.error;
-                     statusDiv.style.color = 'red';
-                 } else {
+                    // Optionally update the main header icon if it exists elsewhere on the page
+                    if (typeof updateHeaderIcon === "function") {
+                        updateHeaderIcon(response.profile_pic_url);
+                    }
+                } else if (response.error) {
+                    statusDiv.textContent = 'Error: ' + response.error;
+                    statusDiv.style.color = 'red';
+                    profileImage.src = defaultAvatar; // Revert to default if upload failed and it was changed
+                } else {
                     statusDiv.textContent = 'Upload finished. Unknown response.';
                     statusDiv.style.color = 'orange';
-                 }
-             } catch (e) {
-                 console.error("Error processing upload response:", e);
-                 statusDiv.textContent = 'Upload failed or blocked by CORS.';
-                 statusDiv.style.color = 'red';
-             }
-             // Clear the file input for potential re-upload
-             document.getElementById('photoUpload').value = '';
+                }
+            } catch (e) {
+                console.error("Error processing upload response:", e);
+                statusDiv.textContent = 'Upload failed. Please try again.';
+                statusDiv.style.color = 'red';
+                profileImage.src = defaultAvatar; // Revert to default
+            }
+            // Clear the file input for potential re-upload
+            document.getElementById('photoUpload').value = '';
         };
-         form.submit();
+        form.submit();
     }
 
-    function updateHeaderIcon(newIconUrl) {
-        // Find the profile icon element in your main header and update its src
-        const headerIcon = document.querySelector('.header-profile-icon img'); // Adjust selector as needed
-        if (headerIcon) {
-            headerIcon.src = newIconUrl + '?t=' + new Date().getTime();
-        }
-    }
+    // Ensure updateHeaderIcon function exists if called, e.g., in your site's main JS file or profile_base.html
+    // function updateHeaderIcon(newIconUrl) {
+    //     const headerIcon = document.querySelector('.site-header .user-avatar img'); // Adjust selector
+    //     if (headerIcon) {
+    //         headerIcon.src = newIconUrl + '?t=' + new Date().getTime();
+    //     }
+    // }
 </script>
 {% endblock %}
