@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programmes & Courses - USP Enrollment System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        [x-cloak] { display: none !important; }
+    </style>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="dashboard.html" class="flex-shrink-0">
+                        <img class="h-10 w-auto" src="https://placehold.co/150x50/003366/FFFFFF?text=USP+Enroll" alt="USP Logo">
+                    </a>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="dashboard.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="enroll.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
+                            <a href="enrollment.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My Enrollment</a>
+                            <a href="fees.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
+                            <a href="programmes.html" class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Programmes</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                     <div class="ml-4 flex items-center md:ml-6">
+                        <a href="profile.html" class="p-1 rounded-full text-gray-500 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-white" title="Profile">
+                            <span class="sr-only">View profile</span>
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </a>
+                        <a href="login.html" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-button" class="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+         <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="dashboard.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="enroll.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
+                <a href="enrollment.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My Enrollment</a>
+                <a href="fees.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
+                <a href="programmes.html" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Programmes</a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="flex items-center px-5">
+                    <div class="flex-shrink-0">
+                         <img class="h-10 w-10 rounded-full" src="https://placehold.co/40x40/E0E0E0/757575?text=S" alt="User Avatar">
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium leading-none text-gray-800">Ratu Epeli Nailatikau</div>
+                        <div class="text-sm font-medium leading-none text-gray-500">s11223344@student.usp.ac.fj</div>
+                    </div>
+                </div>
+                <div class="mt-3 px-2 space-y-1">
+                    <a href="profile.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i class="fas fa-user-edit mr-2"></i>Your Profile</a>
+                    <a href="login.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl font-semibold text-gray-900">Programme & Course Browser</h1>
+        </div>
+    </header>
+
+    <main>
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8" x-data="programmeData()">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Academic Programmes</h3>
+                    <ul class="space-y-2">
+                        <template x-for="programme in programmes" :key="programme.id">
+                            <li>
+                                <button @click="selectProgramme(programme.id)" 
+                                        :class="{'bg-indigo-100 text-indigo-700 font-semibold': selectedProgrammeId === programme.id, 'hover:bg-gray-100': selectedProgrammeId !== programme.id}"
+                                        class="w-full text-left px-4 py-3 rounded-lg transition-colors duration-150">
+                                    <i :class="programme.icon" class="mr-2 text-indigo-500"></i>
+                                    <span x-text="programme.name"></span>
+                                    <i class="fas fa-chevron-right float-right mt-1 text-gray-400" x-show="selectedProgrammeId !== programme.id"></i>
+                                    <i class="fas fa-chevron-down float-right mt-1 text-indigo-700" x-show="selectedProgrammeId === programme.id"></i>
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                    <div x-show="!selectedProgrammeId" class="text-center py-10">
+                        <i class="fas fa-search fa-3x text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 text-lg">Select a programme from the list to view details.</p>
+                    </div>
+
+                    <div x-show="selectedProgrammeId" x-cloak>
+                        <div x-show="currentProgramme">
+                            <h2 class="text-2xl font-bold text-indigo-700 mb-1" x-text="currentProgramme?.name"></h2>
+                            <p class="text-gray-600 mb-6" x-text="currentProgramme?.description"></p>
+                            
+                            <h4 class="text-lg font-semibold text-gray-700 mb-3">Sub-Programmes / Specializations:</h4>
+                            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1 pl-2" x-show="currentProgramme?.subProgrammes?.length > 0">
+                                <template x-for="sub in currentProgramme?.subProgrammes" :key="sub">
+                                    <li x-text="sub"></li>
+                                </template>
+                            </ul>
+                             <p class="text-gray-500 text-sm mb-6" x-show="!currentProgramme?.subProgrammes || currentProgramme?.subProgrammes?.length === 0">No specific sub-programmes listed.</p>
+
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Core Courses</h3>
+                            <div class="space-y-4">
+                                <template x-for="course in currentProgramme?.courses" :key="course.code">
+                                    <div class="p-4 border rounded-lg bg-gray-50 hover:shadow-sm">
+                                        <h4 class="font-semibold text-md text-indigo-600" x-text="course.code + ': ' + course.title"></h4>
+                                        <p class="text-sm text-gray-600 mt-1" x-text="course.description"></p>
+                                        <p class="text-xs text-gray-500 mt-2">
+                                            Prerequisites: <span x-text="course.prerequisites || 'None'"></span>
+                                        </p>
+                                    </div>
+                                </template>
+                                 <div x-show="!currentProgramme?.courses || currentProgramme?.courses?.length === 0" class="text-center py-6">
+                                    <i class="fas fa-info-circle fa-2x text-gray-400 mb-2"></i>
+                                    <p class="text-gray-500">No courses listed for this programme.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+            &copy; <script>document.write(new Date().getFullYear())</script> USP Enrollment System. All rights reserved.
+        </div>
+    </footer>
+    <script>
+        // Basic mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Alpine.js data for programmes
+        function programmeData() {
+            return {
+                selectedProgrammeId: null,
+                programmes: [
+                    { 
+                        id: 'bsc_cs', name: 'Bachelor of Science in Computer Science', icon: 'fas fa-laptop-code',
+                        description: 'Prepares students for careers in software development, data science, and IT infrastructure.',
+                        subProgrammes: ['Software Engineering Stream', 'Data Science Stream', 'Cybersecurity Stream'],
+                        courses: [
+                            { code: 'CS111', title: 'Introduction to Computing', description: 'Fundamentals of CS.', prerequisites: 'None' },
+                            { code: 'CS112', title: 'Data Structures & Algorithms', description: 'Core data organization.', prerequisites: 'CS111' },
+                            { code: 'CS214', title: 'Web Development', description: 'Building modern web apps.', prerequisites: 'CS112' },
+                            { code: 'CS241', title: 'Operating Systems', description: 'OS principles.', prerequisites: 'CS112, MA101' }
+                        ]
+                    },
+                    { 
+                        id: 'ba_eng', name: 'Bachelor of Arts in English', icon: 'fas fa-book-open',
+                        description: 'Explores literature, language, and critical analysis.',
+                        subProgrammes: ['Literature Focus', 'Linguistics Focus'],
+                        courses: [
+                            { code: 'EN101', title: 'Introduction to Literary Studies', description: 'Basic literary concepts.', prerequisites: 'None' },
+                            { code: 'EN102', title: 'Academic Writing', description: 'Effective writing skills.', prerequisites: 'None' },
+                            { code: 'EN210', title: 'Shakespearean Drama', description: 'Study of Shakespeare.', prerequisites: 'EN101' }
+                        ]
+                    },
+                    { 
+                        id: 'bcomm_acc', name: 'Bachelor of Commerce in Accounting', icon: 'fas fa-calculator',
+                        description: 'Focuses on financial reporting, auditing, and taxation.',
+                        subProgrammes: [],
+                        courses: [
+                            { code: 'AF101', title: 'Introduction to Accounting & Financial Management Part I', description: 'Basic accounting principles.', prerequisites: 'None' },
+                            { code: 'AF102', title: 'Introduction to Accounting & Financial Management Part II', description: 'Further accounting concepts.', prerequisites: 'AF101' },
+                            { code: 'AF201', title: 'Managerial Accounting', description: 'Accounting for decision making.', prerequisites: 'AF102' }
+                        ]
+                    },
+                    { 
+                        id: 'dip_it', name: 'Diploma in Information Technology', icon: 'fas fa-network-wired',
+                        description: 'Provides foundational IT skills for various roles.',
+                        subProgrammes: [],
+                        courses: [
+                            { code: 'ITD01', title: 'IT Fundamentals', description: 'Basic IT concepts.', prerequisites: 'None' },
+                            { code: 'ITD02', title: 'Networking Essentials', description: 'Introduction to computer networks.', prerequisites: 'ITD01' },
+                            { code: 'ITD03', title: 'Basic Programming', description: 'Introductory programming skills.', prerequisites: 'ITD01' }
+                        ]
+                    },
+                     { 
+                        id: 'cert_bus', name: 'Certificate in Business Studies', icon: 'fas fa-briefcase',
+                        description: 'Offers fundamental knowledge in business operations and management.',
+                        subProgrammes: [],
+                        courses: [
+                            { code: 'CB101', title: 'Introduction to Business', description: 'Overview of business concepts.', prerequisites: 'None' },
+                            { code: 'CB102', title: 'Basic Marketing', description: 'Fundamentals of marketing.', prerequisites: 'None' }
+                        ]
+                    }
+                ],
+                currentProgramme: null,
+                selectProgramme(id) {
+                    if (this.selectedProgrammeId === id) {
+                        this.selectedProgrammeId = null; // Toggle off if already selected
+                        this.currentProgramme = null;
+                    } else {
+                        this.selectedProgrammeId = id;
+                        this.currentProgramme = this.programmes.find(p => p.id === id);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

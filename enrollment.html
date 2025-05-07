@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Enrollment - USP Enrollment System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .flash-message { padding: 1rem; margin-bottom: 1rem; border-radius: 0.375rem; font-size: 0.875rem; }
+        .flash-success { background-color: #d1fae5; color: #065f46; }
+        .flash-error { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="dashboard.html" class="flex-shrink-0">
+                        <img class="h-10 w-auto" src="https://placehold.co/150x50/003366/FFFFFF?text=USP+Enroll" alt="USP Logo">
+                    </a>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="dashboard.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="enroll.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
+                            <a href="enrollment.html" class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">My Enrollment</a>
+                            <a href="fees.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
+                            <a href="programmes.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Programmes</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                     <div class="ml-4 flex items-center md:ml-6">
+                        <a href="profile.html" class="p-1 rounded-full text-gray-500 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-white" title="Profile">
+                            <span class="sr-only">View profile</span>
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </a>
+                        <a href="login.html" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-button" class="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+         <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="dashboard.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="enroll.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
+                <a href="enrollment.html" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">My Enrollment</a>
+                <a href="fees.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
+                <a href="programmes.html" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Programmes</a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="flex items-center px-5">
+                    <div class="flex-shrink-0">
+                         <img class="h-10 w-10 rounded-full" src="https://placehold.co/40x40/E0E0E0/757575?text=S" alt="User Avatar">
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium leading-none text-gray-800">Ratu Epeli Nailatikau</div>
+                        <div class="text-sm font-medium leading-none text-gray-500">s11223344@student.usp.ac.fj</div>
+                    </div>
+                </div>
+                <div class="mt-3 px-2 space-y-1">
+                    <a href="profile.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i class="fas fa-user-edit mr-2"></i>Your Profile</a>
+                    <a href="login.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl font-semibold text-gray-900">My Current Enrollment</h1>
+        </div>
+    </header>
+
+    <main>
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold text-gray-800 mb-6">Your Enrolled Courses for Semester 1, 2025</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Code</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Semester</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">CS111</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Introduction to Computing</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Semester 1, 2025</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button onclick="confirmDrop('CS111', 'Introduction to Computing')" class="text-red-600 hover:text-red-800 transition duration-150 ease-in-out">
+                                        <i class="fas fa-trash-alt mr-1"></i>Drop Course
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">MA101</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Calculus I</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Semester 1, 2025</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button onclick="confirmDrop('MA101', 'Calculus I')" class="text-red-600 hover:text-red-800 transition duration-150 ease-in-out">
+                                        <i class="fas fa-trash-alt mr-1"></i>Drop Course
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                    </table>
+                </div>
+
+                <div id="no-enrollment-message" class="text-center py-12 hidden"> <i class="fas fa-folder-open fa-4x text-gray-300 mb-4"></i>
+                    <p class="text-xl text-gray-700 font-semibold">No Courses Enrolled</p>
+                    <p class="text-gray-500 mt-2">You are not currently enrolled in any courses for this semester.</p>
+                    <a href="enroll.html" class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-plus-circle mr-2"></i>Enroll in Courses
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="confirmation-modal" class="fixed z-50 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Drop Course Confirmation</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500" id="modal-message">Are you sure you want to drop this course? This action cannot be undone.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="confirm-drop-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Yes, Drop Course
+                    </button>
+                    <button type="button" id="cancel-drop-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+            &copy; <script>document.write(new Date().getFullYear())</script> USP Enrollment System. All rights reserved.
+        </div>
+    </footer>
+    <script>
+        // Basic mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Modal functionality
+        const modal = document.getElementById('confirmation-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const confirmDropButton = document.getElementById('confirm-drop-button');
+        const cancelDropButton = document.getElementById('cancel-drop-button');
+        let courseToDropCode = '';
+
+        function confirmDrop(courseCode, courseName) {
+            courseToDropCode = courseCode;
+            modalMessage.textContent = `Are you sure you want to drop ${courseName} (${courseCode})? This action cannot be undone.`;
+            modal.classList.remove('hidden');
+        }
+
+        confirmDropButton.addEventListener('click', () => {
+            // Placeholder for actual drop logic
+            console.log(`Dropping course: ${courseToDropCode}`);
+            alert(`Course ${courseToDropCode} would be dropped here. Implement backend logic.`);
+            // Add flash message simulation here
+            modal.classList.add('hidden');
+            // Potentially remove the row from the table or reload the page
+        });
+
+        cancelDropButton.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+        
+        // Check if table has rows, if not, show empty state
+        // This is a basic check, a more robust solution would check after data is loaded dynamically
+        const enrollmentTableBody = document.querySelector('.min-w-full tbody');
+        const noEnrollmentMessage = document.getElementById('no-enrollment-message');
+        if (enrollmentTableBody && noEnrollmentMessage) {
+            if (enrollmentTableBody.rows.length === 0) {
+                document.querySelector('.min-w-full').classList.add('hidden'); // Hide table
+                noEnrollmentMessage.classList.remove('hidden'); // Show message
+            }
+        }
+    </script>
+</body>
+</html>
