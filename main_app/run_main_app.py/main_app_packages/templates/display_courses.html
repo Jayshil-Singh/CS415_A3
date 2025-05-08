@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enrolled Courses</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background: #f9f9f9; }
+        h1 { color: #333; }
+        .course { padding: 15px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 15px; background: #fff; }
+        .course h2 { margin: 0 0 10px; }
+        .flash { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .flash.error { background: #fdd; color: #a00; }
+        .flash.success { background: #dfd; color: #060; }
+    </style>
+</head>
+<body>
+    <h1>Enrolled Courses</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if enrolled_courses %}
+        <ul>
+            {% for course in enrolled_courses %}
+                <li class="course">
+                    <h2>{{ course.code }} - {{ course.title }}</h2>
+                    <p>{{ course.description }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No courses selected.</p>
+    {% endif %}
+
+</body>
+</html>
