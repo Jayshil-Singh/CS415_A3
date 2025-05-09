@@ -1,0 +1,142 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light grey background */
+}
+
+/* Header Styles */
+.custom-header {
+    background-color: #009999; /* uspTeal from login page */
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.usp-logo img {
+    height: 40px; /* Adjust as needed */
+}
+
+.username-display {
+    display: flex;
+    align-items: center;
+}
+
+.profile-icon {
+    margin-left: 10px;
+    font-size: 24px;
+}
+
+/* Hero Section Styles */
+.hero-section {
+    position: relative;
+    width: 100%;
+    height: 350px; /* As in Flutter */
+    overflow: hidden;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.48); /* Colors.black.withAlpha(77) = 0.48 opacity */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 16px;
+    color: white;
+}
+
+.hero-content h1 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.hero-content p {
+    font-size: 16px;
+    white-space: pre-line; /* To respect the \n in the text */
+}
+
+/* Features Grid Styles */
+.features-grid-container {
+    padding: 10px 6px;
+    background-color: #F6F0FB; /* Color(0xFFF6F0FB) */
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid */
+    gap: 16px;
+    padding: 5px; /* Add some padding around the grid */
+}
+
+/* Feature Tile Styles */
+.feature-tile {
+    background-color: #083057; /* Color(0xFF083057) */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 0; /* BorderRadius.zero */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Basic elevation */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    min-height: 200px;  
+}
+
+.feature-tile:hover {
+    background-color: #2c537a; /* Slightly lighter on hover */
+}
+
+.feature-icon {
+    font-size: 70px; /* Approximate icon size */
+    margin-bottom: 12px;
+}
+
+.feature-label {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Footer Styles */
+.custom-footer {
+    background-color: #333; /* Dark background for footer */
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.footer-content p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* Responsive adjustments (example for smaller screens) */
+@media (max-width: 600px) {
+    .features-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Two columns on smaller screens */
+    }
+
+    .feature-icon {
+        font-size: 50px;
+    }
+
+    .feature-label {
+        font-size: 16px;
+    }
+}

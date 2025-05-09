@@ -1,0 +1,106 @@
+body {
+  font-family: sans-serif;
+  background-color: rgb(172, 226, 228); /* Keeping the body background white */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.login-container {
+  padding: 20px;
+}
+
+.blur-background {
+  border-radius: 24px;
+  backdrop-filter: blur(18px);
+}
+
+.login-card {
+  width: 480px;
+  max-width: 480px;
+  padding: 32px;
+  background-color: #009999; /* Setting the login card background to the original teal */
+  border-radius: 24px;
+  border: 1.2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.usp-logo {
+  height: 55px;
+  margin-bottom: 20px;
+}
+
+.welcome-text {
+  font-size: 20px;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.login-continue-text {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: white;
+  color: black;
+  box-sizing: border-box;
+}
+
+.input-field::placeholder {
+  color: #aaa;
+}
+
+.password-field-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+.password-field {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: white;
+  color: black;
+  box-sizing: border-box;
+}
+
+.password-field::placeholder {
+  color: #aaa;
+}
+
+.visibility-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: grey;
+}
+
+.login-button {
+  width: 180px;
+  padding: 14px;
+  border: none;
+  border-radius: 20px;
+  background-color: #002B49;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
