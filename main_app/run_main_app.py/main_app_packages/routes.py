@@ -1,6 +1,6 @@
 # File: C:\Users\yashp\Documents\CS415\CS415_A3\main_app\run_main_app.py\main_app_packages\routes.py
 import os
-from flask import jsonify, request, send_from_directory, render_template
+from flask import jsonify, request, send_from_directory
 # Assuming student_profiles and allowed_file are correctly importable.
 # This might need adjustment based on your project's Python path setup.
 # If 'profile_service' is a sibling to 'main_app', and 'CS415_A3' is the project root in PYTHONPATH:
@@ -66,45 +66,5 @@ def get_profile_pic(filename):
     if 'UPLOAD_FOLDER' not in app.config or not app.config['UPLOAD_FOLDER']:
         return jsonify({"error": "UPLOAD_FOLDER not configured"}), 404
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-# --- Page Rendering Routes ---
-
-@app.route('/')
-def index():
-    """Serves the main login page."""
-    return render_template('login.html') # Assuming login.html is in the root of templates/
-
-# Routes for SASManager
-@app.route('/sas-manager/home')
-def sas_manager_home():
-    """Serves the SAS Manager dashboard page."""
-    return render_template('SASManager/homeSAS.html')
-
-# Routes for SASStaff
-@app.route('/sas-staff/home')
-def sas_staff_home():
-    """Serves the SAS Staff home page."""
-    return render_template('SASStaff/homeStaff.html')
-
-@app.route('/sas-staff/edit-student')
-def sas_staff_edit_student():
-    """Serves the page for editing student information."""
-    return render_template('SASStaff/editST.html')
-
-@app.route('/sas-staff/register-student')
-def sas_staff_register_student():
-    """Serves the page for registering a new student."""
-    return render_template('SASStaff/registerST.html')
-
-# Routes for SuperAdmin
-@app.route('/super-admin/home')
-def super_admin_home():
-    """Serves the Super Admin dashboard page."""
-    return render_template('SuperAdmin/SAdminHome.html')
-
-@app.route('/super-admin/remove-staff')
-def super_admin_remove_staff():
-    """Serves the page for removing staff/managers."""
-    return render_template('SuperAdmin/RemoveStaff.html')
 
 # --- Add other routes as needed ---
