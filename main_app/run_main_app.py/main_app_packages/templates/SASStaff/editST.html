@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Student Information</title>
-    <link rel="stylesheet" href="../../static/css/SASStaff/editST.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/editST.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
@@ -71,6 +71,6 @@
 
     <div id="snackbar" class="snackbar">Snackbar message</div>
 
-    <script src="../../static/js/SASStaff/editST.js"></script>
+    <script src="{{ url_for('static', filename='js/SASStaff/editST.js') }}"></script>
 </body>
 </html>

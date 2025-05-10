@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Student</title>
-    <link rel="stylesheet" href="../../static/css/SASStaff/registerST.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/registerST.css') }}">
 </head>
 <body>
     <header id="custom-header">
@@ -51,7 +51,7 @@
                                 <span class="validation-error"></span>
                             </div>
                         </div>
-                        <div class="form-row">
+                         <div class="form-row">
                             <div class="form-group">
                                 <label for="gender">Gender <span class="required">*</span></label>
                                 <select id="gender" name="gender" required>
@@ -89,7 +89,7 @@
                     <fieldset>
                         <legend>Academic Details</legend>
                         <div class="form-row">
-                            <div class="form-group">
+                             <div class="form-group">
                                 <label for="student-level">Student Level <span class="required">*</span></label>
                                 <input type="text" id="student-level" name="studentLevel" required>
                                 <span class="validation-error"></span>
@@ -98,7 +98,7 @@
                                 <label for="program">Program <span class="required">*</span></label>
                                 <select id="program" name="program" required>
                                     <option value="">Loading programs...</option>
-                                </select>
+                                    </select>
                                 <span class="validation-error"></span>
                             </div>
                         </div>
@@ -114,7 +114,7 @@
                                 <label for="campus">Campus <span class="required">*</span></label>
                                 <select id="campus" name="campus" required>
                                     <option value="">Loading campuses...</option>
-                                </select>
+                                    </select>
                                 <span class="validation-error"></span>
                             </div>
                         </div>
@@ -136,6 +136,6 @@
         </div>
     </div>
 
-    <script src="../../../../static/js/SASStaff/registerST.js"></script>
+    <script src="{{ url_for('static', filename='js/SASStaff/registerST.js') }}"></script>
 </body>
 </html>

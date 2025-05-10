@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Admin Dashboard</title>
-    <link rel="stylesheet" href="../../../main_app_packages/static/css/SAdmin/SAdHomepage.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SAdmin/SAdHomepage.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <div id="header-container">
-        </div>
+            </div>
 
         <div class="body-content">
             <div class="dashboard-container">
@@ -20,12 +20,12 @@
                         <i class="material-icons card-icon">person_remove</i>
                         <div class="card-title">Remove Managers and Staffs</div>
                     </div>
-                </div>
+                    </div>
             </div>
         </div>
 
         <div id="footer-container">
-        </div>
+            </div>
 
         <div class="drawer">
             <div class="drawer-header">
@@ -36,25 +36,56 @@
                 <i class="material-icons drawer-item-icon">person_remove</i>
                 <span class="drawer-item-text">Remove Managers and Staffs</span>
             </div>
-        </div>
+            </div>
     </div>
+
     <script>
+        // Asynchronously loads HTML content from a given URL into a target element.
         async function loadHTML(url, targetElementId) {
             try {
                 const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const html = await response.text();
-                document.getElementById(targetElementId).innerHTML = html;
+                const targetElement = document.getElementById(targetElementId);
+                if (targetElement) {
+                    targetElement.innerHTML = html;
+                } else {
+                    console.error(`Target element with ID '${targetElementId}' not found.`);
+                }
             } catch (error) {
                 console.error('Failed to load HTML:', error);
-                document.getElementById(targetElementId).innerHTML = '<p>Failed to load content.</p>';
+                const targetElement = document.getElementById(targetElementId);
+                if (targetElement) {
+                    targetElement.innerHTML = '<p>Failed to load content.</p>';
+                }
             }
         }
 
         window.addEventListener('load', () => {
-            loadHTML('Header.html', 'header-container');
-            loadHTML('../../../templates/footer.html', 'footer-container');
+            // Load Header.html and footer.html.
+            // IMPORTANT: If Header.html and footer.html are Flask templates with Jinja,
+            // this client-side fetch is not the standard way. Use Jinja's {% include %} instead.
+            // The paths below assume Header.html and footer.html are static files
+            // located in the root of your 'static' folder.
+            loadHTML("{{ url_for('static', filename='Header.html') }}", 'header-container');
+            loadHTML("{{ url_for('static', filename='footer.html') }}", 'footer-container');
         });
+
+        // Placeholder for showAlert function, to be defined in your SAdHomepage.js or here
+        function showAlert(message) {
+            alert(message); // Simple alert, replace with more sophisticated UI if needed
+            // Example: Navigate to a page
+            if (message === 'Remove Managers and Staffs') {
+                // Assuming you have a Flask route for this, e.g., /sadmin/remove_users
+                // window.location.href = "{{ url_for('sadmin_blueprint.remove_users_route') }}";
+                // Or if it's a static page (less likely for this action):
+                // window.location.href = "{{ url_for('static', filename='remove_users.html') }}";
+                console.log("Navigation for '" + message + "' would happen here.");
+            }
+        }
     </script>
-    <script src="../../../main_app_packages/static/js/SAdmin/SAdHomepage.js"></script>
+    <script src="{{ url_for('static', filename='js/SAdmin/SAdHomepage.js') }}"></script>
 </body>
 </html>

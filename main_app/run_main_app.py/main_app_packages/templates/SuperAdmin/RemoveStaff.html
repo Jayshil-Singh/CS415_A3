@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Remove Staff/Manager</title>
-    <link rel="stylesheet" href="../../../main_app_packages/static/css/SAdmin/Remove.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SAdmin/Remove.css') }}">
 </head>
 <body>
     <header id="custom-header">
@@ -38,6 +38,6 @@
         </div>
     </div>
 
-    <script src="../../../main_app_packages/static/js/SAdmin/Remove.js"></script>
+    <script src="{{ url_for('static', filename='js/SAdmin/Remove.js') }}"></script>
 </body>
 </html>

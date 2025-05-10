@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAS Manager Dashboard</title>
-    <link rel="stylesheet" href="../../../main_app_packages/static/css/SASManager/homeSAS.css">
-    </head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASManager/homeSAS.css') }}">
+</head>
 <body>
     <header id="custom-header">
         <h1>SAS Manager Dashboard</h1>
@@ -33,6 +33,6 @@
         <p>&copy; 2024 SAS Management</p>
     </footer>
 
-    <script src="../../../main_app_packages/static/js/SASManager/homeSAS.js"></script>
+    <script src="{{ url_for('static', filename='js/SASManager/homeSAS.js') }}"></script>
 </body>
 </html>
