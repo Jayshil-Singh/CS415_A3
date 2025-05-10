@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>My Enrollment</title>
+
+  <!-- Material Icons -->
+  <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+    rel="stylesheet"
+  />
+
+  <!-- enrollment page CSS -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/myEnrollment.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+<main class="enrollment-page">
+
+  <!-- CARD CONTAINER -->
+  <div class="enrollment-card">
+
+    <!-- NAVBAR-COLORED SECTION HEADER -->
+    <div class="dashboard-header">
+      Enrollment Dashboard
+    </div>
+
+    <!-- 16:4 BANNER IMAGE -->
+    <div class="banner-wrapper">
+      <img
+        src="{{ url_for('static', filename='images/student.png') }}"
+        alt="Students studying"
+        class="banner-image"
+      />
+    </div>
+
+    <!-- CURRENT ENROLLMENTS SECTION -->
+    <section class="section">
+      <h2 class="section-title">Current Enrollments</h2>
+      <p class="section-text">
+        You are not currently enrolled in any courses.
+      </p>
+    </section>
+
+    <!-- ADD COURSE BUTTON -->
+    <div class="add-course-wrapper">
+      <a href="{{ url_for('my_enrollment') }}" class="btn-add-course">
+        Add Course
+      </a>
+    </div>
+
+    <!-- DROPPED/NOT APPROVED SECTION -->
+    <section class="section">
+      <h2 class="section-title">Dropped / Not Approved Courses</h2>
+      <p class="section-text">
+        No dropped or unapproved courses.
+      </p>
+    </section>
+
+  </div>
+</main>
+{% endblock %}

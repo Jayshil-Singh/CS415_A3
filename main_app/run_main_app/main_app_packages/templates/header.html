@@ -1,33 +1,78 @@
 {# templates/header.html #}
-<header class="site-header">
-  <div class="header-inner">
-    <!-- USP Logo -->
-    <a href="{{ url_for('home') }}" class="logo-link">
-      <img
-        src="{{ url_for('static', filename='images/usp_logo.png') }}"
-        alt="USP Logo"
-        class="logo"
-      >
-    </a>
 
-    <!-- Main navigation -->
-    <nav class="main-nav">
-      <ul class="nav-list">
-        <li><a href="{{ url_for('home') }}">Home</a></li>
-        <li><a href="{{ url_for('profile') }}">Profile</a></li>
-        <li><a href="{{ url_for('courses') }}">Courses</a></li>
-        <li><a href="{{ url_for('finance') }}">Finance</a></li>
-      </ul>
-    </nav>
+<!-- Your header-specific styles -->
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/header_style.css') }}"
+/>
 
-    <!-- Welcome + user icon -->
-    <div class="user-info">
-      <span class="welcome-text">Welcome, {{ current_user.username or 'Guest' }}</span>
-      <img
-        src="{{ url_for('static', filename='images/user_icon.png') }}"
-        alt="User"
-        class="user-icon"
-      >
-    </div>
+<header class="header">
+  <!-- USP Logo -->
+  <a href="{{ url_for('home') }}" class="logo-link">
+    <img
+      src="{{ url_for('static', filename='images/usp_logo.svg') }}"
+      alt="USP Logo"
+      class="logo"
+    />
+  </a>
+
+  <!-- User menu -->
+  <div class="user-menu">
+    <!-- clickable person icon -->
+    <span class="material-icons-outlined user-icon">person</span>
+
+    <ul class="dropdown">
+      <li class="dropdown-header">Hi, {{ current_user.username }}</li>
+      <li>
+        <a href="{{ url_for('student_profile') }}">
+          <span class="material-icons-outlined mi">person</span>
+          Profile
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('my_enrollment') }}">
+          <span class="material-icons-outlined mi">how_to_reg</span>
+          My Enrollment
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('courses') }}">
+          <span class="material-icons-outlined mi">menu_book</span>
+          Courses
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('finance') }}">
+          <span class="material-icons-outlined mi">attach_money</span>
+          Finance
+        </a>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <a href="{{ url_for('logout') }}">
+          <span class="material-icons-outlined mi">logout</span>
+          Logout
+        </a>
+      </li>
+    </ul>
   </div>
 </header>
+
+<script>
+  // toggle dropdown open/closed on click
+  document.addEventListener('DOMContentLoaded', () => {
+    const menu = document.querySelector('.user-menu');
+    const icon = menu.querySelector('.user-icon');
+
+    // click on the icon toggles the open class
+    icon.addEventListener('click', e => {
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+
+    // clicking anywhere else closes it
+    document.addEventListener('click', () => {
+      menu.classList.remove('open');
+    });
+  });
+</script>

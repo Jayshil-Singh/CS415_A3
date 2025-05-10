@@ -1,6 +1,10 @@
+/* ───────────────────────────────────────────────────────────────── */
+/*                      LOGIN PAGE STYLESHEET                      */
+/* ───────────────────────────────────────────────────────────────── */
+
 body {
   font-family: sans-serif;
-  background-color: rgb(172, 226, 228); /* Keeping the body background white */
+  background-color: rgb(172, 226, 228);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,12 +22,13 @@ body {
 }
 
 .login-card {
-  width: 480px;
-  max-width: 480px;
+  /* card width can be increased here */
+  width: 300px;
+  max-width: 90%;
   padding: 32px;
-  background-color: #009999; /* Setting the login card background to the original teal */
-  border-radius: 24px;
-  border: 1.2px solid rgba(255, 255, 255, 0.15);
+  background-color: #009999;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
@@ -31,76 +36,99 @@ body {
 }
 
 .usp-logo {
-  height: 55px;
+  height: 70px;
   margin-bottom: 20px;
 }
 
 .welcome-text {
-  font-size: 20px;
-  color: white;
+  font-size: 22px;
+  color: #fff;
   font-weight: 600;
-  margin-bottom: 5px;
+  margin-bottom: 4px;        /* tighter spacing */
   text-align: center;
 }
 
 .login-continue-text {
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 28px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 12px;       /* tighter spacing */
   text-align: center;
 }
 
-.input-field {
+
+/* ───────────────────────────────────────────────────────────────── */
+/*   Input fields: full width, squared corners                     */
+/* ───────────────────────────────────────────────────────────────── */
+.input-field,
+.password-field {
   width: 100%;
-  padding: 12px;
+  padding: 14px 30px;
   margin-bottom: 16px;
   border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: white;
-  color: black;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
   box-sizing: border-box;
 }
 
-.input-field::placeholder {
+.input-field::placeholder,
+.password-field::placeholder {
   color: #aaa;
 }
 
-.password-field-container {
+/* ───────────────────────────────────────────────────────────────── */
+/* Password wrapper + toggle button                                */
+/* ───────────────────────────────────────────────────────────────── */
+.password-wrapper {
   position: relative;
   width: 100%;
   margin-bottom: 28px;
 }
 
 .password-field {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: white;
-  color: black;
-  box-sizing: border-box;
+  /* leave space on the right for the toggle button */
+  padding-right: 48px;
 }
 
-.password-field::placeholder {
-  color: #aaa;
-}
-
-.visibility-icon {
+.toggle-password {
   position: absolute;
-  right: 10px;
   top: 50%;
+  right: 12px;
   transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
   cursor: pointer;
-  color: grey;
 }
 
+.toggle-password .material-icons-outlined {
+  font-size: 24px;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover .material-icons-outlined {
+  color: #000;
+}
+
+/* ───────────────────────────────────────────────────────────────── */
+/* Login button styling and centering                              */
+/* ───────────────────────────────────────────────────────────────── */
 .login-button {
-  width: 180px;
-  padding: 14px;
+  width: 140px;
+  padding: 12px;
   border: none;
-  border-radius: 20px;
+  border-radius: 24px;
   background-color: #002B49;
-  color: white;
+  color: #fff;
   font-size: 16px;
   cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.login-button:hover {
+  background-color: #001f36;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }

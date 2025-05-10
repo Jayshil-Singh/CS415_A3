@@ -1,64 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="../static/css/login.css">
-</head>
-<body>
-    <div class="login-container">
-        <div class="blur-background">
-            <div class="login-card">
-                <img src="../static/images/usp_logo.svg" alt="USP Logo" class="usp-logo">
-                <div class="welcome-text">Welcome.</div>
-                <div class="login-continue-text">Login to continue.</div>
-                <input type="email" class="input-field" placeholder="Student Email" id="email">
-                <div class="password-field-container">
-                    <input type="password" class="password-field" placeholder="Password" id="password">
-                    <span class="visibility-icon" id="togglePassword">
-                        &#128065;
-                    </span>
-                </div>
-                <button class="login-button" onclick="handleLogin()">Login</button>
-            </div>
-        </div>
+{# templates/login.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>USP Student Services – Login</title>
+
+  <!-- Material Icons CDN -->
+  <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+    rel="stylesheet"
+  />
+
+  <!-- page‐specific stylesheet -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/login.css') }}"
+  />
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block body %}
+  <div class="login-container">
+    <div class="blur-background">
+      <div class="login-card">
+        <img
+          src="{{ url_for('static', filename='images/usp_logo.svg') }}"
+          alt="USP Logo"
+          class="usp-logo"
+        />
+        <h1 class="welcome-text">Welcome</h1>
+        <p class="login-continue-text">Login to continue</p>
+
+        <form action="{{ url_for('login') }}" method="post">
+          <input
+            type="email"
+            name="email"
+            class="input-field"
+            placeholder="Student Email"
+            required
+          />
+
+          <div class="password-wrapper">
+            <input
+              type="password"
+              name="password"
+              class="input-field password-field"
+              placeholder="Password"
+              id="password"
+              required
+            />
+            <button
+              type="button"
+              id="togglePassword"
+              class="toggle-password"
+              aria-label="Show or hide password"
+            >
+              <span class="material-icons-outlined" id="toggleIcon">
+                visibility_off
+              </span>
+            </button>
+          </div>
+
+          <button type="submit" class="login-button">Login</button>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const passwordInput = document.getElementById('password');
-        const togglePasswordButton = document.getElementById('togglePassword');
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const pwdInput = document.getElementById('password');
+      const toggleBtn = document.getElementById('togglePassword');
+      const icon = document.getElementById('toggleIcon');
 
-        togglePasswordButton.addEventListener('click', function () {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            // You can also change the icon here if you have different icons for visibility on/off
-        });
-
-        function handleLogin() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // In a real web app, you would send this data to a server for authentication.
-            // For this HTML conversion, we'll just log the values.
-            console.log('Email:', email);
-            console.log('Password:', password);
-
-            // You would need to implement the email validation and navigation logic here using JavaScript.
-            // For example:
-            // if (!isValidEmail(email)) {
-            //     alert('Invalid Student Email');
-            //     return;
-            // }
-            // window.location.href = '/homepage'; // Basic navigation
-        }
-
-        // You would need to implement a JavaScript function for email validation if needed.
-        // function isValidEmail(email) {
-        //     // Basic email validation regex
-        //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        //     return emailRegex.test(email);
-        // }
-    </script>
-</body>
-</html>
+      toggleBtn.addEventListener('click', () => {
+        const isHidden = pwdInput.type === 'password';
+        // toggle the input
+        pwdInput.type = isHidden ? 'text' : 'password';
+        // swap the icon
+        icon.textContent = isHidden ? 'visibility' : 'visibility_off';
+      });
+    });
+  </script>
+{% endblock %}

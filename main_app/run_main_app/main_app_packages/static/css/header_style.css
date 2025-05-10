@@ -1,53 +1,103 @@
 /* header_style.css */
 
-.site-header {
-    background-color: #009999;  
-    padding: 0.5rem 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .header-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .logo {
-    height: 50px;
-  }
-  
-  .main-nav .nav-list {
-    list-style: none;
-    display: flex;
-    gap: 1.5rem;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .main-nav .nav-list li a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-  }
-  
-  .main-nav .nav-list li a:hover {
-    text-decoration: underline;
-  }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #fff;
-  }
-  
-  .user-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
+/* Top navbar */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #009999;
+  padding: 0 1rem;
+  height: 65px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Logo styling */
+.logo {
+  height: 55px;
+}
+
+/* User-menu wrapper */
+.user-menu {
+  position: relative;
+  cursor: pointer;
+}
+
+/* User icon */
+.user-icon {
+  font-size: 35px;
+  color: white;
+}
+
+/* Dropdown container (hidden by default) */
+.dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+  background: #fff;
+  /* square corners */
+  border-radius: 0;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  min-width: 200px;
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
+  z-index: 10;
+  font-family: sans-serif;
+}
+
+/* only show when .open is toggled via JavaScript */
+.user-menu.open .dropdown {
+  display: block;
+}
+
+/* Greeting header */
+.dropdown-header {
+  padding: 0.75rem 1rem;
+  color: #666;
+  border-bottom: 1px solid #eee;
+}
+
+/* Divider */
+.divider {
+  border-top: 1px solid #eee;
+  margin: 0.5rem 0;
+}
+
+/* Links in the dropdown */
+.dropdown li a {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* icon inside each item */
+.mi {
+  margin-right: 0.75rem;
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+/* Hover state: dark-blue bg + white text/icon */
+.dropdown li a:hover {
+  background-color: #083057;
+  color: #fff;
+}
+
+/* ensure icons go white on hover too */
+.dropdown li a:hover .mi {
+  color: #fff;
+}
+
+/* When menu is open, tint the icon and give it a circular background */
+.user-menu.open .user-icon {
+  color: #083057;           /* match your dropdown hover blue */
+  background: rgba(255,255,255,0.3); /* translucent white circle */
+  border-radius: 50%;
+  padding: 4px;             /* gives the background some breathing room */
+  transition: background 0.2s, color 0.2s;
+}

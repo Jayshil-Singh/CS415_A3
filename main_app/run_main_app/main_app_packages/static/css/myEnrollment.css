@@ -1,0 +1,82 @@
+/* page background */
+.enrollment-page {
+  background-color: #F6F0FB; /* light lavender */
+  padding: 2rem 1rem;
+}
+
+/* center the card and constrain width */
+.enrollment-card {
+  max-width: 1040px;
+  margin: 0 auto;
+  background: #FFF;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* dark-blue section header */
+.dashboard-header {
+  background-color: #082D57; /* navbarBlue */
+  color: #FFF;
+  padding: 0.75rem 1rem;
+  font-size: 1.125rem;
+  font-weight: bold;
+}
+
+/* maintain a 16:4 aspect ratio banner */
+.banner-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 25%; /* 4 / 16 = 0.25 => 25% */
+  overflow: hidden;
+}
+.banner-image {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* common section styling */
+.section {
+  padding: 1.5rem 1rem;
+}
+.section + .section {
+  border-top: 1px solid #E0E0E0;
+}
+
+/* teal sub-headers */
+.section-title {
+  background-color: #009999; /* headerTeal */
+  color: #FFF;
+  margin: 0 -1rem; /* edge-to-edge inside card */
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+.section-text {
+  margin-top: 1rem;
+  color: #333;
+}
+
+/* “Add Course” pill button centered */
+.add-course-wrapper {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: #FFF; /* keep card white behind button */
+}
+.btn-add-course {
+  display: inline-block;
+  background-color: #009999; /* headerTeal */
+  color: #FFF;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: background-color 0.2s ease;
+}
+.btn-add-course:hover {
+  background-color: #007F7F;
+}

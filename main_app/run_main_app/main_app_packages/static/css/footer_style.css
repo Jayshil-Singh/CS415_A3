@@ -1,0 +1,68 @@
+/* footer_style.css */
+
+/* Base footer styles */
+.custom-footer {
+  background-color: #009999;
+  color: white;
+  /* reduced top/bottom padding from 1rem to 0.5rem */
+  padding: 0.5rem 0;
+  font-family: sans-serif;
+  font-size: 0.9rem;
+}
+
+/* Layout container */
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Left block: links + line */
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* tighten spacing between lines */
+  gap: 0.25rem;
+}
+
+/* Top links row stays on one line */
+.footer-left .links-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space between items */
+}
+
+/* Divider styling */
+.footer-left .separator {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Copyright line beneath */
+.footer-left .footer-line {
+  margin: 0;               /* remove extra margin */
+  font-size: 0.8rem;
+  color: rgb(255, 255, 255);
+  line-height: 1.2;        /* tighter line-height */
+}
+
+/* Center logo: smaller height */
+.footer-center .footer-logo {
+  height: 57px;            /* shrunk from 60px */
+  object-fit: contain;
+}
+
+/* Right block: contact info */
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;            /* space between lines */
+}
+
+.footer-right p {
+  margin: 0;
+  line-height: 1.2;        /* tighten up line spacing */
+}

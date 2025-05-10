@@ -1,40 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+{# templates/homepage.html #}
+{% extends 'base.html' %}
+
+{% block head %}
   <title>USP Student Services</title>
-  
-  <!-- Material Icons CDN -->
+  <!-- page-specific stylesheet -->
   <link
-    href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
     rel="stylesheet"
+    href="{{ url_for('static', filename='css/homepage_style.css') }}"
   />
 
-  <link rel="stylesheet" href="../static/css/homepage_style.css" />
   <style>
-    /* Basic styling for the header and footer containers */
+    /* page-specific tweaks */
     #header-container,
     #footer-container {
       width: 100%;
     }
   </style>
-</head>
-<body>
-  <!-- semantic header -->
-  <header id="header-container"></header>
+{% endblock %}
+
+{% block body %}
 
   <main>
     <section class="hero-section">
       <img
-        src="../static/images/homepage.png"
+        src="{{ url_for('static', filename='images/homepage.png') }}"
         alt="Student in Library"
         class="hero-image"
       />
       <div class="hero-overlay">
         <div class="hero-content">
           <h1>Welcome to USP Student Services</h1>
-          <p>Your one-stop hub for enrollment, course management,<br/>and academic success.</p>
+          <p>
+            Your one-stop hub for enrollment, course management,
+            and academic success.
+          </p>
         </div>
       </div>
     </section>
@@ -72,15 +71,12 @@
     </section>
   </main>
 
-  <!-- semantic footer -->
-  <footer id="footer-container"></footer>
-
   <script>
     async function loadHeaderAndFooter() {
       try {
         const [hdr, ftr] = await Promise.all([
-          fetch('header.html'),
-          fetch('footer.html')
+          fetch('{{ url_for("static", filename="templates/header.html") }}'),
+          fetch('{{ url_for("static", filename="templates/footer.html") }}')
         ]);
         document.getElementById('header-container').innerHTML = await hdr.text();
         document.getElementById('footer-container').innerHTML = await ftr.text();
@@ -88,17 +84,10 @@
         console.error('Error loading header/footer:', err);
       }
     }
-    window.onload = loadHeaderAndFooter;
+    window.addEventListener('DOMContentLoaded', loadHeaderAndFooter);
 
     function navigateTo(path) {
       window.location.href = path;
     }
-
-    // (Optional) Insert username if your header.html has an element with id="username"
-    document.addEventListener('DOMContentLoaded', () => {
-      const el = document.getElementById('username');
-      if (el) el.textContent = 'Your Username';
-    });
   </script>
-</body>
-</html>
+{% endblock %}

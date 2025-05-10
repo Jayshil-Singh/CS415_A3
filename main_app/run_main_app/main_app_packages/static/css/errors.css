@@ -1,0 +1,47 @@
+body {
+  margin: 0; padding: 0;
+  background-color: #eaf4f3;
+  font-family: "Roboto", sans-serif;
+  color: #333;
+}
+
+.error-container {
+  max-width: 400px;
+  margin: 10vh auto;
+  text-align: center;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.error-logo {
+  height: 64px;
+  margin-bottom: 1rem;
+}
+
+.error-code {
+  font-size: 4rem;
+  color: #009999;
+  margin: 0.5rem 0;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-button {
+  display: inline-block;
+  background-color: #009999;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.error-button:hover {
+  background-color: #007f7f;
+}
