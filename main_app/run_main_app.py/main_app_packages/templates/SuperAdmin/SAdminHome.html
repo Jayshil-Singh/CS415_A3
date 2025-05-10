@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard</title>
+    <link rel="stylesheet" href="../../../main_app_packages/static/css/SAdmin/SAdHomepage.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div id="header-container">
+        </div>
+
+        <div class="body-content">
+            <div class="dashboard-container">
+                <p class="welcome-text">Welcome, Super Admin!</p>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" onclick="showAlert('Remove Managers and Staffs')">
+                        <i class="material-icons card-icon">person_remove</i>
+                        <div class="card-title">Remove Managers and Staffs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-container">
+        </div>
+
+        <div class="drawer">
+            <div class="drawer-header">
+                <i class="material-icons drawer-icon">supervisor_account</i>
+                <h2 class="drawer-title">Super Admin Menu</h2>
+            </div>
+            <div class="drawer-item" onclick="showAlert('Remove Managers and Staffs')">
+                <i class="material-icons drawer-item-icon">person_remove</i>
+                <span class="drawer-item-text">Remove Managers and Staffs</span>
+            </div>
+        </div>
+    </div>
+    <script>
+        async function loadHTML(url, targetElementId) {
+            try {
+                const response = await fetch(url);
+                const html = await response.text();
+                document.getElementById(targetElementId).innerHTML = html;
+            } catch (error) {
+                console.error('Failed to load HTML:', error);
+                document.getElementById(targetElementId).innerHTML = '<p>Failed to load content.</p>';
+            }
+        }
+
+        window.addEventListener('load', () => {
+            loadHTML('Header.html', 'header-container');
+            loadHTML('../../../templates/footer.html', 'footer-container');
+        });
+    </script>
+    <script src="../../../main_app_packages/static/js/SAdmin/SAdHomepage.js"></script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+body {
+    font-family: sans-serif;
+    background-color: #e0f2f7; /* Light teal background */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.header {
+    background-color: #008080; /* Teal header */
+    color: white;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-container {
+    background-color: #ede7f6; /* Light indigo background */
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.welcome-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #3f51b5; /* Indigo color */
+    margin-bottom: 20px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.dashboard-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.dashboard-card:hover {
+    transform: scale(1.05);
+}
+
+.card-icon {
+    font-size: 40px;
+    color: #008080; /* Teal color */
+    margin-bottom: 10px;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.drawer {
+    background-color: white;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: -250px; /* Initially hidden */
+    transition: left 0.3s ease-in-out;
+    overflow-y: auto;
+}
+
+.drawer.open {
+    left: 0;
+}
+
+.drawer-header {
+    background-color: #008080; /* Teal drawer header */
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.drawer-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.drawer-title {
+    font-size: 22px;
+}
+
+.drawer-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.drawer-item:hover {
+    background-color: #f9f9f9;
+}
+
+.drawer-item-icon {
+    font-size: 24px;
+    color: #008080; /* Teal color */
+    margin-right: 15px;
+}
+
+.drawer-item-text {
+    font-size: 16px;
+}
+
+.footer {
+    background-color: #f5f5f5;
+    color: #777;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
+    font-size: 12px;
+}
+
+/* Basic icon styling - you might need to include an icon library */
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-container {
+        width: 95%;
+    }
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}

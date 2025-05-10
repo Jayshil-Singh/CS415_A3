@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Staff/Manager</title>
+    <link rel="stylesheet" href="../../../main_app_packages/static/css/SAdmin/Remove.css">
+</head>
+<body>
+    <header id="custom-header">
+        <h1 id="page-title">View & Remove Managers</h1>
+    </header>
+
+    <main>
+        <div class="toggle-buttons-container">
+            <button id="managers-toggle-btn" class="toggle-button selected">Managers</button>
+            <button id="staff-toggle-btn" class="toggle-button">Staff</button>
+        </div>
+
+        <div id="list-container" class="list-container">
+            </div>
+        <div id="empty-list-message" class="empty-list-message" style="display: none;">
+            </div>
+    </main>
+
+    <footer id="custom-footer">
+        <p>Custom Footer Content</p>
+    </footer>
+
+    <div id="confirmation-dialog" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="dialog-title">Confirm Removal</h2>
+            <p id="dialog-message">Are you sure you want to remove this item?</p>
+            <div class="modal-actions">
+                <button id="cancel-button" class="dialog-button">Cancel</button>
+                <button id="remove-confirm-button" class="dialog-button remove">Remove</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../../main_app_packages/static/js/SAdmin/Remove.js"></script>
+</body>
+</html>

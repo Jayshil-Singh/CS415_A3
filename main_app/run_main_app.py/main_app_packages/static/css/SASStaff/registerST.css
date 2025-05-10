@@ -1,0 +1,278 @@
+/* General Body Styles */
+body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #f0f2f5; /* Light grey background */
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Custom Header Placeholder Styles */
+#custom-header {
+    background-color: #00796b; /* Teal variant, similar to Flutter's default AppBar */
+    color: white;
+    padding: 15px 25px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#custom-header h1 {
+    margin: 0;
+    font-size: 1.7em;
+}
+
+/* Main Content Area */
+main {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Loading Indicator Styles */
+.loading-indicator {
+    text-align: center;
+    padding: 40px;
+    color: #555;
+}
+
+.spinner {
+    border: 5px solid #f3f3f3; /* Light grey */
+    border-top: 5px solid #00796b; /* Teal */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error Message Container */
+.error-message-container {
+    text-align: center;
+    color: #d32f2f; /* Red for errors */
+    background-color: #ffebee;
+    border: 1px solid #d32f2f;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    max-width: 600px;
+    width: 100%;
+}
+
+/* Registration Form Container and Card */
+.registration-form-container {
+    width: 100%;
+    max-width: 800px; /* Max width for the form card */
+    display: flex;
+    justify-content: center;
+}
+
+.form-card {
+    background-color: white;
+    padding: 25px 30px; /* Increased padding */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Elevation */
+    width: 100%;
+}
+
+.form-card h2 {
+    text-align: center;
+    color: #00796b;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+}
+
+/* Form Fieldset and Legend */
+fieldset {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-weight: bold;
+    color: #004d40; /* Darker Teal */
+    padding: 0 10px;
+    font-size: 1.1em;
+}
+
+/* Form Row and Group */
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between form groups in a row */
+    margin-bottom: 15px;
+}
+
+.form-group {
+    flex: 1 1 calc(50% - 10px); /* Two columns layout, adjusts for gap */
+    display: flex;
+    flex-direction: column;
+    min-width: 250px; /* Minimum width for form groups */
+}
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+
+/* Form Elements: Label, Input, Select */
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+    font-size: 0.95em;
+}
+
+label .required {
+    color: #d32f2f; /* Red asterisk for required fields */
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1em;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="date"]:focus,
+select:focus {
+    border-color: #00796b;
+    box-shadow: 0 0 0 2px rgba(0, 121, 107, 0.2);
+    outline: none;
+}
+
+input[type="date"] {
+    appearance: none; /* Better control over date input styling if needed */
+}
+
+/* Validation Error Styling */
+.validation-error {
+    display: block;
+    color: #d32f2f;
+    font-size: 0.85em;
+    margin-top: 4px;
+    min-height: 1.2em; /* Reserve space to prevent layout shifts */
+}
+
+input.invalid, select.invalid {
+    border-color: #d32f2f;
+}
+input.invalid:focus, select.invalid:focus {
+     box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2);
+}
+
+
+/* Form Actions: Buttons */
+.form-actions {
+    display: flex;
+    justify-content: center; /* Center buttons */
+    gap: 16px; /* Space between buttons */
+    margin-top: 30px;
+}
+
+.form-actions button {
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.form-actions button:hover {
+    opacity: 0.9;
+}
+.form-actions button:active {
+    transform: translateY(1px);
+}
+
+.button-primary {
+    background-color: #00796b; /* Teal */
+    color: white;
+}
+
+.button-danger {
+    background-color: #d32f2f; /* Red, similar to Colors.red */
+    color: white;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+}
+.close-button:hover {
+    color: #333;
+}
+
+#modal-text {
+    font-size: 1.1em;
+    margin: 0;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-card {
+        padding: 20px;
+    }
+    .form-row {
+        flex-direction: column; /* Stack form groups vertically */
+        gap: 0; /* Remove gap when stacked */
+    }
+    .form-group {
+        flex: 1 1 100%; /* Full width for form groups */
+        margin-bottom: 15px; /* Add margin between stacked groups */
+    }
+    .form-actions {
+        flex-direction: column; /* Stack buttons */
+    }
+    .form-actions button {
+        width: 100%;
+    }
+}

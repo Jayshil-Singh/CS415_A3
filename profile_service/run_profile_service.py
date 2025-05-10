@@ -32,11 +32,11 @@ student_profiles = {
         "email": "s12345678@student.usp.ac.fj",
         "phone": "+679 123 4567",
         "address": {
-             "street": "123 University Way", "city": "Suva", "state": "Central", "country": "Fiji", "postal_code": "0000"
+            "street": "123 University Way", "city": "Suva", "state": "Central", "country": "Fiji", "postal_code": "0000"
         },
-         "passport_visa": {
-             "passport_number": "P123456", "visa_status": "Student Visa", "expiry_date": "2026-12-31"
-         },
+        "passport_visa": {
+            "passport_number": "P123456", "visa_status": "Student Visa", "expiry_date": "2026-12-31"
+        },
         "profile_pic_url": None # URL to the profile picture file
     }
     # Add more student profiles as needed
@@ -45,7 +45,7 @@ student_profiles = {
 # --- Helper Functions ---
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def authenticate_request():
     """ Placeholder for API Key Authentication """

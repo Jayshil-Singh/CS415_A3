@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student Information</title>
+    <link rel="stylesheet" href="../../static/css/SASStaff/editST.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <header id="custom-header">
+        <h1>Student Management</h1>
+    </header>
+
+    <main>
+        <div class="page-title-container">
+            <h2 id="page-main-title">Manage Student Records</h2>
+        </div>
+
+        <div id="loading-indicator" class="loading-indicator">
+            <div class="spinner"></div>
+            <p>Loading student data...</p>
+        </div>
+
+        <div id="no-students-message" class="no-students-message" style="display: none;">
+            <p>No students found.</p>
+        </div>
+
+        <div id="student-table-container" class="student-table-container" style="display: none;">
+            <div class="table-wrapper">
+                <table id="students-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Middle Name</th>
+                            <th>Last Name</th>
+                            <th>Address</th>
+                            <th>Contact</th>
+                            <th>Date of Birth</th>
+                            <th>Gender</th>
+                            <th>Citizenship</th>
+                            <th>Subprogram</th>
+                            <th>Program</th>
+                            <th>Student Level</th>
+                            <th>Campus</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="students-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer id="custom-footer">
+        <p>&copy; 2024 Student Admin Portal</p>
+    </footer>
+
+    <div id="confirmation-dialog" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3 id="dialog-title">Confirm Deletion</h3>
+            <p id="dialog-message">Are you sure you want to delete this student?</p>
+            <div class="modal-actions">
+                <button id="cancel-delete-button" class="dialog-button">Cancel</button>
+                <button id="confirm-delete-button" class="dialog-button danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="snackbar" class="snackbar">Snackbar message</div>
+
+    <script src="../../static/js/SASStaff/editST.js"></script>
+</body>
+</html>

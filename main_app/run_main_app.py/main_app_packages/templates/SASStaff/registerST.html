@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Student</title>
+    <link rel="stylesheet" href="../../static/css/SASStaff/registerST.css">
+</head>
+<body>
+    <header id="custom-header">
+        <h1>Register New Student</h1>
+    </header>
+
+    <main>
+        <div id="loading-indicator" class="loading-indicator">
+            <div class="spinner"></div>
+            <p>Loading form data...</p>
+        </div>
+
+        <div id="error-message-container" class="error-message-container" style="display: none;">
+            <p id="error-text"></p>
+        </div>
+
+        <div id="registration-form-container" class="registration-form-container" style="display: none;">
+            <div class="form-card">
+                <h2>Student Registration</h2>
+                <form id="student-registration-form" novalidate>
+                    <fieldset>
+                        <legend>Personal Details</legend>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first-name">First Name <span class="required">*</span></label>
+                                <input type="text" id="first-name" name="firstName" required>
+                                <span class="validation-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="middle-name">Middle Name</label>
+                                <input type="text" id="middle-name" name="middleName">
+                                <span class="validation-error"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="last-name">Last Name <span class="required">*</span></label>
+                                <input type="text" id="last-name" name="lastName" required>
+                                <span class="validation-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="date-of-birth">Date of Birth <span class="required">*</span></label>
+                                <input type="date" id="date-of-birth" name="dateOfBirth" required>
+                                <span class="validation-error"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gender">Gender <span class="required">*</span></label>
+                                <select id="gender" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span class="validation-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="citizenship">Citizenship <span class="required">*</span></label>
+                                <input type="text" id="citizenship" name="citizenship" required>
+                                <span class="validation-error"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Contact Information</legend>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="address">Address <span class="required">*</span></label>
+                                <input type="text" id="address" name="address" required>
+                                <span class="validation-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact">Contact (e.g., 679-1234567) <span class="required">*</span></label>
+                                <input type="tel" id="contact" name="contact" placeholder="679-XXXXXXX" required>
+                                <span class="validation-error"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Academic Details</legend>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="student-level">Student Level <span class="required">*</span></label>
+                                <input type="text" id="student-level" name="studentLevel" required>
+                                <span class="validation-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="program">Program <span class="required">*</span></label>
+                                <select id="program" name="program" required>
+                                    <option value="">Loading programs...</option>
+                                </select>
+                                <span class="validation-error"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="subprogram">Subprogram <span class="required">*</span></label>
+                                <select id="subprogram" name="subprogram" required>
+                                    <option value="">Select program first...</option>
+                                    </select>
+                                <span class="validation-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="campus">Campus <span class="required">*</span></label>
+                                <select id="campus" name="campus" required>
+                                    <option value="">Loading campuses...</option>
+                                </select>
+                                <span class="validation-error"></span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <button type="submit" id="register-button" class="button-primary">Register</button>
+                        <button type="button" id="clear-button" class="button-danger">Clear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="message-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <p id="modal-text"></p>
+        </div>
+    </div>
+
+    <script src="../../../../static/js/SASStaff/registerST.js"></script>
+</body>
+</html>

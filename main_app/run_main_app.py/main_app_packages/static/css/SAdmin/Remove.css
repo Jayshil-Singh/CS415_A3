@@ -1,0 +1,177 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: #333;
+}
+
+#custom-header {
+    background-color: #00796b; /* Teal variant */
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+}
+
+#custom-header h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+main {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.toggle-buttons-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.toggle-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0 8px;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.toggle-button.selected {
+    background-color: #009688; /* Teal */
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 150, 136, 0.5);
+}
+
+.toggle-button:not(.selected) {
+    background-color: #e0e0e0; /* Grey[300] */
+    color: black;
+}
+
+.list-container {
+    width: 100%;
+    max-width: 600px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow-y: auto; /* For scrollable list if it grows */
+}
+
+.list-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-item:last-child {
+    border-bottom: none;
+}
+
+.item-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1em;
+}
+
+.item-details p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #555;
+    white-space: pre-line; /* To respect newline characters in subtitles */
+}
+
+.delete-button {
+    background-color: transparent;
+    border: none;
+    color: #f44336; /* Red */
+    font-size: 1.2em; /* Adjust for icon-like appearance */
+    cursor: pointer;
+    padding: 5px;
+}
+
+.delete-button:hover {
+    color: #d32f2f; /* Darker Red */
+}
+
+.empty-list-message {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #777;
+}
+
+#custom-footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right like AlertDialog */
+}
+
+.dialog-button {
+    padding: 10px 15px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.dialog-button.remove {
+    background-color: white;
+    color: #f44336; /* Red */
+}
+.dialog-button.remove:hover {
+    background-color: #ffebee; /* Light red hover */
+}
+
+#cancel-button {
+    background-color: white;
+    color: #333;
+}
+#cancel-button:hover {
+    background-color: #f0f0f0;
+}

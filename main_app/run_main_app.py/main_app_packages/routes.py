@@ -1,8 +1,7 @@
 import os
-from flask import app, jsonify, request, send_from_directory
+from flask import app, jsonify, request, send_from_directory, render_template
 from profile_service.run_profile_service import student_profiles
 from profile_service.run_profile_service import allowed_file
-
 
 @app.route('/profile/<student_id>', methods=['GET'])
 def get_profile(student_id):
@@ -57,3 +56,9 @@ def upload_profile_picture(student_id):
 def get_profile_pic(filename):
     # Serves the uploaded pictures from the configured UPLOAD_FOLDER
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/')  # This is the crucial part!
+def index():
+    # This function will be called when someone visits the base URL
+    # (e.g., http://127.0.0.1:5000/)
+    return render_template('login.html')

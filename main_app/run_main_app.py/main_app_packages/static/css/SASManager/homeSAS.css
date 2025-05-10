@@ -1,0 +1,130 @@
+/* General Body Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #e8eaf6; /* Approximate Colors.indigo[50] */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Custom Header Placeholder Styles */
+#custom-header {
+    background-color: #008080; /* headerTeal */
+    color: white;
+    padding: 15px 25px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#custom-header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+/* Main Content Area */
+main {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Registration Status Styles */
+.status-container {
+    margin-bottom: 25px;
+    padding: 10px 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#registration-status {
+    font-size: 20px; /* Equivalent to Flutter's fontSize: 20 */
+    font-weight: bold; /* Equivalent to Flutter's fontWeight: FontWeight.bold */
+    color: #3f51b5; /* Approximate Colors.indigo */
+    margin: 0;
+    text-align: center;
+}
+
+/* Dashboard Grid Styles */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Simulates crossAxisCount: 2 */
+    gap: 16px; /* Simulates crossAxisSpacing and mainAxisSpacing */
+    width: 100%;
+    max-width: 700px; /* Adjust as needed */
+}
+
+/* Dashboard Tile Styles */
+.dashboard-tile {
+    background-color: white;
+    border-radius: 12px; /* Equivalent to Flutter's borderRadius: BorderRadius.circular(12) */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Simulates elevation: 4 */
+    padding: 20px; /* Increased padding for better spacing */
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* mainAxisAlignment: MainAxisAlignment.center */
+    aspect-ratio: 1.2 / 1; /* Simulates childAspectRatio: 1.2, adjust if needed */
+}
+
+.dashboard-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.tile-icon {
+    font-size: 40px; /* Equivalent to Flutter's icon size: 40 */
+    color: #3f51b5; /* Approximate Colors.indigo */
+    margin-bottom: 12px;
+}
+
+.tile-title {
+    font-size: 16px; /* Equivalent to Flutter's fontSize: 16 */
+    font-weight: bold;
+    color: #3f51b5; /* Approximate Colors.indigo */
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.tile-description {
+    font-size: 12px; /* Equivalent to Flutter's fontSize: 12 */
+    color: #757575; /* Approximate Colors.grey */
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Custom Footer Placeholder Styles */
+#custom-footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px 25px;
+    margin-top: auto; /* Pushes footer to the bottom */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Stack tiles vertically on smaller screens */
+        gap: 20px;
+    }
+
+    .dashboard-tile {
+        aspect-ratio: auto; /* Adjust aspect ratio for single column */
+        padding: 25px;
+    }
+
+    #custom-header h1 {
+        font-size: 1.5em;
+    }
+
+    #registration-status {
+        font-size: 18px;
+    }
+}
