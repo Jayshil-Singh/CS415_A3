@@ -1,5 +1,4 @@
 /* header_style.css */
-
 /* Top navbar */
 .header {
   display: flex;
@@ -101,3 +100,4 @@
   padding: 4px;             /* gives the background some breathing room */
   transition: background 0.2s, color 0.2s;
 }
+

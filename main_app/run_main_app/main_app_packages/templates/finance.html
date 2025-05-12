@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>Finance Menu</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/finance.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+<main class="finance-page">
+  <div class="finance-card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      Finance Menu
+    </div>
+
+    <!-- Invoice Section -->
+    <details class="finance-section">
+      <summary>Invoice</summary>
+      <div class="section-content">
+        {% if invoices %}
+          <div class="finance-table-wrapper">
+            <table class="finance-table">
+              <thead>
+                <tr>
+                  <th>Term</th>
+                  <th>Invoice No.</th>
+                  <th>Invoice Date</th>
+                  <th>Amount Due</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inv in invoices %}
+                <tr>
+                  <td>{{ inv.term }}</td>
+                  <td>{{ inv.invoice_no }}</td>
+                  <td>{{ inv.invoice_date }}</td>
+                  <td>{{ inv.amount_due }}</td>
+                  <td>
+                    <button class="btn-action">Generate Invoice</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="finance-cards">
+            {% for inv in invoices %}
+            <div class="card-item">
+              <div><strong>Term:</strong> {{ inv.term }}</div>
+              <div><strong>Invoice No.:</strong> {{ inv.invoice_no }}</div>
+              <div><strong>Date:</strong> {{ inv.invoice_date }}</div>
+              <div><strong>Amount Due:</strong> {{ inv.amount_due }}</div>
+              <div class="action-row">
+                <button class="btn-action">Generate Invoice</button>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty-text">No invoice data available.</p>
+        {% endif %}
+      </div>
+    </details>
+
+    <!-- Payments/Credits Section -->
+    <details class="finance-section">
+      <summary>Payments / Credits</summary>
+      <div class="section-content">
+        {% if payments %}
+          <div class="finance-table-wrapper">
+            <table class="finance-table">
+              <thead>
+                <tr>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Method</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in payments %}
+                <tr>
+                  <td>{{ p.amount }}</td>
+                  <td>{{ p.date }}</td>
+                  <td>{{ p.method }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="finance-cards">
+            {% for p in payments %}
+            <div class="card-item">
+              <div><strong>Amount:</strong> {{ p.amount }}</div>
+              <div><strong>Date:</strong> {{ p.date }}</div>
+              <div><strong>Method:</strong> {{ p.method }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty-text">You have no payments or credits.</p>
+        {% endif %}
+      </div>
+    </details>
+
+    <!-- Refunds Section -->
+    <details class="finance-section">
+      <summary>Refunds</summary>
+      <div class="section-content">
+        {% if refunds %}
+          <div class="finance-table-wrapper">
+            <table class="finance-table">
+              <thead>
+                <tr>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in refunds %}
+                <tr>
+                  <td>{{ r.amount }}</td>
+                  <td>{{ r.date }}</td>
+                  <td>{{ r.reason }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="finance-cards">
+            {% for r in refunds %}
+            <div class="card-item">
+              <div><strong>Amount:</strong> {{ r.amount }}</div>
+              <div><strong>Date:</strong> {{ r.date }}</div>
+              <div><strong>Reason:</strong> {{ r.reason }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty-text">You have no refunds.</p>
+        {% endif %}
+      </div>
+    </details>
+
+    <!-- Holds Section -->
+    <details class="finance-section">
+      <summary>Holds</summary>
+      <div class="section-content">
+        {% if holds %}
+          <div class="finance-table-wrapper">
+            <table class="finance-table">
+              <thead>
+                <tr>
+                  <th>Reason</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for h in holds %}
+                <tr>
+                  <td>{{ h.reason }}</td>
+                  <td>{{ h.date }}</td>
+                  <td>{{ h.status }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="finance-cards">
+            {% for h in holds %}
+            <div class="card-item">
+              <div><strong>Reason:</strong> {{ h.reason }}</div>
+              <div><strong>Date:</strong> {{ h.date }}</div>
+              <div><strong>Status:</strong> {{ h.status }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty-text">You have no holds.</p>
+        {% endif %}
+      </div>
+    </details>
+
+  </div>
+</main>
+{% endblock %}

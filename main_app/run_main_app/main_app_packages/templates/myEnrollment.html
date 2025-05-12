@@ -1,33 +1,30 @@
 {% extends 'base.html' %}
 
 {% block head %}
-  <title>My Enrollment</title>
-
-  <!-- Material Icons -->
-  <link
-    href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
-    rel="stylesheet"
-  />
-
-  <!-- enrollment page CSS -->
+  <title>USP Student Services</title>
   <link
     rel="stylesheet"
     href="{{ url_for('static', filename='css/myEnrollment.css') }}"
   />
+  <style>
+    /* force header/footer full width */
+    #header-container,
+    #footer-container {
+      width: 100% !important;
+    }
+  </style>
 {% endblock %}
 
 {% block body %}
 <main class="enrollment-page">
-
-  <!-- CARD CONTAINER -->
   <div class="enrollment-card">
 
-    <!-- NAVBAR-COLORED SECTION HEADER -->
+    <!-- Dashboard Header -->
     <div class="dashboard-header">
       Enrollment Dashboard
     </div>
 
-    <!-- 16:4 BANNER IMAGE -->
+    <!-- Banner (16:4) -->
     <div class="banner-wrapper">
       <img
         src="{{ url_for('static', filename='images/student.png') }}"
@@ -36,27 +33,33 @@
       />
     </div>
 
-    <!-- CURRENT ENROLLMENTS SECTION -->
+    <!-- Current Enrollments -->
     <section class="section">
       <h2 class="section-title">Current Enrollments</h2>
-      <p class="section-text">
-        You are not currently enrolled in any courses.
-      </p>
+
+      {% if active_courses %}
+        <!-- …table/cards as before… -->
+      {% else %}
+        <p class="section-text">You are not currently enrolled in any courses.</p>
+      {% endif %}
     </section>
 
-    <!-- ADD COURSE BUTTON -->
+    <!-- ← Add Course BUTTON HERE → -->
     <div class="add-course-wrapper">
-      <a href="{{ url_for('my_enrollment') }}" class="btn-add-course">
+      <button type="button" class="btn-add-course">
         Add Course
-      </a>
+      </button>
     </div>
 
-    <!-- DROPPED/NOT APPROVED SECTION -->
+    <!-- Dropped / Not Approved Courses -->
     <section class="section">
       <h2 class="section-title">Dropped / Not Approved Courses</h2>
-      <p class="section-text">
-        No dropped or unapproved courses.
-      </p>
+
+      {% if dropped_courses %}
+        <p class="section-text">[…list dropped courses here…]</p>
+      {% else %}
+        <p class="section-text">No Dropped / Unapproved Courses.</p>
+      {% endif %}
     </section>
 
   </div>

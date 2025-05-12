@@ -1,4 +1,8 @@
 /* footer_style.css */
+/* force our footer wrapper to span edge-to-edge */
+#footer-container {
+  width: 100%;
+}
 
 /* Base footer styles */
 .custom-footer {
