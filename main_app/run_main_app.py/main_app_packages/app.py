@@ -1,6 +1,6 @@
 # File: C:\Users\yashp\Documents\CS415\CS415_A3\main_app\run_main_app.py\main_app_packages\app.py
 import os
-from flask import Flask, render_template
+from flask import Flask, jsonify, request, send_from_directory, render_template, redirect, url_for
 
 # 1. Create the Flask application instance
 # __name__ helps Flask find templates and static files relative to this module's location.
@@ -34,7 +34,34 @@ app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 @app.route('/')
 def index():
     """Serves the main login page."""
-    return render_template('templates/login.html') # Assuming login.html is in the root of templates/
+    return render_template('login.html') # Assuming login.html is in the root of templates/
+
+# --- Login POST Route ---
+# This function is named 'login', so url_for('login') in your HTML form will point here.
+@app.route('/login', methods=['GET', 'POST'])
+def login(): # <<< THIS FUNCTION NAME MATCHES url_for('login')
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        # TODO: Implement your actual authentication logic here
+        # Example: check email and password against a database
+        # For now, let's assume a simple check and redirect to a staff home page on success
+        if email == "staff@example.com" and password == "password": # Replace with real auth
+            # On successful login, redirect to a dashboard or home page
+            # For example, redirect to the SAS Staff home page:
+            return redirect(url_for('sas_staff_home')) 
+        elif email == "manager@example.com" and password == "password":
+             return redirect(url_for('sas_manager_home'))
+        elif email == "admin@example.com" and password == "password":
+             return redirect(url_for('super_admin_home'))
+        else:
+            # If login fails, re-render the login page with an error message
+            return render_template('login.html', error="Invalid email or password")
+
+    # If it's a GET request to /login, just show the login page.
+    # This makes it so that if someone types /login in the URL, they still see the login page.
+    return render_template('login.html')
 
 # Routes for SASManager
 @app.route('/sas-manager/home')

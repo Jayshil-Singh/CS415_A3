@@ -127,14 +127,25 @@
                 </form>
             </div>
         </div>
-    </main>
 
-    <div id="message-modal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <p id="modal-text"></p>
+        <div id="message-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <p id="modal-text"></p>
+            </div>
         </div>
-    </div>
+
+        <div id="registration-confirmation-dialog" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3 id="registration-dialog-title">Confirm Registration</h3>
+                <p id="registration-dialog-message">Are you sure you want to register this student with the provided details?</p>
+                <div class="modal-actions">
+                    <button id="cancel-registration-button" class="dialog-button">Cancel</button>
+                    <button id="confirm-registration-button" class="dialog-button button-primary">Confirm Register</button>
+                </div>
+            </div>
+        </div>
+        </main>
 
     <script src="{{ url_for('static', filename='js/SASStaff/registerST.js') }}"></script>
 </body>
