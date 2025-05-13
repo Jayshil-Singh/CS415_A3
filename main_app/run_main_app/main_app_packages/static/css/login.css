@@ -27,7 +27,7 @@ body {
   max-width: 90%;
   padding: 32px;
   background-color: #009999;
-  border-radius: 16px;
+  border-radius: 0px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   display: flex;
