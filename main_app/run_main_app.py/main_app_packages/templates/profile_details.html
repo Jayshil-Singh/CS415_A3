@@ -1,0 +1,130 @@
+{% extends "profile_base.html" %}
+
+{% block head_extra %}
+    {{ super() }}
+    <link rel="stylesheet" href="../static/css/profile_style.css"> {# Ensure this path is correct #}
+{% endblock %}
+
+{% block profile_content %}
+<div class="profile-section-container main-profile-details"> {# Added main-profile-details for specific targeting if needed #}
+    <h2 class="profile-section-title">Personal Profile Overview</h2>
+
+    <div class="profile-summary-header">
+        <div class="profile-pic-upload-area">
+            <img id="profileImage" src="{{ profile_data.profile_pic_url or url_for('static', filename='images/default_avatar.png') }}" alt="Profile Picture" class="profile-main-pic">
+            <form id="uploadForm" action="YOUR_MICROSERVICE_UPLOAD_URL/{{ profile_data.student_id }}/picture" method="post" enctype="multipart/form-data" target="upload_iframe" class="upload-form">
+                <label for="photoUpload" class="btn btn-primary btn-sm upload-button-styled">Change Photo</label>
+                <input type="file" id="photoUpload" name="photo" accept="image/*" onchange="submitUploadForm();" style="display: none;">
+                </form>
+            <iframe name="upload_iframe" style="display: none;"></iframe>
+            <div id="uploadStatus" class="upload-status-message"></div>
+            <small class="file-type-hint">Allowed: .png, .jpg, .jpeg, .gif</small>
+        </div>
+        <div class="profile-header-main-info">
+            <h3>{{ profile_data.first_name or 'N/A' }} {{ profile_data.last_name or 'N/A' }}</h3>
+            <p><span class="info-label-inline">Program:</span> {{ profile_data.program or 'Not Provided' }}</p>
+            <p><span class="info-label-inline">Student ID:</span> {{ profile_data.student_id or 'Not Provided' }}</p>
+        </div>
+    </div>
+
+    <div class="profile-view-card">
+        <h4 class="card-subheader">Personal Details</h4>
+        <div class="profile-info-grid">
+            <div class="info-item">
+                <span class="info-label">Full Name</span>
+                <span class="info-value">{{ profile_data.first_name or '' }} {{ profile_data.middle_name or '' }} {{ profile_data.last_name or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Date of Birth</span>
+                <span class="info-value">{{ profile_data.dob or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Gender</span>
+                <span class="info-value">{{ profile_data.gender or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Citizenship</span>
+                <span class="info-value">{{ profile_data.citizenship or 'Not Provided' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-view-card">
+        <h4 class="card-subheader">Academic Details</h4>
+        <div class="profile-info-grid">
+            <div class="info-item">
+                <span class="info-label">Student Level</span>
+                <span class="info-value">{{ profile_data.student_level or 'Not Provided' }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Registered Campus</span>
+                <span class="info-value">{{ profile_data.student_campus or 'Not Provided' }}</span>
+            </div>
+             </div>
+    </div>
+
+    <div class="profile-view-card verification-notice-card">
+        <h4 class="card-subheader notice-header">Please Verify Your Information</h4>
+        <p>If any of the information displayed in your profile is incorrect, please contact the Student Administrative Services Office at your earliest convenience. You may need to provide appropriate documentary evidence for corrections.</p>
+        <p>Email: <a href="mailto:sas@university.example.com">sas@university.example.com</a> (Replace with actual email)</p>
+        <p>Phone: +123-456-7890 (Replace with actual phone)</p>
+    </div>
+
+</div>
+
+<script>
+    // Make sure this script is here or in your profile_base.html or a linked JS file
+    function submitUploadForm() {
+        const form = document.getElementById('uploadForm');
+        const statusDiv = document.getElementById('uploadStatus');
+        const profileImage = document.getElementById('profileImage');
+        const defaultAvatar = "{{ url_for('static', filename='images/default_avatar.png') }}"; // Get default avatar URL
+
+        statusDiv.textContent = 'Uploading...';
+        statusDiv.style.color = '#0056a0'; // University accent color
+
+        const iframe = document.querySelector('iframe[name="upload_iframe"]');
+        iframe.onload = function() {
+            try {
+                const iframeDoc = iframe.contentWindow.document;
+                const responseText = iframeDoc.body.textContent || iframeDoc.body.innerText;
+                const response = JSON.parse(responseText);
+
+                if (response.profile_pic_url) {
+                    // Append a timestamp to prevent caching issues
+                    profileImage.src = response.profile_pic_url + '?t=' + new Date().getTime();
+                    statusDiv.textContent = 'Upload successful!';
+                    statusDiv.style.color = 'green';
+                    // Optionally update the main header icon if it exists elsewhere on the page
+                    if (typeof updateHeaderIcon === "function") {
+                        updateHeaderIcon(response.profile_pic_url);
+                    }
+                } else if (response.error) {
+                    statusDiv.textContent = 'Error: ' + response.error;
+                    statusDiv.style.color = 'red';
+                    profileImage.src = defaultAvatar; // Revert to default if upload failed and it was changed
+                } else {
+                    statusDiv.textContent = 'Upload finished. Unknown response.';
+                    statusDiv.style.color = 'orange';
+                }
+            } catch (e) {
+                console.error("Error processing upload response:", e);
+                statusDiv.textContent = 'Upload failed. Please try again.';
+                statusDiv.style.color = 'red';
+                profileImage.src = defaultAvatar; // Revert to default
+            }
+            // Clear the file input for potential re-upload
+            document.getElementById('photoUpload').value = '';
+        };
+        form.submit();
+    }
+
+    // Ensure updateHeaderIcon function exists if called, e.g., in your site's main JS file or profile_base.html
+    // function updateHeaderIcon(newIconUrl) {
+    //     const headerIcon = document.querySelector('.site-header .user-avatar img'); // Adjust selector
+    //     if (headerIcon) {
+    //         headerIcon.src = newIconUrl + '?t=' + new Date().getTime();
+    //     }
+    // }
+</script>
+{% endblock %}

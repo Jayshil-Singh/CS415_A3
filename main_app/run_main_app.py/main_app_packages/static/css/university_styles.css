@@ -1,0 +1,222 @@
+/* ========== SITE HEADER STYLES (Revised) ========== */
+
+.site-header {
+    background-color: #003366; /* CUSTOMIZE: University primary color */
+    color: #ffffff;
+    padding: 12px 0; /* Vertical padding */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.header-container {
+    max-width: 1400px; /* Consistent with overall site width */
+    margin: 0 auto;
+    padding: 0 25px; /* Horizontal padding */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pushes brand to left, user controls to right */
+}
+
+.header-brand-link {
+    display: flex; /* Align logo and site name inline */
+    align-items: center;
+    text-decoration: none; /* Remove underline from link */
+    color: #ffffff; /* Text color for site name */
+}
+
+.header-logo {
+    height: 45px; /* CUSTOMIZE: Adjust logo height */
+    width: auto;
+    margin-right: 12px; /* Space between logo and site name */
+    vertical-align: middle;
+}
+
+.header-site-name {
+    font-family: 'Lato', 'Open Sans', sans-serif; /* CUSTOMIZE: University heading/brand font */
+    font-size: 1.4em; /* CUSTOMIZE: Site name font size */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.header-brand-link:hover .header-site-name {
+    opacity: 0.9; /* Slight feedback on hover */
+}
+
+.header-user-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between items in user controls */
+}
+
+.header-profile-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #ffffff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+.header-profile-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header-avatar {
+    height: 32px; /* Size of the avatar */
+    width: 32px;
+    border-radius: 50%; /* Circular avatar */
+    object-fit: cover;
+    margin-right: 8px; /* Space between avatar and name */
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.header-user-name {
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+/* Styling for .btn-small already exists, we can add a specific header action style */
+.btn.btn-header-action {
+    padding: 6px 12px; /* Adjust padding for header buttons */
+    font-size: 0.85em;
+    background-color: rgba(255,255,255,0.15); /* Subtle background */
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+.btn.btn-header-action:hover {
+    background-color: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.5);
+    color: #ffffff; /* Ensure text color remains white on hover */
+}
+
+
+/* Mobile Menu Toggle (if used) */
+.mobile-menu-toggle {
+    display: none; /* Hidden by default */
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.8em; /* Adjust icon size */
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+/* Responsive adjustments for the header */
+@media (max-width: 768px) {
+    .header-container {
+        padding: 0 15px; /* Less padding on smaller screens */
+    }
+    .header-site-name {
+        font-size: 1.2em; /* Smaller site name */
+    }
+    .header-logo {
+        height: 35px; /* Smaller logo */
+    }
+    .header-user-name {
+        display: none; /* Hide username on smaller screens to save space, avatar remains */
+    }
+    .header-profile-link {
+        padding: 5px; /* Reduce padding around avatar if name is hidden */
+    }
+     .header-user-controls {
+        gap: 10px; /* Reduce gap */
+    }
+    /* If you need to make space for a mobile menu toggle: */
+    /* .mobile-menu-toggle {
+        display: block;
+    } */
+    /* .header-user-controls {
+        If some elements need to be part of a dropdown, hide them here
+    } */
+}
+
+@media (max-width: 480px) {
+
+    .header-logo {
+        margin-right: 0; /* No margin if site name is hidden */
+    }
+    .btn.btn-header-action {
+        font-size: 0.8em;
+        padding: 5px 8px;
+    }
+    .header-avatar {
+        height: 28px;
+        width: 28px;
+    }
+}
+
+/* ========== SITE FOOTER STYLES ========== */
+
+.site-footer-main {
+    background-color: #343a40; /* CUSTOMIZE: A dark neutral or university secondary dark color */
+    color: #adb5bd; /* CUSTOMIZE: Light grey text color for footer */
+    padding: 30px 0; /* Vertical padding */
+    margin-top: auto; /* This helps push the footer to the bottom with flexbox on body */
+    font-size: 0.9em;
+    border-top: 3px solid #00417d; /* CUSTOMIZE: University primary or accent color for top border */
+}
+
+.footer-container {
+    max-width: 1400px; /* Consistent with overall site width */
+    margin: 0 auto;
+    padding: 0 25px; /* Horizontal padding */
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    justify-content: space-between; /* Distribute space between copyright and links */
+    align-items: center; /* Align items vertically */
+    gap: 20px; /* Space between copyright and links section if they wrap */
+}
+
+.footer-copyright {
+    flex-basis: 60%; /* Give more space to copyright text initially */
+    min-width: 280px; /* Prevent it from becoming too narrow */
+    text-align: left;
+}
+
+.footer-copyright p {
+    margin: 5px 0;
+    line-height: 1.5;
+}
+
+.footer-links {
+    flex-basis: 35%; /* Space for links */
+    min-width: 280px; /* Prevent it from becoming too narrow */
+    text-align: right;
+}
+
+.footer-links a {
+    color: #ced4da; /* CUSTOMIZE: Footer link color */
+    text-decoration: none;
+    margin-left: 15px; /* Space between links */
+    transition: color 0.2s ease;
+}
+
+.footer-links a:first-child {
+    margin-left: 0;
+}
+
+.footer-links a:hover {
+    color: #ffffff; /* CUSTOMIZE: Footer link hover color (brighter) */
+    text-decoration: underline;
+}
+
+/* Responsive adjustments for the footer */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column; /* Stack items vertically */
+        text-align: center; /* Center text for stacked items */
+    }
+    .footer-copyright,
+    .footer-links {
+        flex-basis: 100%; /* Take full width when stacked */
+        text-align: center; /* Ensure text is centered */
+        margin-bottom: 10px;
+    }
+    .footer-links a {
+        margin: 0 8px; /* Adjust spacing for centered links */
+        display: inline-block; /* Allow margin to apply correctly */
+        margin-bottom: 8px; /* Space if links wrap */
+    }
+}

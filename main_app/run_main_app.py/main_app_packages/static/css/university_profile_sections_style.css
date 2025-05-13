@@ -1,0 +1,128 @@
+/* General Profile Section Styling */
+/* Ensure this is loaded after any base site styles to override if necessary */
+
+/* Container for each profile section content block */
+.profile-section-container {
+    padding: 20px 15px; /* Add some padding around the content */
+    max-width: 900px; /* Or your preferred max width for content areas */
+    margin: 0 auto; /* Center the content block if it has a max-width */
+}
+
+.profile-section-title {
+    font-family: 'Lato', 'Open Sans', sans-serif; /* University-themed font */
+    font-size: 1.8em; /* Adjust size as needed */
+    color: #003366; /* University primary color - CUSTOMIZE */
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0; /* Subtle separator */
+    font-weight: 600;
+}
+
+/* Card style for displaying information blocks */
+.profile-view-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    padding: 25px 30px;
+    border: 1px solid #e9ecef; /* Light border for definition */
+    margin-bottom: 30px;
+}
+
+/* Grid layout for label-value pairs */
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive columns */
+    gap: 20px 30px; /* Row and column gap */
+}
+
+.info-item {
+    padding: 10px 0;
+    border-bottom: 1px dashed #f0f0f0; /* Subtle separator for items */
+}
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    display: block;
+    font-weight: 600;
+    color: #555; /* Dark grey for labels */
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    text-transform: uppercase; /* Professional touch */
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    display: block;
+    color: #333; /* Main text color */
+    font-size: 1em;
+    word-wrap: break-word; /* Prevent long strings from breaking layout */
+}
+
+/* Styling for the actions section (if any buttons or notes are present) */
+.profile-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+    text-align: right; /* Align actions to the right by default */
+}
+
+.profile-actions .text-muted {
+    color: #6c757d !important; /* Bootstrap-like muted text color */
+    font-size: 0.85em;
+    text-align: left; /* Or center, if preferred for notes */
+    margin-top: 10px;
+}
+
+/* Basic Button Styling (if you add edit buttons) */
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d; /* Example secondary button color */
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-section-title {
+        font-size: 1.6em;
+    }
+    .profile-view-card {
+        padding: 20px;
+    }
+    .profile-info-grid {
+        grid-template-columns: 1fr; /* Stack items on smaller screens */
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-section-container {
+        padding: 15px 10px;
+    }
+    .profile-section-title {
+        font-size: 1.4em;
+    }
+}

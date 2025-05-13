@@ -1,0 +1,29 @@
+{# templates/base.html #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %}USP Student Portal{% endblock %}</title> {# Default title, can be overridden #}
+
+    <link rel="stylesheet" href="../static/css/university_styles.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    {% block head_extra %}{% endblock %} {# For page-specific CSS or meta tags #}
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <main class="site-main-content"> {# Wrapper for main content area #}
+        {% block content %}{% endblock %} {# Main content block for child templates #}
+    </main>
+
+    {% include 'footer.html' %}
+
+    {% block scripts %}{% endblock %} {# For page-specific JavaScript files or inline scripts #}
+</body>
+</html>

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Fees & Holds{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Tuition Fees - Semester 1, 2025
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Based on {{ enrollments|length }} enrolled course(s) out of ({{ enrollments|sum(attribute='units') }} units).</p>
+                    <ul class="list-group list-group-flush">
+                        {% for enrollment in enrollments %}
+                            <li class="list-group-item">
+                                {{ enrollment.course_code }}: {{ enrollment.course_title }} 
+                                <span class="float-end">FJD {{ enrollment.fee }}</span>
+                            </li>
+                        {% endfor %}
+                        <li class="list-group-item">Student Services Fee <span class="float-end">FJD 150.00</span></li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <strong>Total Due: <span class="float-end">FJD {{ total_fees }}</span></strong>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>Payment Options:</strong>
+                    </p>
+                    <ul>
+                        <li>Online payment via G Pay</li>
+                        <li>Bank transfer (details available at Finance Office)</li>
+                        <li>In-person payment at USP Cashier</li>
+                    </ul>
+                    <p class="text-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Fee payment deadline: 28 May, 2025.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Status Overview
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>Fee Status:</strong>
+                        {% if fee_status == "Paid" %}
+                            <span class="text-success"><i class="fas fa-check-circle"></i> Paid</span>
+                        {% else %}
+                            <span class="text-danger"><i class="fas fa-times-circle"></i> Unpaid</span>
+                        {% endif %}
+                    </p>
+                    <p class="card-text">
+                        <strong>Academic Holds:</strong>
+                        {% if holds %}
+                            <span class="text-danger"><i class="fas fa-exclamation-triangle"></i> You have holds on your account.</span>
+                            <ul>
+                                {% for hold in holds %}
+                                    <li>{{ hold.description }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <span class="text-success"><i class="fas fa-check-circle"></i> No active holds on your account. You are clear for enrollment and other services.</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
