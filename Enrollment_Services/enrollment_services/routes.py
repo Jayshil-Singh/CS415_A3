@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 app = Flask(__name__)
 app.secret_key = 'usp_secret_key'
@@ -36,6 +36,9 @@ courses = [
 
 @app.route('/enroll', methods=['GET', 'POST'])
 def enroll():
+    if 'enrolled_courses' not in session:
+        session['enrolled_courses'] = []
+
     if request.method == 'POST':
         selected_courses = request.form.getlist('courses')
         if len(selected_courses) > 4:
@@ -52,10 +55,10 @@ def enroll():
         if unmet:
             flash(f"Cannot enroll in: {', '.join(unmet)} due to unmet prerequisites.", 'error')
         else:
-            flash('Enrollment successful!', 'success')
-        
-        # Redirect to the display route with the selected courses
-        return redirect(url_for('display_courses', selected_courses=','.join(selected_courses)))
+            # Add only the courses that meet prerequisites
+            session['enrolled_courses'].extend([course for course in selected_courses if course not in unmet])
+            flash('Enrollment successful! Please confirm your courses.', 'success')
+            return redirect(url_for('display_courses'))
 
     # Determine met/unmet prerequisites for view
     for course in courses:
@@ -65,13 +68,15 @@ def enroll():
 
 @app.route('/display_courses')
 def display_courses():
-    selected_courses = request.args.get('selected_courses', '')
-    selected_courses = selected_courses.split(',')
-    
-    # Gather selected course data
-    enrolled_courses = [course for course in courses if course['code'] in selected_courses]
-    
+    enrolled_courses = [course for course in courses if course['code'] in session.get('enrolled_courses', [])]
     return render_template('display_courses.html', enrolled_courses=enrolled_courses)
+
+@app.route('/drop_course/<course_code>')
+def drop_course(course_code):
+    if 'enrolled_courses' in session:
+        session['enrolled_courses'] = [code for code in session['enrolled_courses'] if code != course_code]
+        flash(f'Course {course_code} dropped successfully.', 'success')
+    return redirect(url_for('display_courses'))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
