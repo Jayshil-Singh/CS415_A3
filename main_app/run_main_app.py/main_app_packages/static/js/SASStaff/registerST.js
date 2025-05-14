@@ -8,161 +8,189 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Form fields
     const firstNameInput = document.getElementById('first-name');
-    const middleNameInput = document.getElementById('middle-name');
-    const lastNameInput = document.getElementById('last-name');
-    const addressInput = document.getElementById('address');
-    const contactInput = document.getElementById('contact');
-    const dobInput = document.getElementById('date-of-birth');
+    // ... other existing form field references ...
+    const programSelect = document.getElementById('program');
+    const programTypeSelect = document.getElementById('program-type'); // New
+    const subprogram1Select = document.getElementById('subprogram1'); // Renamed
+    const subprogram2Select = document.getElementById('subprogram2'); // New
+    const subprogram1Group = document.getElementById('subprogram1-group');
+    const subprogram2Group = document.getElementById('subprogram2-group');
+    const subprogram1RequiredAsterisk = document.getElementById('subprogram1-required-asterisk');
+    const subprogram2RequiredAsterisk = document.getElementById('subprogram2-required-asterisk');
+    const campusSelect = document.getElementById('campus');
+    // Add other input elements like gender, citizenship, studentLevel here if not already
     const genderInput = document.getElementById('gender');
     const citizenshipInput = document.getElementById('citizenship');
     const studentLevelInput = document.getElementById('student-level');
-    const programSelect = document.getElementById('program');
-    const subprogramSelect = document.getElementById('subprogram');
-    const campusSelect = document.getElementById('campus');
+    const addressInput = document.getElementById('address');
+    const contactInput = document.getElementById('contact');
+    const dobInput = document.getElementById('date-of-birth');
+    const middleNameInput = document.getElementById('middle-name');
+    const lastNameInput = document.getElementById('last-name');
+
 
     const registerButton = document.getElementById('register-button');
     const clearButton = document.getElementById('clear-button');
 
-    // Modal elements for success/error messages
+    // Modals
     const messageModal = document.getElementById('message-modal');
     const modalText = document.getElementById('modal-text');
-    const closeButton = document.querySelector('#message-modal .close-button'); // More specific selector
-
-    // --- NEW: Registration Confirmation Dialog Elements ---
+    const closeButton = document.querySelector('#message-modal .close-button');
     const registrationConfirmationDialog = document.getElementById('registration-confirmation-dialog');
-    const registrationDialogMessage = document.getElementById('registration-dialog-message'); // If you want to customize its text
     const cancelRegistrationButton = document.getElementById('cancel-registration-button');
     const confirmRegistrationButton = document.getElementById('confirm-registration-button');
-    let currentFormDataForSubmission = null; // To store form data temporarily
+    let currentFormDataForSubmission = null;
 
-    // --- ViewModel Simulation ---
+    // Data Store
+    let programsData = [];
+    let allSubprogrammesData = [];
+    let campusesData = [];
+
+    // ViewModel
     const viewModel = {
-        programs: [],
-        subprograms: {}, // Store as { programId: [subprograms] } or fetch dynamically
-        campuses: [],
         selectedProgram: null,
-        selectedSubprogram: null,
+        selectedProgramType: null,
+        selectedSubprogram1: null,
+        selectedSubprogram2: null,
         selectedCampus: null,
-
-        loadPrograms: function() {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    this.programs = ["Bachelor of Science in IT", "Bachelor of Arts", "Diploma in Business"];
-                    this.subprograms["Bachelor of Science in IT"] = ["Software Engineering", "Networking", "Cybersecurity"];
-                    this.subprograms["Bachelor of Arts"] = ["History", "Literature"];
-                    this.subprograms["Diploma in Business"] = ["Management", "Marketing"];
-                    resolve();
-                }, 1000);
-            });
-        },
-
-        loadCampuses: function() {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    this.campuses = ["Main Campus (Suva)", "Lautoka Campus", "Labasa Campus"];
-                    resolve();
-                }, 800);
-            });
-        },
-
         submitForm: function(formData) {
             return new Promise((resolve, reject) => {
-                console.log("Submitting form data:", formData);
-                // This is where you would make an actual API call to your Flask backend
-                // For example:
-                // fetch('/api/register-student', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify(formData)
-                // })
-                // .then(response => response.json())
-                // .then(data => {
-                //     if (data.success) resolve(data.message || "Student registered successfully!");
-                //     else reject(data.error || "Failed to register student.");
-                // })
-                // .catch(error => reject("Network error or server issue."));
-
-                setTimeout(() => { // Simulating API call
-                    const isSuccess = Math.random() > 0.2; // 80% success rate
+                console.log("Submitting form data to backend:", formData);
+                // Simulate API call
+                setTimeout(() => {
+                    const isSuccess = Math.random() > 0.2;
                     if (isSuccess) {
-                        resolve("Student registered successfully!");
+                        resolve("Student registered successfully! (Simulated)");
                     } else {
-                        reject("Failed to register student. Please try again.");
+                        reject("Failed to register student. Please try again. (Simulated)");
                     }
                 }, 1500);
             });
         }
     };
 
-    // --- Helper Functions ---
+    // Helper Functions
     function populateSelect(selectElement, options, defaultOptionText = "Select an option") {
         if (!selectElement) return;
         selectElement.innerHTML = `<option value="">${defaultOptionText}</option>`;
-        options.forEach(option => {
-            const optionElement = document.createElement('option');
-            optionElement.value = option;
-            optionElement.textContent = option;
-            selectElement.appendChild(optionElement);
-        });
+        if (Array.isArray(options)) {
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                const trimmedOption = String(option).trim();
+                optionElement.value = trimmedOption;
+                optionElement.textContent = trimmedOption;
+                selectElement.appendChild(optionElement);
+            });
+        }
     }
 
-    function showLoading() {
+    function showLoading() { /* ... */ 
         if (loadingIndicator) loadingIndicator.style.display = 'block';
         if (formContainer) formContainer.style.display = 'none';
         if (errorMessageContainer) errorMessageContainer.style.display = 'none';
     }
-
-    function showError(message) {
+    function showError(message) { /* ... */ 
         if (loadingIndicator) loadingIndicator.style.display = 'none';
         if (formContainer) formContainer.style.display = 'none';
-        if (errorTextElement) errorTextElement.textContent = `Error loading data: ${message}`;
+        if (errorTextElement) errorTextElement.textContent = `Error: ${message}`;
         if (errorMessageContainer) errorMessageContainer.style.display = 'block';
     }
-
-    function showForm() {
+    function showForm() { /* ... */ 
         if (loadingIndicator) loadingIndicator.style.display = 'none';
         if (formContainer) formContainer.style.display = 'block';
         if (errorMessageContainer) errorMessageContainer.style.display = 'none';
     }
-
-    function showMessageModal(message, isSuccess = true) {
+    function showMessageModal(message, isSuccess = true) { /* ... */ 
         if (!messageModal || !modalText) return;
         modalText.textContent = message;
-        messageModal.className = isSuccess ? 'modal success-modal' : 'modal error-modal'; // Differentiate success/error
+        messageModal.className = isSuccess ? 'modal success-modal' : 'modal error-modal';
         messageModal.style.display = 'flex';
     }
-
-    function hideMessageModal() {
+    function hideMessageModal() { /* ... */ 
         if (messageModal) messageModal.style.display = 'none';
     }
-
-    // --- NEW: Registration Confirmation Dialog Functions ---
-    function showRegistrationConfirmationDialog(formData) {
+    function showRegistrationConfirmationDialog(formData) { /* ... */ 
         if (!registrationConfirmationDialog) return;
-        currentFormDataForSubmission = formData; // Store data for when user confirms
-        // You can customize the message if needed:
-        // registrationDialogMessage.textContent = `Confirm registration for ${formData.firstName} ${formData.lastName}?`;
+        currentFormDataForSubmission = formData;
         registrationConfirmationDialog.style.display = 'flex';
     }
-
-    function hideRegistrationConfirmationDialog() {
+    function hideRegistrationConfirmationDialog() { /* ... */ 
         if (registrationConfirmationDialog) registrationConfirmationDialog.style.display = 'none';
-        currentFormDataForSubmission = null; // Clear stored form data
+        currentFormDataForSubmission = null;
+    }
+    
+    function updateSubprogramVisibilityAndRequirement() {
+        const selectedProgramText = programSelect?.value || "";
+        const selectedProgramType = programTypeSelect?.value || "";
+
+        // Default to Single Major for Certificates and Diplomas
+        if (selectedProgramText.toLowerCase().includes("certificate") || selectedProgramText.toLowerCase().includes("diploma")) {
+            if (programTypeSelect) {
+                programTypeSelect.value = "Single Major";
+                programTypeSelect.disabled = true;
+            }
+            // Update selectedProgramType for subsequent logic
+            viewModel.selectedProgramType = "Single Major";
+        } else {
+            if (programTypeSelect) {
+                programTypeSelect.disabled = false;
+            }
+            viewModel.selectedProgramType = selectedProgramType; // Use user's selection
+        }
+        
+        // Now use viewModel.selectedProgramType for logic
+        const currentType = viewModel.selectedProgramType;
+
+        // Subprogram 1
+        if (currentType === "Single Major" || currentType === "Double Major") {
+            if (subprogram1Group) subprogram1Group.style.display = 'block';
+            if (subprogram1Select) subprogram1Select.required = true;
+            if (subprogram1RequiredAsterisk) subprogram1RequiredAsterisk.style.display = 'inline';
+            populateSelect(subprogram1Select, allSubprogrammesData, "Select subprogram 1");
+        } else {
+            if (subprogram1Group) subprogram1Group.style.display = 'none';
+            if (subprogram1Select) {
+                subprogram1Select.required = false;
+                subprogram1Select.value = ""; // Clear value
+            }
+            if (subprogram1RequiredAsterisk) subprogram1RequiredAsterisk.style.display = 'none';
+        }
+
+        // Subprogram 2
+        if (currentType === "Double Major") {
+            if (subprogram2Group) subprogram2Group.style.display = 'block';
+            if (subprogram2Select) subprogram2Select.required = true;
+            if (subprogram2RequiredAsterisk) subprogram2RequiredAsterisk.style.display = 'inline';
+            populateSelect(subprogram2Select, allSubprogrammesData, "Select subprogram 2");
+        } else {
+            if (subprogram2Group) subprogram2Group.style.display = 'none';
+            if (subprogram2Select) {
+                subprogram2Select.required = false;
+                subprogram2Select.value = ""; // Clear value
+            }
+            if (subprogram2RequiredAsterisk) subprogram2RequiredAsterisk.style.display = 'none';
+        }
+        // Re-validate subprogram fields after changing their state
+        if (subprogram1Select) validateField(subprogram1Select);
+        if (subprogram2Select) validateField(subprogram2Select);
     }
 
-    // --- Form Validation ---
+
     function validateField(inputElement) {
-        if (!inputElement) return true; // Should not happen if called correctly
-        const errorElement = inputElement.closest('.form-group')?.querySelector('.validation-error'); // More robust selector
+        if (!inputElement) return true;
+        const errorElement = inputElement.closest('.form-group')?.querySelector('.validation-error');
         let isValid = true;
         let errorMessage = "";
 
-        if (inputElement.required && (inputElement.value === null || inputElement.value.trim() === '')) {
+        // Check if the element is visible and required
+        const isVisible = inputElement.offsetParent !== null || inputElement.closest('.form-group')?.style.display !== 'none';
+
+        if (inputElement.required && isVisible && (inputElement.value === null || String(inputElement.value).trim() === '')) {
             isValid = false;
             errorMessage = "This field is required.";
         }
 
-        if (isValid && inputElement.id === 'contact') {
+        if (isValid && inputElement.id === 'contact' && inputElement.value.trim() !== '') {
             const regex = /^679-\d{7}$/;
             if (!regex.test(inputElement.value)) {
                 isValid = false;
@@ -189,57 +217,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function validateForm() {
         let isFormValid = true;
-        const inputsToValidate = form.querySelectorAll('input[required], select[required]');
+        // Validate all fields that are currently marked as required and visible
+        const inputsToValidate = form.querySelectorAll('input, select'); 
         inputsToValidate.forEach(input => {
-            if (!validateField(input)) {
-                isFormValid = false;
+            // Only validate if it's required AND its group is visible
+            const group = input.closest('.form-group');
+            const isVisible = group ? group.style.display !== 'none' : true; // Assume visible if not in a group with display style
+            
+            if (input.required && isVisible) {
+                if (!validateField(input)) {
+                    isFormValid = false;
+                }
+            } else if (!input.required && input.classList.contains('invalid')) {
+                // Clear previous errors from fields that are no longer required or hidden
+                input.classList.remove('invalid');
+                const errorElement = group?.querySelector('.validation-error');
+                if (errorElement) errorElement.textContent = "";
             }
         });
+        // Special validation for contact even if not marked required but has value
         if (contactInput && contactInput.value.trim() && !validateField(contactInput)) isFormValid = false;
         return isFormValid;
     }
 
-    // --- Actual Form Submission Logic (called after confirmation) ---
     async function processFormSubmission(formData) {
-        registerButton.disabled = true;
-        registerButton.textContent = 'Registering...';
+        if(registerButton) {
+            registerButton.disabled = true;
+            registerButton.textContent = 'Registering...';
+        }
         try {
             const successMessage = await viewModel.submitForm(formData);
             showMessageModal(successMessage, true);
-            form.reset();
-            populateSelect(programSelect, viewModel.programs, "Select program");
-            populateSelect(subprogramSelect, [], "Select program first...");
-            if (subprogramSelect) subprogramSelect.disabled = true;
-            populateSelect(campusSelect, viewModel.campuses, "Select campus");
-            form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
-            form.querySelectorAll('.validation-error').forEach(el => el.textContent = '');
+            if (form) form.reset(); // This will trigger change events on selects, resetting them
+            // Manually call update to ensure subprogram states are correct after reset
+            updateSubprogramVisibilityAndRequirement(); 
+            
+            form?.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+            form?.querySelectorAll('.validation-error').forEach(el => el.textContent = '');
         } catch (error) {
-            showMessageModal(String(error), false); // Ensure error is a string
-        } finally { // Use finally to re-enable button regardless of success/failure
-            registerButton.disabled = false;
-            registerButton.textContent = 'Register';
+            showMessageModal(String(error), false);
+        } finally {
+            if(registerButton){
+                registerButton.disabled = false;
+                registerButton.textContent = 'Register';
+            }
         }
     }
-
 
     // --- Event Listeners ---
     if (programSelect) {
         programSelect.addEventListener('change', () => {
             viewModel.selectedProgram = programSelect.value;
-            const relatedSubprograms = viewModel.subprograms[viewModel.selectedProgram] || [];
-            populateSelect(subprogramSelect, relatedSubprograms, "Select subprogram...");
-            if (subprogramSelect) subprogramSelect.disabled = relatedSubprograms.length === 0;
+            updateSubprogramVisibilityAndRequirement(); // Centralized logic
             validateField(programSelect);
         });
     }
 
-    if (subprogramSelect) {
-        subprogramSelect.addEventListener('change', () => {
-            viewModel.selectedSubprogram = subprogramSelect.value;
-            validateField(subprogramSelect);
+    if (programTypeSelect) {
+        programTypeSelect.addEventListener('change', () => {
+            viewModel.selectedProgramType = programTypeSelect.value;
+            updateSubprogramVisibilityAndRequirement(); // Centralized logic
+            validateField(programTypeSelect);
         });
     }
-    if (campusSelect) {
+    
+    if (subprogram1Select) {
+        subprogram1Select.addEventListener('change', () => {
+            viewModel.selectedSubprogram1 = subprogram1Select.value;
+            validateField(subprogram1Select);
+        });
+    }
+    if (subprogram2Select) {
+        subprogram2Select.addEventListener('change', () => {
+            viewModel.selectedSubprogram2 = subprogram2Select.value;
+            validateField(subprogram2Select);
+        });
+    }
+
+    if (campusSelect) { /* ... (same as before) ... */ 
         campusSelect.addEventListener('change', () => {
             viewModel.selectedCampus = campusSelect.value;
             validateField(campusSelect);
@@ -263,7 +318,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         form.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault(); 
+            // Ensure subprogram states are correct before validation
+            updateSubprogramVisibilityAndRequirement(); 
 
             if (validateForm()) {
                 const formData = {
@@ -277,10 +334,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     citizenship: citizenshipInput?.value,
                     studentLevel: studentLevelInput?.value,
                     program: programSelect?.value,
-                    subprogram: subprogramSelect?.value,
+                    programType: programTypeSelect?.value, // New
+                    subprogram1: (subprogram1Select && subprogram1Select.closest('.form-group')?.style.display !== 'none') ? subprogram1Select.value : "", // New
+                    subprogram2: (subprogram2Select && subprogram2Select.closest('.form-group')?.style.display !== 'none') ? subprogram2Select.value : "", // New
                     campus: campusSelect?.value,
                 };
-                // --- MODIFIED: Show confirmation dialog instead of direct submission ---
                 showRegistrationConfirmationDialog(formData);
             } else {
                 showMessageModal("Please correct the errors in the form.", false);
@@ -290,81 +348,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (clearButton) {
         clearButton.addEventListener('click', () => {
-            if (form) form.reset();
-            populateSelect(programSelect, viewModel.programs, "Select program");
-            populateSelect(subprogramSelect, [], "Select program first...");
-            if (subprogramSelect) subprogramSelect.disabled = true;
-            populateSelect(campusSelect, viewModel.campuses, "Select campus");
+            if (form) form.reset(); // This will trigger change events on selects
+            // Manually call update to ensure subprogram states are correct after reset
+            updateSubprogramVisibilityAndRequirement(); 
+            
             form?.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
             form?.querySelectorAll('.validation-error').forEach(el => el.textContent = '');
             if (firstNameInput) firstNameInput.focus();
         });
     }
 
-    if (closeButton) { // For the success/error message modal
-        closeButton.addEventListener('click', hideMessageModal);
-    }
-    if (messageModal) {
-        messageModal.addEventListener('click', (event) => {
-            if (event.target === messageModal) {
-                hideMessageModal();
-            }
-        });
-    }
-
-    // --- NEW: Event Listeners for Registration Confirmation Dialog ---
-    if (cancelRegistrationButton) {
+    // Modal event listeners (same as before)
+    if (closeButton) { closeButton.addEventListener('click', hideMessageModal); }
+    if (messageModal) { messageModal.addEventListener('click', (event) => { if (event.target === messageModal) hideMessageModal(); }); }
+    if (cancelRegistrationButton) { 
         cancelRegistrationButton.addEventListener('click', () => {
             hideRegistrationConfirmationDialog();
-            // Re-enable register button if it was disabled
-            if (registerButton) {
-                registerButton.disabled = false;
-                registerButton.textContent = 'Register';
-            }
-        });
+            if (registerButton) { registerButton.disabled = false; registerButton.textContent = 'Register';}
+        }); 
     }
-
-    if (confirmRegistrationButton) {
+    if (confirmRegistrationButton) { 
         confirmRegistrationButton.addEventListener('click', () => {
             hideRegistrationConfirmationDialog();
-            if (currentFormDataForSubmission) {
-                processFormSubmission(currentFormDataForSubmission); // Process the stored form data
-            }
+            if (currentFormDataForSubmission) processFormSubmission(currentFormDataForSubmission);
         });
     }
-    
-    if (registrationConfirmationDialog) {
-        registrationConfirmationDialog.addEventListener('click', (event) => {
+    if (registrationConfirmationDialog) { 
+        registrationConfirmationDialog.addEventListener('click', (event) => { 
             if (event.target === registrationConfirmationDialog) {
                 hideRegistrationConfirmationDialog();
-                if (registerButton) {
-                     registerButton.disabled = false;
-                     registerButton.textContent = 'Register';
-                }
+                if (registerButton) { registerButton.disabled = false; registerButton.textContent = 'Register';}
             }
         });
     }
 
+    // Initial Load
+    function initializePage() {
+        showLoading(); 
+        const dataScriptElement = document.getElementById('registration-initial-data');
+        if (dataScriptElement) {
+            try {
+                const initialData = JSON.parse(dataScriptElement.textContent);
+                programsData = initialData.programs || [];
+                allSubprogrammesData = initialData.all_subprogrammes || [];
+                campusesData = initialData.campuses || [];
 
-    // --- Initial Load ---
-    async function initializePage() {
-        showLoading();
-        try {
-            await Promise.all([
-                viewModel.loadPrograms(),
-                viewModel.loadCampuses()
-            ]);
-            populateSelect(programSelect, viewModel.programs, "Select program");
-            populateSelect(campusSelect, viewModel.campuses, "Select campus");
-            if (subprogramSelect) subprogramSelect.disabled = true;
-            showForm();
-        } catch (error) {
-            console.error("Initialization error:", error);
-            showError(error.message || "Unknown error occurred.");
+                populateSelect(programSelect, programsData, "Select program");
+                populateSelect(campusSelect, campusesData, "Select campus");
+                // Program Type is static, already in HTML
+                
+                // Initialize subprogram dropdowns but keep them hidden/disabled until type is selected
+                populateSelect(subprogram1Select, allSubprogrammesData, "Select subprogram 1");
+                populateSelect(subprogram2Select, allSubprogrammesData, "Select subprogram 2");
+                updateSubprogramVisibilityAndRequirement(); // Set initial state
+
+                showForm();
+            } catch (error) {
+                console.error("Error parsing initial registration data from HTML:", error);
+                showError("Could not load initial form data. Please refresh the page.");
+            }
+        } else {
+            console.error("Initial registration data script tag not found.");
+            showError("Critical data missing. Please contact support.");
         }
     }
 
-    if (formContainer) { // Only initialize if the main form container exists
+    if (formContainer) {
         initializePage();
     } else {
         console.warn("Registration form container not found. Page initialization skipped.");

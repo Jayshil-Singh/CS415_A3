@@ -1,0 +1,755 @@
+<Units>
+	<Unit code="CK131" courseName="Cook Islands History and Society"/>
+	<Unit code="CM131" courseName="Cook Islands Māori Language &amp; Culture I"/>
+	<Unit code="CM101" courseName="Introductory Māori Language"/>
+	<Unit code="UU114" courseName="English Language Skills for Tertiary Studies"/>
+	<Unit code="ED152" courseName="Foundations of Teaching and Learning"/>
+	<Unit code="ED252" courseName="Language &amp; Literacy in ECE"/>
+	<Unit code="ED354" courseName="Advanced Assessment Strategies"/>
+	<Unit code="ED300" courseName="Practicum"/>
+	<Unit code="ED100" courseName="Introduction to Primary Teaching"/>
+	<Unit code="ED115" courseName="Primary Curriculum &amp; Pedagogy I"/>
+	<Unit code="ED116" courseName="Primary Curriculum &amp; Pedagogy II"/>
+	<Unit code="ED150" courseName="Introduction to Teaching"/>
+	<Unit code="ED170" courseName="Professional Practice in Teaching"/>
+	<Unit code="ED183" courseName="Swimming &amp; Aquatic Safety"/>
+	<Unit code="ED184" courseName="Outdoor Education and Leisure"/>
+	<Unit code="CM311" courseName="Cook Islands Māori Texts &amp; Translation"/>
+	<Unit code="LN111" courseName="Language and Society"/>
+	<Unit code="LN118" courseName="Language Learning"/>
+	<Unit code="NU111" courseName="Introductory Vagahau Niue"/>
+	<Unit code="NU131" courseName="Niuean Cultural Knowledge"/>
+	<Unit code="NU211" courseName="Intermediate Vagahau Niue I"/>
+	<Unit code="NU212" courseName="Intermediate Vagahau Niue II"/>
+	<Unit code="NU331" courseName="Advanced Vagahau Niue II"/>
+	<Unit code="ED103" courseName="Understanding Children &amp; Childhood"/>
+	<Unit code="ED204" courseName="Pedagogy in ECE"/>
+	<Unit code="ED205" courseName="ECE Curriculum I"/>
+	<Unit code="ED206" courseName="ECE Curriculum II"/>
+	<Unit code="ED250" courseName="Curriculum &amp; Pedagogy"/>
+	<Unit code="ED262" courseName="Inclusive Pedagogy"/>
+	<Unit code="ED255" courseName="Data Analysis in Education"/>
+	<Unit code="ED359" courseName="Capstone Project"/>
+	<Unit code="ED215" courseName="Multilingual Pedagogy"/>
+	<Unit code="JN101" courseName="Introduction to Journalism"/>
+	<Unit code="JN103" courseName="Writing and Reporting"/>
+	<Unit code="JN201" courseName="Radio Journalism"/>
+	<Unit code="JN301" courseName="Journalism Practice"/>
+	<Unit code="JN302" courseName="Journalism Research"/>
+	<Unit code="JN303" courseName="Journalism Production"/>
+	<Unit code="PS101" courseName="Introduction to Psychology"/>
+	<Unit code="ED209" courseName="Educating Individuals with Vision Impairments"/>
+	<Unit code="ED210" courseName="Inclusive Curriculum"/>
+	<Unit code="ED323" courseName="Behavior Management"/>
+	<Unit code="ED362" courseName="Inclusive Education"/>
+	<Unit code="FJ111" courseName="Fijian Language Studies 1 - Vakadidike Vosa Vakaviti 1"/>
+	<Unit code="FJ121" courseName="Fijian Orature/Literature 1 - Umavosa Maroroi Vakaviti 1"/>
+	<Unit code="LT102" courseName="Contemporary Literary Criticism: Key Terms &amp; Texts 1"/>
+	<Unit code="FJ211" courseName="Fijian Language Studies 2"/>
+	<Unit code="FJ212" courseName="Intermediate Fijian II"/>
+	<Unit code="FJ221" courseName="Fijian Heritage"/>
+	<Unit code="FJ311" courseName="Advanced Fijian I"/>
+	<Unit code="FJ321" courseName="Advanced Fijian II"/>
+	<Unit code="HN211" courseName="Varieties of Hindi"/>
+	<Unit code="HN212" courseName="The Teaching of Hindi"/>
+	<Unit code="HN221" courseName="Hindi Prose Fiction"/>
+	<Unit code="HN321" courseName="Culture, Literature &amp; Language"/>
+	<Unit code="HN331" courseName="Cultural Studies"/>
+	<Unit code="LN216" courseName="Applied Linguistics"/>
+	<Unit code="LN317" courseName="Language Documentation"/>
+	<Unit code="LN211" courseName="Sociolinguistics"/>
+	<Unit code="LN311" courseName="Language Revitalization"/>
+	<Unit code="LN319" courseName="Language Documentation"/>
+	<Unit code="CN101" courseName="Introductory Chinese I"/>
+	<Unit code="CN201" courseName="Intermediate Chinese I"/>
+	<Unit code="CN301" courseName="Advanced Chinese I"/>
+	<Unit code="CN302" courseName="Advanced Chinese II"/>
+	<Unit code="FR101" courseName="Introduction to the French Language"/>
+	<Unit code="FR201" courseName="IFrench Language 2"/>
+	<Unit code="FR301" courseName="Advanced French I"/>
+	<Unit code="ED363" courseName="Educational Policy Analysis"/>
+	<Unit code="JN202" courseName="Radio Broadcasting"/>
+	<Unit code="JN203" courseName="Print Journalism"/>
+	<Unit code="LN213" courseName="Language and Gender"/>
+	<Unit code="LN315" courseName="Discourse Analysis"/>
+	<Unit code="LN316" courseName="Language Acquisition"/>
+	<Unit code="LT202" courseName="Contemporary Literary Criticism: Key Terms &amp; Texts 2"/>
+	<Unit code="LT204" courseName="Islands 2: Myths &amp; Metaphors"/>
+	<Unit code="LT305" courseName="Postcolonial Literatures"/>
+	<Unit code="LT306" courseName="Literature and Identity"/>
+	<Unit code="LT307" courseName="Global Literatures"/>
+	<Unit code="LT108" courseName="Creative Writing"/>
+	<Unit code="LT331" courseName="Advanced Literary Analysis"/>
+	<Unit code="ED302" courseName="Professional Practice in ECE"/>
+	<Unit code="ED303" courseName="Curriculum Planning"/>
+	<Unit code="ED304" courseName="ECE Leadership and Management"/>
+	<Unit code="ED216" courseName="Curriculum and Instruction II"/>
+	<Unit code="ED217" courseName="Science in the Primary School"/>
+	<Unit code="ED325" courseName="Literacy &amp; Numeracy"/>
+	<Unit code="ED327" courseName="Teaching Social Studies"/>
+	<Unit code="ED328" courseName="Creative Arts and Health"/>
+	<Unit code="ED336" courseName="ICT in Education"/>
+	<Unit code="ED350" courseName="Leadership in Education"/>
+	<Unit code="ED386" courseName="Advanced Inclusive Education Practice"/>
+	<Unit code="MG101" courseName="Introduction to Management"/>
+	<Unit code="MG206" courseName="Organisational Behaviour"/>
+	<Unit code="MG303" courseName="Strategic Management"/>
+	<Unit code="MG301" courseName="Contemporary Issues in Management"/>
+	<Unit code="ED401" courseName="Teaching and Learning in Higher Education"/>
+	<Unit code="ED402" courseName="Curriculum and Assessment in Higher Education"/>
+	<Unit code="ED403" courseName="Technology and Research in Higher Education"/>
+	<Unit code="LN411" courseName="Language in Education"/>
+	<Unit code="LN413" courseName="Language Planning and Policy"/>
+	<Unit code="LN416" courseName="Language Curriculum Design"/>
+	<Unit code="LT402" courseName="Studies of Women Authors"/>
+	<Unit code="LT407" courseName="Study of a Selected Author"/>
+	<Unit code="LT410" courseName="Study of a Selected Genre"/>
+	<Unit code="LN418" courseName="Testing and Evaluation in Language Education"/>
+	<Unit code="LN419" courseName="Language Teacher Education"/>
+	<Unit code="FJ411" courseName="Fijian Orature"/>
+	<Unit code="FJ412" courseName="Fijian Translation &amp; Editing"/>
+	<Unit code="FJ413" courseName="Fijian Creative Writing"/>
+	<Unit code="FJ421" courseName="Advanced Fijian Discourse"/>
+	<Unit code="FJ422" courseName="Fijian Sociolinguistics"/>
+	<Unit code="ED421" courseName="Advanced Studies in Early Childhood Education &amp; Care"/>
+	<Unit code="ED451" courseName="Culture &amp; Education"/>
+	<Unit code="ED454" courseName="Advanced Educational Measurement &amp; Evaluation"/>
+	<Unit code="ED455" courseName="Advanced Curriculum Studies"/>
+	<Unit code="ED456" courseName="Curriculum Policy &amp; Reform"/>
+	<Unit code="ED457" courseName="Teacher Development &amp; Reflective Practice"/>
+	<Unit code="ED461" courseName="Gender &amp; Education"/>
+	<Unit code="ED466" courseName="Education &amp; Sustainable Development"/>
+	<Unit code="ED468" courseName="Global Education Issues"/>
+	<Unit code="ED491" courseName="Educational Leadership: Theory &amp; Practice"/>
+	<Unit code="ED492" courseName="Managing Educational Change"/>
+	<Unit code="ED493" courseName="Strategic Planning in Education"/>
+    <Unit code="LM112" courseName="Introduction to Land Management"/>
+    <Unit code="LM113" courseName="Land Tenure Systems"/>
+    <Unit code="LM211" courseName="Land Development"/>
+    <Unit code="LM214" courseName="Cadastral Surveying"/>
+    <Unit code="LM216" courseName="Geographic Information Systems"/>
+    <Unit code="TS106" courseName="Introduction to Tourism"/>
+    <Unit code="TS108" courseName="Hotel Operations"/>
+    <Unit code="TS109" courseName="Food and Beverage Operations"/>
+    <Unit code="TS208" courseName="Tourism Marketing"/>
+    <Unit code="TS209" courseName="Rooms Division Management"/>
+    <Unit code="TS216" courseName="Hospitality and Tourism Law"/>
+    <Unit code="TS218" courseName="Practical Training"/>
+    <Unit code="AF101" courseName="Introduction to Accounting"/>
+    <Unit code="EC101" courseName="Microeconomics"/>
+    <Unit code="MG201" courseName="Management Principles"/>
+    <Unit code="AF210" courseName="Financial Accounting"/>
+    <Unit code="EC202" courseName="Macroeconomics"/>
+    <Unit code="MG206" courseName="Organizational Behavior"/>
+    <Unit code="MG301" courseName="Strategic Management"/>
+    <Unit code="AF302" courseName="Advanced Financial Reporting"/>
+    <Unit code="EC306" courseName="Econometrics"/>
+    <Unit code="MG304" courseName="Business Ethics"/>
+    <Unit code="MG106" courseName="Business Communication"/>
+    <Unit code="MG204" courseName="Business Law"/>
+    <Unit code="MG302" courseName="Human Resource Management"/>
+    <Unit code="MG309" courseName="Business Strategy"/>
+    <Unit code="MG312" courseName="International Business"/>
+    <Unit code="MG315" courseName="Corporate Social Responsibility"/>
+    <Unit code="MG316" courseName="Project Management"/>
+    <Unit code="MG305" courseName="Public Policy"/>
+    <Unit code="MG311" courseName="Government and Public Sector Management"/>
+    <Unit code="TS107" courseName="Tourism and Hospitality Industry"/>
+    <Unit code="TS109" courseName="Hospitality Management"/>
+    <Unit code="TS207" courseName="Hotel Operations Management"/>
+    <Unit code="TS209" courseName="Event Planning"/>
+    <Unit code="TS302" courseName="Hospitality Marketing"/>
+    <Unit code="TS309" courseName="Hospitality Finance"/>
+    <Unit code="TS310" courseName="Human Resource Management"/>
+    <Unit code="MG303" courseName="Business Strategy"/>
+    <Unit code="LM213" courseName="Real Estate Management"/>
+    <Unit code="LM215" courseName="Land Administration"/>
+    <Unit code="LM216" courseName="Geographic Information Systems"/>
+    <Unit code="LM311" courseName="Advanced Land Law"/>
+    <Unit code="LM312" courseName="Urban Land Use Planning"/>
+    <Unit code="LM315" courseName="Valuation and Land Economics"/>
+    <Unit code="LM311" courseName="Land Management Practice"/>
+    <Unit code="LM312" courseName="Land Policy"/>
+    <Unit code="LM313" courseName="Environmental Land Management"/>
+    <Unit code="LM317" courseName="Urban Planning"/>
+    <Unit code="LM318" courseName="Land Use Planning"/>
+    <Unit code="MBA422" courseName="Financial Management"/>
+    <Unit code="MBA432" courseName="Accounting for Managers"/>
+    <Unit code="MBA436" courseName="Public Finance"/>
+    <Unit code="MBA423" courseName="Financial Management"/>
+    <Unit code="MBA431" courseName="Accounting for Managers"/>
+    <Unit code="MBA433" courseName="Public Finance"/>
+    <Unit code="MBA434" courseName="Management Accounting"/>
+    <Unit code="MBA435" courseName="Corporate Finance"/>
+    <Unit code="MBA437" courseName="Investment Management"/>
+    <Unit code="MBA438" courseName="International Business"/>
+    <Unit code="MBA439" courseName="Marketing Management"/>
+    <Unit code="MBA440" courseName="Strategic Management"/>
+    <Unit code="MBA421" courseName="Managerial Economics"/>
+    <Unit code="MBA430" courseName="Operations Management"/>
+    <Unit code="MBA441" courseName="Entrepreneurship"/>
+    <Unit code="MBA442" courseName="Business Law"/>
+    <Unit code="MBA443" courseName="Human Resource Management"/>
+    <Unit code="AF420" courseName="Financial Reporting"/>
+    <Unit code="AF433" courseName="Advanced Corporate Finance"/>
+    <Unit code="DG410" courseName="Development Economics"/>
+    <Unit code="DG415" courseName="Sustainable Development"/>
+    <Unit code="DG417" courseName="Project Management"/>
+    <Unit code="EC408" courseName="Macroeconomic Policy"/>
+    <Unit code="EC412" courseName="Economic Development"/>
+    <Unit code="MG401" courseName="Leadership and Management"/>
+    <Unit code="MG404" courseName="Organizational Change"/>
+    <Unit code="MG405" courseName="Strategic Marketing"/>
+    <Unit code="MG409" courseName="Corporate Governance"/>
+    <Unit code="MG410" courseName="International Marketing"/>
+    <Unit code="MG411" courseName="Human Resources Management"/>
+    <Unit code="MG412" courseName="Business Strategy"/>
+    <Unit code="LM401" courseName="Land Use Planning"/>
+    <Unit code="LM402" courseName="Land Development"/>
+    <Unit code="TS401" courseName="Tourism Planning"/>
+    <Unit code="MBA425" courseName="Supervised Independent Research"/>
+    <Unit code="DBA700" courseName="Research Methods"/>
+    <Unit code="DBA710" courseName="Business Strategy"/>
+    <Unit code="DBA720" courseName="Advanced Management"/>
+    <Unit code="DBA760" courseName="Strategic Leadership"/>
+    <Unit code="DBA770" courseName="Global Business Strategy"/>
+    <Unit code="DBA780" courseName="Entrepreneurship"/>
+    <Unit code="ST131" courseName="Statistical Concepts"/>
+    <Unit code="OS101" courseName="Introduction to Official Statistics"/>
+    <Unit code="OS102" courseName="Data Collection and Processing"/>
+    <Unit code="PD101" courseName="Principles of Demography"/>
+    <Unit code="UU100" courseName="Communication and Information Literacy"/>
+    <Unit code="OS201" courseName="Statistical Analysis"/>
+    <Unit code="GS100" courseName="Introduction to Population Studies"/>
+    <Unit code="PD200" courseName="Demographic Analysis"/>
+    <Unit code="AF101" courseName="Introduction to Accounting"/>
+    <Unit code="AF102" courseName="Financial Accounting"/>
+    <Unit code="AF108" courseName="Accounting Information Systems"/>
+    <Unit code="AF121" courseName="Business Law"/>
+    <Unit code="FM101" courseName="Principles of Finance"/>
+    <Unit code="AF201" courseName="Intermediate Accounting"/>
+    <Unit code="AF208" courseName="Management Accounting"/>
+    <Unit code="AF210" courseName="Corporate Law"/>
+    <Unit code="AF3XX" courseName="One 300-Level Accounting Course"/>
+    <Unit code="EC101" courseName="Microeconomics"/>
+    <Unit code="EC102" courseName="Macroeconomics"/>
+    <Unit code="EC201" courseName="Intermediate Microeconomics"/>
+    <Unit code="EC202" courseName="Intermediate Macroeconomics"/>
+    <Unit code="EC203" courseName="Economic Statistics"/>
+    <Unit code="UU200" courseName="Ethics and Governance"/>
+    <Unit code="UU204" courseName="Pacific Worlds"/>
+    <Unit code="EC3XX" courseName="One 300-Level Economics Course"/>
+    <Unit code="OS202" courseName="Statistical Software and Applications"/>
+    <Unit code="EC203" courseName="Microeconomics"/>
+    <Unit code="PD200" courseName="Population Studies"/>
+    <Unit code="GS201" courseName="Advanced Population Studies"/>
+    <Unit code="PD303" courseName="Population and Development"/>
+    <Unit code="AF301" courseName="Advanced Accounting"/>
+    <Unit code="EC301" courseName="International Economics"/>
+    <Unit code="FM301" courseName="Investment Management"/>
+    <Unit code="UU300" courseName="Strategic Management"/>
+    <Unit code="AF302" courseName="Taxation"/>
+    <Unit code="AF304" courseName="Auditing"/>
+    <Unit code="AF308" courseName="Accounting Information Systems"/>
+    <Unit code="AF413" courseName="Advanced Accounting"/>
+    <Unit code="AF418" courseName="Corporate Governance"/>
+    <Unit code="AF411" courseName="Financial Reporting"/>
+    <Unit code="AF412" courseName="Financial Accounting Theory"/>
+    <Unit code="AF401" courseName="Fraud Detection and Investigation"/>
+    <Unit code="AF402" courseName="Financial Fraud Risk Management"/>
+    <Unit code="AF405" courseName="Fraud Investigation Methodology"/>
+    <Unit code="AF420" courseName="Forensic Accounting"/>
+    <Unit code="AF431" courseName="Financial Statement Analysis"/>
+    <Unit code="AF432" courseName="Strategic Financial Management"/>
+    <Unit code="AF437" courseName="Accounting Theory"/>
+    <Unit code="EC401" courseName="Advanced Microeconomics"/>
+    <Unit code="EC402" courseName="Advanced Macroeconomics"/>
+    <Unit code="EC403" courseName="Research Methods"/>
+    <Unit code="EC404" courseName="International Economics"/>
+    <Unit code="OS301" courseName="Advanced Official Statistics"/>
+    <Unit code="OS302" courseName="Survey Design"/>
+    <Unit code="OS303" courseName="Statistical Analysis"/>
+    <Unit code="PD401" courseName="Advanced Population Studies"/>
+    <Unit code="PD402" courseName="Demographic Research Methods"/>
+    <Unit code="PD403" courseName="Applied Population Demography"/>
+    <Unit code="CS111" courseName="Introduction to Computing" />
+    <Unit code="IS121" courseName="Introduction to Information Systems" />
+    <Unit code="MA111" courseName="Linear Algebra and Calculus" />
+    <Unit code="UU100A" courseName="Communications &amp; Information Literacy" />
+    <Unit code="CS112" courseName="Data Structure and Algorithms" />
+    <Unit code="MA161" courseName="Discrete Mathematics" />
+    <Unit code="ST130" courseName="Basic Statistics" />
+    <Unit code="IS122" courseName="Application Programming" />
+    <Unit code="IS104" courseName="Computing for Science and Technology" />
+    <Unit code="MA112" courseName="Calculus II" />
+    <Unit code="ST131" courseName="Introduction to Statistics" />
+    <Unit code="CS211" courseName="Computer Organization" />
+    <Unit code="CS230" courseName="Requirements Engineering" />
+    <Unit code="IS222" courseName="Database Management Systems" />
+    <Unit code="CS215" courseName="Computer Communications and Management" />
+    <Unit code="CS001" courseName="Foundamentals of Computer Project" />
+    <Unit code="CS214" courseName="Design of Data Structure and Algorithms" />
+    <Unit code="CS310" courseName="Computer Systems" />
+    <Unit code="CS311" courseName="Operating Systems" />
+    <Unit code="IS333" courseName="Project Management" />
+    <Unit code="CS350" courseName=" Wireless Networks" />
+    <Unit code="IS314" courseName="Computing Projects" />
+    <Unit code="CS317" courseName=" Computer and Network Security" />
+    <Unit code="CS324" courseName="Distributed Computing" />
+    <Unit code="IS328" courseName="Data Mining" />
+    <Unit code="CS351" courseName="Network Design and Administration" />
+    <Unit code="IS221" courseName="Web Application Development" />
+    <Unit code="IS202" courseName="Data Science" />
+    <Unit code="IS226" courseName="Systems, Analysis and Design" />
+    <Unit code="IS351" courseName="Data and Information Security" />
+    <Unit code="IS302" courseName="Data Analytics" />
+    <Unit code="IS322" courseName="Business Information Systems" />
+    <Unit code="PH102" courseName="Classical Physics" />
+    <Unit code="PH103" courseName="Quantum and Electrical Physics" />
+    <Unit code="CH105" courseName="Chemistry for Applied Science" />
+    <Unit code="PH202" courseName="Environmental Physics" />
+    <Unit code="PH204" courseName="Modern Physics" />
+    <Unit code="PH206" courseName="Electromagnetism and Electronics" />
+    <Unit code="SC356" courseName="Research Skills" />
+    <Unit code="PH301" courseName="Renewable Energy Systems" />
+    <Unit code="PH302" courseName="Electronic Communication Systems" />
+    <Unit code="PH304" courseName="Solid State Physics" />
+    <Unit code="PH306" courseName="Special Topics" />
+    <Unit code="CH105" courseName="Chemistry for Physics Majors" />
+    <Unit code="EE102" courseName="Fundamentals for Electrical and Electronics Engineering" />
+    <Unit code="MM103" courseName="Engineering Mechanics" />
+    <Unit code="EE211" courseName="Electrical Machines" />
+    <Unit code="EE212" courseName="Analogue Electronics 1 " />
+    <Unit code="EE222" courseName="Digital Logic Design" />
+    <Unit code="EE224" courseName="Signals and Systems" />
+    <Unit code="EE225" courseName="Amplifiers and Power Electronics" />
+    <Unit code="PH302" courseName="Advanced Physics" />
+    <Unit code="EE312" courseName="Control System Engineering" />
+    <Unit code="EE313" courseName="Microprocessor Applications" />
+    <Unit code="EE314" courseName="Electrical Engineering Design" />
+    <Unit code="EE321" courseName="Power Systems Analysis" />
+    <Unit code="EE323" courseName="Digital Control Systems" />
+    <Unit code="EE325" courseName="Electrical Drives" />
+    <Unit code="EE326" courseName="Embedded Systems" />
+    <Unit code="IndustrialAttachment" courseName="10-Week Industrial Attachment" />
+    <Unit code="PH102" courseName="Physics for Engineers" />
+    <Unit code="MA112" courseName="Advanced Calculus" />
+    <Unit code="MM101" courseName="Engineering Graphics and Design" />
+    <Unit code="MM211" courseName="Solid Mechanics 1" />
+    <Unit code="MM214" courseName="Dynamics" />
+    <Unit code="MM221" courseName="Thermodynamics and Heat Transfer" />
+    <Unit code="MM222" courseName="Fluid Mechanics" />
+    <Unit code="MM223" courseName="Manufacturing Processes" />
+    <Unit code="MM311" courseName="Applied Thermo Fluids" />
+    <Unit code="MM315" courseName="Solid Mechanics 2" />
+    <Unit code="MM321" courseName="Refrigeration and Air Conditioning" />
+    <Unit code="MM323" courseName="Manufacturing Systems" />
+    <Unit code="MG101" courseName="Introduction to Management" />
+    <Unit code="CS140" courseName="Introduction to Software Engineering" />
+    <Unit code="CS241" courseName="Software Design and Implementation" />
+    <Unit code="CS218" courseName="Mobile Computing" />
+    <Unit code="CS219" courseName="Cloud Computing" />
+    <Unit code="CS352" courseName="Cybersecurity Principles" />
+    <Unit code="CS324" courseName="Distributed Systems" />
+    <Unit code="CS341" courseName="Software Quality Assurance and Testing" />
+    <Unit code="IS314" courseName="Computing Project" />
+    <Unit code="CS403" courseName="Cyber Defense: Governance and Risk Management" />
+    <Unit code="CS412" courseName="Artificial Intelligence" />
+    <Unit code="CS424" courseName="Big Data Technologies" />
+    <Unit code="CS400" courseName="Industrial Experience Project" />
+    <Unit code="CS150" courseName="Introduction to Software Engineering" />
+    <Unit code="CS317" courseName="Computer and Network Security " />
+    <Unit code="CS350" courseName="Wireless Networks" />
+    <Unit code="EE102" courseName="Introduction to Electrical Engineering" />
+    <Unit code="MM103" courseName="Engineering Mathematics" />
+    <Unit code="CS111" courseName="Programming Concepts" />
+    <Unit code="MA211" courseName="Advanced Calculus" />
+    <Unit code="CV211" courseName="Solid Mechanics 1" />
+    <Unit code="CV212" courseName="Metallurgy and Material Science" />
+    <Unit code="EV201" courseName="Environment and Society in the South Pacific" />
+    <Unit code="EN001" courseName="Industrial Work Experience (IWE)" />
+    <Unit code="MA272" courseName="Engineering Mathematics 4" />
+    <Unit code="CV203" courseName="Engineering Survey" />
+    <Unit code="CV222" courseName="Fluid Mechanics" />
+    <Unit code="CH205" courseName="Chemistry for Engineers" />
+    <Unit code="CV311" courseName="Concrete Technology" />
+    <Unit code="CV312" courseName="Structural Analysis" />
+    <Unit code="CV313" courseName="Transportation Engineering" />
+    <Unit code="CV316" courseName="Hydraulics" />
+    <Unit code="CV321" courseName="Steel Structures" />
+    <Unit code="CV322" courseName="Construction Management" />
+    <Unit code="CV323" courseName="Water Resources Engineering" />
+    <Unit code="CV324" courseName="Soil Mechanics" />
+    <Unit code="CV461" courseName="Project Management" />
+    <Unit code="CV469" courseName="Advanced Structural Design" />
+    <Unit code="CV488" courseName="Capstone Project Part 1" />
+    <Unit code="CV462" courseName="Foundation Engineering" />
+    <Unit code="CV463" courseName="Bridge Engineering" />
+    <Unit code="CV464" courseName="Hydrology" />
+    <Unit code="CV491" courseName="Civil Engineering Practice" />
+    <Unit code="CV492" courseName="Capstone Project Part 2" />
+    <Unit code="CV499" courseName="Research Project" />
+    <Unit code="CV493" courseName="Traffic Engineering" />
+    <Unit code="CV494" courseName="Earthquake Engineering" />
+    <Unit code="CV495" courseName="Sustainable Infrastructure" />
+    <Unit code="CV496" courseName="Advanced Geotechnics" />
+    <Unit code="SC400" courseName="Research Methods" />
+    <Unit code="CS415" courseName="Advanced Software Engineering" />
+    <Unit code="CS427" courseName="Mobile Comunications" />
+    <Unit code="CS427" courseName="Mobile Communications" />
+    <Unit code="Thesis" />
+    <Unit code="Supervised Report" />
+    <Unit code="COJ01" courseName="Introduction to Law" />
+    <Unit code="COJ02" courseName="Courts and Their Processes " />
+    <Unit code="COJ03" courseName="Criminal Law" />
+    <Unit code="COJ04" courseName="Civil Law" />
+    <Unit code="DG100" courseName="Introduction to Leadership, Governance and Human Rights" />
+    <Unit code="DG101" courseName="Principles of Good Leadership and Governance" />
+    <Unit code="DG102" courseName="Laws, Legal Systems and Access to Justice" />
+    <Unit code="DG200" courseName="Human Rights at Local, National, Regional and International" />
+    <Unit code="DG201" courseName="Introduction to the Role and Challenges of Human Rights Defenders" />
+    <Unit code="DG202" courseName="Corruption and Anti-Corruption in Pacific Island Countries" />
+    <Unit code="DG301" courseName="Leadership, Governance and Human Rights Internship" />
+    <Unit code="DG302" courseName="Building Resilience Among Human Rights Defenders" />
+    <Unit code="DG400" courseName="Advanced Research Methodology" />
+    <Unit code="DG403" courseName="Public Financial Management" />
+    <Unit code="DG404" courseName="Ethics of Governance" />
+    <Unit code="DG405" courseName="Special Topic in Governance in the Pacific" />
+    <Unit code="DG406" courseName="Theories of Governance" />
+    <Unit code="DG407" courseName="Conflict and Justice" />
+    <Unit code="DG408" courseName="Public Policy Implementation and Appraisal" />
+    <Unit code="DG410" courseName="Development Theories and Alternatives" />
+    <Unit code="DG411" courseName="Governance and Governments in the South Pacific" />
+    <Unit code="DG413" courseName="Special Topic in Development Studies 1" />
+    <Unit code="DG414" courseName="Special Topic in Development Studies 2" />
+    <Unit code="DG415" courseName="Urbanisation, Development and Urban Planning" />
+    <Unit code="DG416" courseName="Development Internship" />
+    <Unit code="DG417" courseName="NGOs, Civil Society and Development" />
+    <Unit code="DG421" courseName="Development and Change in the Contemporary Pacific" />
+    <Unit code="DG422" courseName="Environmental Change and Green Development" />
+    <Unit code="DOJ01" courseName="Professionalism and Communication in Court Practice" />
+    <Unit code="DOJ02" courseName="Judicial Administration" />
+    <Unit code="GN400" courseName="Gender and Feminisms in the Pacific Context" />
+    <Unit code="GN401" courseName="Gender, Global Change and Development in a Comparative Perspective" />
+    <Unit code="GN402" courseName="Gender and Environment" />
+    <Unit code="HY101" courseName="Pacific Islands Prehistory" />
+    <Unit code="HY102" courseName="20th Century World History" />
+    <Unit code="HY201" courseName="Pacific History: Colonial Worlds to Independence" />
+    <Unit code="HY202" courseName="Pacific History: Pre-colonial Power Struggle in Polynesia" />
+    <Unit code="HY206" courseName="Modern East Asian History" />
+    <Unit code="HY207" courseName="Pacific History: Melanesian Worlds" />
+    <Unit code="HY302" courseName="Special Topic: History of Fiji" />
+    <Unit code="HY303" courseName="Special Topic: USA in Asia Pacific Region" />
+    <Unit code="HY304" courseName="Pacific History: Protest and Identity" />
+    <Unit code="HY305" courseName="British Empire and Commonwealth" />
+    <Unit code="HY401" courseName="Reading and Viewing in Pacific History" />
+    <Unit code="HY402" courseName="Migration and Culture" />
+    <Unit code="HY404" courseName="Special Topic" />
+    <Unit code="LW110" courseName="Law and Society" />
+    <Unit code="LW111" courseName="Courts and Dispute Resolution 1" />
+    <Unit code="LW112" courseName="Legislation" />
+    <Unit code="LW113" courseName="Courts and Dispute Resolution 2" />
+    <Unit code="LW201" courseName="Law of Contract 1" />
+    <Unit code="LW202" courseName="Law of Contract 2" />
+    <Unit code="LW203" courseName="Torts 1" />
+    <Unit code="LW204" courseName="Torts 2" />
+    <Unit code="LW205" courseName="Criminal Law and Procedure 1" />
+    <Unit code="LW206" courseName="Criminal Law and Procedure 2" />
+    <Unit code="LW300" courseName="Property Law 1" />
+    <Unit code="LW301" courseName="Property Law 2" />
+    <Unit code="LW302" courseName="Equity and Trusts" />
+    <Unit code="LW303" courseName="Succession" />
+    <Unit code="LW304" courseName="Legal Drafting" />
+    <Unit code="LW305" courseName="Current Developments in Pacific Law" />
+    <Unit code="LW306" courseName="Legal Ethics" />
+    <Unit code="LW307" courseName="Evidence" />
+    <Unit code="LW308" courseName="Constitutional Law" />
+    <Unit code="LW309" courseName="Administrative Law" />
+    <Unit code="LW310" courseName="Family Law" />
+    <Unit code="LW312" courseName="E-Commerce Law" />
+    <Unit code="LW314" courseName="Special Topic" />
+    <Unit code="LW317" courseName="Health Law and Ethics" />
+    <Unit code="LW322" courseName="Intellectual Property Law" />
+    <Unit code="LW324" courseName="European Union Law Relating to the Pacific" />
+    <Unit code="LW330" courseName="Public International Law" />
+    <Unit code="LW331" courseName="Human Rights" />
+    <Unit code="LW334" courseName="Serious Financial Crimes" />
+    <Unit code="LW340" courseName="Pacific Land Tenure" />
+    <Unit code="LW341" courseName="Customary Law" />
+    <Unit code="LW352" courseName="Regional Environmental Law" />
+    <Unit code="LW353" courseName="International Environmental Law" />
+    <Unit code="LW355" courseName="Law of the Sea" />
+    <Unit code="LW356" courseName="Marine Law" />
+    <Unit code="LW370" courseName="Company and Partnership Law 1" />
+    <Unit code="LW371" courseName="Company and Partnership Law 2" />
+    <Unit code="LW372" courseName="Commercial Law" />
+    <Unit code="LW373" courseName="Foreign Trade and Investment Law" />
+    <Unit code="LW374" courseName="Revenue and Taxation Law" />
+    <Unit code="LW375" courseName="Labour Law" />
+    <Unit code="LW390" courseName="Research Project" />
+    <Unit code="LW391" courseName="Law Clinic" />
+    <Unit code="LW392" courseName="Civil Procedure" />
+    <Unit code="LW393" courseName="Advocacy Skills and Prosecutorial Practice" />
+    <Unit code="LW395" courseName="Special Topic: Climate Change Law" />
+    <Unit code="LW395A" courseName="Special Topic International Fisheries Law" />
+    <Unit code="LW395C" courseName="Special Topic International Criminal Law" />
+    <Unit code="LW400" courseName="Advanced Pacific Legal System" />
+    <Unit code="LW402" courseName="Advanced Equity and Trusts" />
+    <Unit code="LW403" courseName="Advanced Succession" />
+    <Unit code="LW407" courseName="Advanced Evidence" />
+    <Unit code="LW410" courseName="Advanced Family Law" />
+    <Unit code="LW412" courseName="Advanced E-Commerce Law" />
+    <Unit code="LW414" courseName="Advanced Special Topic" />
+    <Unit code="LW417" courseName="Advanced Health Law and Ethics" />
+    <Unit code="LW422" courseName="Advanced Intellectual Property Law" />
+    <Unit code="LW424" courseName="Advanced European Union Law Relating to the Pacific" />
+    <Unit code="LW430" courseName="Advanced Public International Law" />
+    <Unit code="LW431" courseName="Advanced Human Rights" />
+    <Unit code="LW434" courseName="Advanced Serious Financial Crimes" />
+    <Unit code="LW440" courseName="Advanced Pacific Land Tenure" />
+    <Unit code="LW441" courseName="Advanced Customary Law" />
+    <Unit code="LW452" courseName="Advanced Regional Environmental Law" />
+    <Unit code="LW453" courseName="Advanced International Environmental Law" />
+    <Unit code="LW455" courseName="Advanced Law of the Sea" />
+    <Unit code="LW456" courseName="Advanced Marine Law" />
+    <Unit code="LW470" courseName="Advanced Company and Partnership Law 1" />
+    <Unit code="LW471" courseName="Advanced Company and Partnership Law 2" />
+    <Unit code="LW472" courseName="Advanced Commercial Law" />
+    <Unit code="LW473" courseName="Advanced Foreign Trade and Investment Law" />
+    <Unit code="LW474" courseName="Advanced Revenue and Taxation Law" />
+    <Unit code="LW475" courseName="Advanced Labour Law" />
+    <Unit code="LW490" courseName="Advanced Research Project" />
+    <Unit code="LW492" courseName="Advanced Civil Procedure" />
+    <Unit code="LW493" courseName="Advanced Advocacy Skills and Prosecutorial Practice" />
+    <Unit code="LW495" courseName="Advanced Special Topic: Climate Change Law" />
+    <Unit code="LW495A" courseName="Advanced Special Topic International Fisheries Law" />
+    <Unit code="LW495C" courseName="Advanced Special Topic International Criminal Law" />
+    <Unit code="LWD01" courseName="Criminal Litigation Skills and Practice" />
+    <Unit code="LWD02" courseName="Civil Litigation Skills and Practice" />
+    <Unit code="LWD03" courseName="Wills and Estates Skills and Practice" />
+    <Unit code="LWD04" courseName="Conveyancing Skills and Practice" />
+    <Unit code="LWD05" courseName="Business Law, Skills and Practice" />
+    <Unit code="LWD06" courseName="Family Law and Human Rights, Skills and Practice" />
+    <Unit code="LWD07" courseName="Ethics and Professionalism and Work Skills" />
+    <Unit code="LWD08" courseName="Practice Placement" />
+    <Unit code="LWD11" courseName="Back to Basics" />
+    <Unit code="LWD12" courseName="Working Within Limits" />
+    <Unit code="LWD13" courseName="Making the Right Expression" />
+    <Unit code="LWD14" courseName="Putting on the Style, Getting Organised" />
+    <Unit code="LWD15" courseName="Topping and Tailing" />
+    <Unit code="LWD16" courseName="Particular Cases" />
+    <Unit code="LWD17" courseName="Drafting Workshop" />
+    <Unit code="PL100" courseName="Politics and Government" />
+    <Unit code="PL101" courseName="Politics of Development" />
+    <Unit code="PL200" courseName="Pacific in a Changing World Order" />
+    <Unit code="PL201" courseName="International Politics" />
+    <Unit code="PL202" courseName="Political Ideologies" />
+    <Unit code="PL203" courseName="Governance and Development in the Pacific" />
+    <Unit code="PL300" courseName="Parties, Electoral Politics and Democracy: Case Studies" />
+    <Unit code="PL302" courseName="International Politics of Asia-Pacific" />
+    <Unit code="PL305" courseName="Politics of Human Rights" />
+    <Unit code="PL307" courseName="Political Leadership" />
+    <Unit code="PL400" courseName="Regional Diplomacy in the Pacific Islands" />
+    <Unit code="PL402" courseName="Intervention and Peace Building" />
+    <Unit code="PL403" courseName="Pacific Politics" />
+    <Unit code="PL409" courseName="Diplomacy, Negotiations and Statecraft" />
+    <Unit code="PL410" courseName="World Politics and International Relations" />
+    <Unit code="PL411" courseName="Research Essay in Diplomacy and International Affairs" />
+    <Unit code="PP101" courseName="Contemporary Issues in Pacific Policing" />
+    <Unit code="PP201" courseName="Comparative and International Policing" />
+    <Unit code="PP202" courseName="Police and Society in the Pacific" />
+    <Unit code="PP300" courseName="Action Research in a Police Context" />
+    <Unit code="PP301" courseName="Police Leadership and Command Management" />
+    <Unit code="PP302" courseName="Ethical Dimensions in Policing" />
+    <Unit code="PP404" courseName="Border Management and the Security Context" />
+    <Unit code="PP405" courseName="Ethical Issues in Leadership and Command" />
+    <Unit code="PP406" courseName="Border Security Intelligence and the International Security Environment" />
+    <Unit code="PP407" courseName="International Cooperation, Partnership and the Border Security Context" />
+    <Unit code="PS101" courseName="Introduction to Psychology" />
+    <Unit code="PS102" courseName="Developmental Psychology" />
+    <Unit code="PS103" courseName="Research Methods and Analysis for Social Sciences 1" />
+    <Unit code="PS107" courseName="Approaches to Social Psychology" />
+    <Unit code="PS203" courseName="Psychological Research Methods and Analysis 2" />
+    <Unit code="PS205" courseName="Cognitive Psychology" />
+    <Unit code="PS206" courseName="Cross-cultural Psychology" />
+    <Unit code="PS303" courseName="Psychological Research Methods and Analysis 3" />
+    <Unit code="PS304" courseName="Psychology of Personality and Individual Differences" />
+    <Unit code="PS305" courseName="Psychology of Individual and Community Health" />
+    <Unit code="PS306" courseName="Cognitive Neuropsychology" />
+    <Unit code="PS314" courseName="Applying Psychology in the Pacific" />
+    <Unit code="PS402" courseName="Advanced Cross-cultural Psychology" />
+    <Unit code="PS407" courseName="Psychological Assessment" />
+    <Unit code="PS408" courseName="Clinical and Counselling Intervention" />
+    <Unit code="SO100" courseName="Themes and Perspectives in Sociology" />
+    <Unit code="SO122" courseName="Classical Sociological Theories and Methodologies" />
+    <Unit code="SO200" courseName="Modern Social Theory" />
+    <Unit code="SO201" courseName="Society, Culture and Change in the Pacific" />
+    <Unit code="SO207" courseName="Families, Sexuality and Change in the Pacific" />
+    <Unit code="SO212" courseName="Race and Ethnicity" />
+    <Unit code="SO300" courseName="Research Methods in Sociology" />
+    <Unit code="SO301" courseName="Sociology of Public Policy and Administration" />
+    <Unit code="SO303" courseName="Advanced Sociological Theory" />
+    <Unit code="SO304" courseName="Religion and Politics in Contemporary Society" />
+    <Unit code="SO311" courseName="Crime and Deviance" />
+    <Unit code="SO401" courseName="Theories of Social Inequality" />
+    <Unit code="SO408" courseName="Issues in Social and Public Policy" />
+    <Unit code="SO409" courseName="Social Development" />
+    <Unit code="SO415" courseName="Contemporary Social Issues" />
+    <Unit code="SW100" courseName="Introduction to Social and Community Work Practice" />
+    <Unit code="SW101" courseName="Social Policy: An Introduction" />
+    <Unit code="SW200" courseName="Fieldwork Practice 1" />
+    <Unit code="SW201" courseName="Social and Community Work Practice 1" />
+    <Unit code="SW300" courseName="Fieldwork Practice 2" />
+    <Unit code="SW301" courseName="Social and Community Work Practice 2" />
+    <Unit code="SW312" courseName="Counselling Theory and Practice" />
+    <Unit code="AG111" courseName="Introduction to Agricultural Economics"/>
+    <Unit code="AG124" courseName="Fundamentals of Soil Science"/>
+    <Unit code="AG134" courseName="Agricultural Mechanisation"/>
+    <Unit code="AG164" courseName="Introductory Agricultural Biology"/>
+    <Unit code="AG165" courseName="Field &amp; Plantation Crops Production"/>
+    <Unit code="AG172" courseName="Introduction to Animal Science"/>
+    <Unit code="AG211" courseName="Agricultural Development"/>
+    <Unit code="AG212" courseName="Farm Management Principles"/>
+    <Unit code="AG213" courseName="Statistics for Agriculture"/>
+    <Unit code="AG221" courseName="Soil Fertility &amp; Plant Nutrition"/>
+    <Unit code="AG266" courseName="Horticultural Crops Production"/>
+    <Unit code="AG268" courseName="Pathogens &amp; Pest of Crops"/>
+    <Unit code="AG273" courseName="Monogastric Livestock Production"/>
+    <Unit code="AG311" courseName="Agricultural Project Management"/>
+    <Unit code="AG312" courseName="Agricultural Marketing &amp; Supply Chains"/>
+    <Unit code="AG314" courseName="Agribusiness Finance &amp; Risk Management"/>
+    <Unit code="AG351" courseName="Agricultural Extension &amp; Programmes Planning"/>
+    <Unit code="AG363" courseName="Pest &amp; Disease Management"/>
+    <Unit code="AG364" courseName="Sustainable Agricultural Production"/>
+    <Unit code="AG366" courseName="Crop Physiology &amp; Breeding"/>
+    <Unit code="AG373" courseName="Ruminant Livestock Production"/>
+    <Unit code="AG383" courseName="Research Project Management Skills"/>
+    <Unit code="AG401" courseName="Advanced Design &amp; Analysis of Experiment"/>
+    <Unit code="AG411" courseName="Agricultural Production &amp; Managerial Economics"/>
+    <Unit code="AG412" courseName="Advanced Agricultural Marketing"/>
+    <Unit code="AG415" courseName="Agricultural &amp; Rural Development Policy"/>
+    <Unit code="AG422" courseName="Advanced Soil Fertility &amp; Plant Nutrition"/>
+    <Unit code="AG461" courseName="Advanced Crop Physiology"/>
+    <Unit code="AG464" courseName="Advanced Pest and Disease Management"/>
+    <Unit code="AG471" courseName="Advanced Poultry &amp; Pig Production"/>
+    <Unit code="AG472" courseName="Advanced Ruminant Livestock Production"/>
+    <Unit code="AG473" courseName="Advanced Animal Products &amp; By-products Processing"/>
+    <Unit code="MS202" courseName="Invertebrate Biology"/>
+    <Unit code="BI202" courseName="Invertebrate Biology"/>
+    <Unit code="MS308" courseName="Environmental &amp; Marine Microbiology"/>
+    <Unit code="BI308" courseName="Environmental Microbiology"/>
+    <Unit code="BI102" courseName="Introduction to Biology I"/>
+    <Unit code="BI103" courseName="General Biology"/>
+    <Unit code="BI108" courseName="Biodiversity &amp; Conservation Biology"/>
+    <Unit code="BI201" courseName="Microbiology"/>
+    <Unit code="BI205" courseName="Genetics"/>
+    <Unit code="BI206" courseName="Cell &amp; Molecular Biology"/>
+    <Unit code="BI302" courseName="Plant Biology"/>
+    <Unit code="BI304" courseName="Animal Biology"/>
+    <Unit code="BI309" courseName="Environmental Physiology"/>
+    <Unit code="BI408" courseName="Advanced Environmental Microbiology"/>
+    <Unit code="BI409" courseName="Advanced Physiology"/>
+    <Unit code="BI436" courseName="Molecular Biology"/>
+    <Unit code="CH101" courseName="General Chemistry I"/>
+    <Unit code="CH102" courseName="General Chemistry II"/>
+    <Unit code="CH105" courseName="Chemistry for Biology Students"/>
+    <Unit code="CH201" courseName="Organic Chemistry I"/>
+    <Unit code="CH203" courseName="Physical Chemistry I"/>
+    <Unit code="CH204" courseName="Inorganic Chemistry I"/>
+    <Unit code="CH301" courseName="Organic Chemistry II"/>
+    <Unit code="CH303" courseName="Inorganic Chemistry II"/>
+    <Unit code="CH306" courseName="Physical Chemistry II"/>
+    <Unit code="CH311" courseName="Analytical Chemistry"/>
+    <Unit code="CH312" courseName="Environmental Chemistry"/>
+    <Unit code="CH405" courseName="Biochemistry"/>
+    <Unit code="CH413" courseName="Chemistry of Natural Products"/>
+    <Unit code="CH414" courseName="Instrumental Analysis"/>
+    <Unit code="EC100" courseName="Introduction to Microeconomics"/>
+    <Unit code="EC102" courseName="Introduction to Microeconomics"/>
+    <Unit code="EC202" courseName="Macroeconomics for the Pacific"/>
+    <Unit code="EC203" courseName="Pacific Island Economies"/>
+    <Unit code="EC307" courseName="Pacific Islands Economies"/>
+    <Unit code="ES106" courseName="Earth Science"/>
+    <Unit code="ES203" courseName="Physical Geology"/>
+    <Unit code="ES301" courseName="Mining &amp; Mineral Resources"/>
+    <Unit code="ES302" courseName="Geological Mapping"/>
+    <Unit code="ES303" courseName="Environmental Geology"/>
+    <Unit code="ES406" courseName="Atoll Geoscience"/>
+    <Unit code="EV201" courseName="Introduction to Environmental Science"/>
+    <Unit code="EV301" courseName="Environmental Impact Assessment"/>
+    <Unit code="EV302" courseName="Sustainable Development"/>
+    <Unit code="EV402" courseName="Natural Resources &amp; Environment"/>
+    <Unit code="EV405" courseName="Field &amp; Laboratory Techniques in Environmental Studies"/>
+    <Unit code="GE101" courseName="Physical Geography: Global Biophysical Environments"/>
+    <Unit code="GE102" courseName="Human Geography: People, Places &amp; Environments"/>
+    <Unit code="GE201" courseName="Biogeography: Plants, Animals &amp; the Human Environment"/>
+    <Unit code="GE202" courseName="Agriculture, Food &amp; Nutrition in the Developing World"/>
+    <Unit code="GE203" courseName="Social &amp; Economic Geography of the Third World"/>
+    <Unit code="GE205" courseName="Physical Environments of the Wet Tropics"/>
+    <Unit code="GE301" courseName="Applied Pacific Island Biogeography &amp; Ethnobiology"/>
+    <Unit code="GE302" courseName="Applied Rural &amp; Agricultural Geography of the Pacific Islands"/>
+    <Unit code="GE303" courseName="The Geography of Development in the Pacific"/>
+    <Unit code="GE304" courseName="Resource Conservation &amp; Management"/>
+    <Unit code="GE306" courseName="Pacific Geoscience"/>
+    <Unit code="GE402" courseName="Third World Development"/>
+    <Unit code="GE403" courseName="Research Methods in Geography"/>
+    <Unit code="GE404" courseName="Selected Studies: Studies in the Geography of the Pacific"/>
+    <Unit code="GE407" courseName="Advanced Pacific Island Biogeography &amp; Ethnobiology"/>
+    <Unit code="GE409" courseName="Environmental Change in the Pacific"/>
+    <Unit code="GS100" courseName="Geography Techniques &amp; Methods"/>
+    <Unit code="GS101" courseName="Geospatial Information Systems"/>
+    <Unit code="GS200" courseName="Quantitative Methods"/>
+    <Unit code="GS201" courseName="Geographic Information Systems 1"/>
+    <Unit code="GS211" courseName="Remote Sensing 1"/>
+    <Unit code="GS231" courseName="Cartography &amp; Geovisualisation"/>
+    <Unit code="GS301" courseName="Geographic Information Systems 2"/>
+    <Unit code="GS302" courseName="Field of Survey of Pacific Island Environments"/>
+    <Unit code="GS311" courseName="Advanced Remote Sensing and Geospatial Modelling"/>
+    <Unit code="GS350" courseName="Geospatial Science Project"/>
+    <Unit code="IS104" courseName="Introduction to Information Systems"/>
+    <Unit code="IS202" courseName="Information Systems Development"/>
+    <Unit code="IS222" courseName="Database Management Systems"/>
+    <Unit code="IS302" courseName="eBusiness Strategy &amp; Planning"/>
+    <Unit code="IS328" courseName="Mobile App Development"/>
+    <Unit code="IS333" courseName="IT Project Management"/>
+    <Unit code="LM113" courseName="Professional Numeracy"/>
+    <Unit code="LM216" courseName="Environmental Law"/>
+    <Unit code="MA102" courseName="Introduction to Algebra"/>
+    <Unit code="MG101" courseName="Introduction to Management"/>
+    <Unit code="MG214" courseName="Organisational Behaviour"/>
+    <Unit code="MS305" courseName="Marine Biology"/>
+    <Unit code="BI305" courseName="Marine Biology"/>
+    <Unit code="MS307" courseName="Fish &amp; Fisheries Biology"/>
+    <Unit code="BI307" courseName="Fish &amp; Fisheries Biology"/>
+    <Unit code="MS101" courseName="Introduction to Marine Resources Management"/>
+    <Unit code="MS111" courseName="Introduction to Marine Science for Pacific Islands"/>
+    <Unit code="MS200" courseName="Marine Resource Economics"/>
+    <Unit code="MS204" courseName="Fisheries Science"/>
+    <Unit code="MS205" courseName="Marine Policy and Planning"/>
+    <Unit code="MS206" courseName="Aquaculture"/>
+    <Unit code="MS210" courseName="Marine Pollution"/>
+    <Unit code="MS211" courseName="Biostatistics"/>
+    <Unit code="MS213" courseName="Coastal Processes"/>
+    <Unit code="MS301" courseName="Marine Ecosystems and Processes"/>
+    <Unit code="MS302" courseName="Marine Resource Economics"/>
+    <Unit code="MS304" courseName="Integrated Coastal Management"/>
+    <Unit code="MS305" courseName="Climate Change Modelling"/>
+    <Unit code="MS306" courseName="Marine Conservation &amp; Protected Areas"/>
+    <Unit code="MS309" courseName="Climate Change Impacts in the Pacific"/>
+    <Unit code="MS310" courseName="Ocean Governance"/>
+    <Unit code="MS312" courseName="Marine Pollution"/>
+    <Unit code="MS313" courseName="Seafood Science"/>
+    <Unit code="MS315" courseName="Marine Protected Areas"/>
+    <Unit code="MS324" courseName="Marine Biotechnology"/>
+    <Unit code="MS411" courseName="Advanced Marine Biology"/>
+    <Unit code="MS421" courseName="Fisheries Science &amp; Management"/>
+    <Unit code="MS441" courseName="Coastal &amp; Marine Resource Economics"/>
+    <Unit code="MS442" courseName="Integrated Coastal Management"/>
+    <Unit code="MS444" courseName="Marine Resources Management"/>
+    <Unit code="PD301" courseName="Professional Development"/>
+    <Unit code="PH106" courseName="Introductory Physics"/>
+    <Unit code="SC356" courseName="Research Skills"/>
+    <Unit code="SC400" courseName="Research Methodology"/>
+    <Unit code="ST130" courseName="Introductory Statistics for Science"/>
+    <Unit code="ST131" courseName="Statistics for Social Sciences"/>
+</Units>

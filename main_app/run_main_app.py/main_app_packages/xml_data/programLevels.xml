@@ -1,0 +1,9 @@
+<programsLevels>
+    <programLevel levelName="Certificate" />
+    <programLevel levelName="Diploma" />
+    <programLevel levelName="Undergraduate" />
+    <programLevel levelName="Prescribed Program" />
+    <programLevel levelName="Postgraduate" />
+    <programLevel levelName="Masters" />
+    <programLevel levelName="Doctorate" />
+</programsLevels>
