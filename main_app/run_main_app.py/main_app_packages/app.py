@@ -228,9 +228,12 @@ def sas_staff_register_student():
     )
 
 @app.route('/super-admin/home')
-def super_admin_home(): return render_template('SuperAdmin/SAdminHome.html')
+def super_admin_home(): 
+    return render_template('SuperAdmin/SAdminHome.html')
 @app.route('/super-admin/remove-staff')
-def super_admin_remove_staff(): return render_template('SuperAdmin/RemoveStaff.html')
+def super_admin_remove_staff():
+    """Serves the page for removing staff/managers."""
+    return render_template('SuperAdmin/RemoveStaff.html')
 
 # --- Main Execution Block ---
 if __name__ == '__main__':

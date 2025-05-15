@@ -16,7 +16,11 @@
             <div class="dashboard-container">
                 <p class="welcome-text">Welcome, Super Admin!</p>
                 <div class="dashboard-grid">
-                    <div class="dashboard-card" onclick="showAlert('Remove Managers and Staffs')">
+                    <div class="dashboard-card" 
+                         role="button" 
+                         tabindex="0" 
+                         onclick="navigateTo('remove_staff')" 
+                         onkeydown="handleKeydown(event, () => navigateTo('remove_staff'))">
                         <i class="material-icons card-icon">person_remove</i>
                         <div class="card-title">Remove Managers and Staffs</div>
                     </div>
@@ -32,7 +36,11 @@
                 <i class="material-icons drawer-icon">supervisor_account</i>
                 <h2 class="drawer-title">Super Admin Menu</h2>
             </div>
-            <div class="drawer-item" onclick="showAlert('Remove Managers and Staffs')">
+            <div class="drawer-item" 
+                 role="button" 
+                 tabindex="0" 
+                 onclick="navigateTo('remove_staff')"
+                 onkeydown="handleKeydown(event, () => navigateTo('remove_staff'))">
                 <i class="material-icons drawer-item-icon">person_remove</i>
                 <span class="drawer-item-text">Remove Managers and Staffs</span>
             </div>
@@ -64,27 +72,36 @@
         }
 
         window.addEventListener('load', () => {
-            // Load Header.html and footer.html.
-            // IMPORTANT: If Header.html and footer.html are Flask templates with Jinja,
-            // this client-side fetch is not the standard way. Use Jinja's {% include %} instead.
-            // The paths below assume Header.html and footer.html are static files
-            // located in the root of your 'static' folder.
             loadHTML("{{ url_for('static', filename='Header.html') }}", 'header-container');
             loadHTML("{{ url_for('static', filename='footer.html') }}", 'footer-container');
         });
 
-        // Placeholder for showAlert function, to be defined in your SAdHomepage.js or here
-        function showAlert(message) {
-            alert(message); // Simple alert, replace with more sophisticated UI if needed
-            // Example: Navigate to a page
-            if (message === 'Remove Managers and Staffs') {
-                // Assuming you have a Flask route for this, e.g., /sadmin/remove_users
-                // window.location.href = "{{ url_for('sadmin_blueprint.remove_users_route') }}";
-                // Or if it's a static page (less likely for this action):
-                // window.location.href = "{{ url_for('static', filename='remove_users.html') }}";
-                console.log("Navigation for '" + message + "' would happen here.");
+        // Navigation function
+        function navigateTo(action) {
+            if (action === 'remove_staff') {
+                window.location.href = "{{ url_for('super_admin_remove_staff') }}";
+            } else {
+                // Fallback for other actions if you add more cards/items
+                console.log('Action triggered:', action); 
+                alert('Action: ' + action); 
             }
         }
+        
+        // Generic keydown handler for custom interactive elements
+        function handleKeydown(event, actionCallback) {
+            // Check if the pressed key is Enter (key code 13) or Space (key code 32)
+            if (event.key === 'Enter' || event.key === ' ' || event.keyCode === 13 || event.keyCode === 32) {
+                event.preventDefault(); // Prevent default action (e.g., scrolling on Space)
+                if (typeof actionCallback === 'function') {
+                    actionCallback();
+                }
+            }
+        }
+
+        // If you have a generic showAlert and it's different from navigateTo:
+        // function showAlert(message) {
+        //     alert(message);
+        // }
     </script>
     <script src="{{ url_for('static', filename='js/SAdmin/SAdHomepage.js') }}"></script>
 </body>
