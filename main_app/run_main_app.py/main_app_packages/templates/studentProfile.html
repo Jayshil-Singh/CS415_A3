@@ -1,0 +1,128 @@
+{# templates/studentProfile.html #}
+{% extends "base.html" %}
+
+{% block head %}
+  <title>USP Student Profile</title>
+  <!-- page-specific stylesheet -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/studentProfile.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+  <nav class="horizontal-nav">
+    <a href="#" class="nav-button selected" onclick="selectSection(0)">Personal Details</a>
+    <a href="#" class="nav-button" onclick="selectSection(1)">Address</a>
+    <a href="#" class="nav-button" onclick="selectSection(2)">Email &amp; Phone</a>
+    <a href="#" class="nav-button" onclick="selectSection(3)">Emergency Contact</a>
+    <a href="#" class="nav-button" onclick="selectSection(4)">Passport &amp; Visa</a>
+  </nav>
+
+  <main>
+    <div class="card">
+      <!-- Personal Details -->
+      <div id="personal-details-section">
+        <h2 class="section-title">Personal Details</h2>
+        <div class="photo-upload-section">
+          <p>Upload Passport Size Photo</p>
+          <div>
+            <button class="upload-button">Choose File</button>
+            <span>No file chosen</span>
+          </div>
+          <p class="error-text">
+            Please ensure that the photo you upload is your true resemblance and is of a passport size.
+            Only JPG files less than 5MB permitted.
+          </p>
+          <button class="save-button">Save</button>
+        </div>
+        {% for label, value in [
+            ('First Name','N/A'),
+            ('Middle Name','N/A'),
+            ('Last Name','N/A'),
+            ('Date of Birth','N/A'),
+            ('Gender','N/A'),
+            ('Citizenship','N/A'),
+            ('Program','N/A'),
+            ('Student Level','N/A'),
+            ('Student Campus','N/A')
+          ]
+        %}
+          <div class="label-value-row">
+            <div class="label">{{ label }}</div>
+            <div class="value-container">{{ value }}</div>
+          </div>
+        {% endfor %}
+        <div class="verification-notice">
+          <strong>Please Verify</strong>
+          <p>
+            If the information given above is incorrect, please contact the Student Administrative
+            Services Office, providing the appropriate documentary evidence.
+          </p>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div id="address-section" style="display: none;">
+        <h2 class="section-title">Address</h2>
+        {% for label in ['Street','City','State/Province','Country','Postal Code'] %}
+          <div class="label-value-row">
+            <div class="label">{{ label }}</div>
+            <div class="value-container">N/A</div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Email & Phone -->
+      <div id="email-phone-section" style="display: none;">
+        <h2 class="section-title">Email &amp; Phone</h2>
+        {% for label in ['Email','Phone'] %}
+          <div class="label-value-row">
+            <div class="label">{{ label }}</div>
+            <div class="value-container">N/A</div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Emergency Contact -->
+      <div id="emergency-contact-section" style="display: none;">
+        <h2 class="section-title">Emergency Contact</h2>
+        {% for label in ['First Name','Middle Name','Last Name','Relationship','Contact Phone'] %}
+          <div class="label-value-row">
+            <div class="label">{{ label }}</div>
+            <div class="value-container">N/A</div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Passport & Visa -->
+      <div id="passport-visa-section" style="display: none;">
+        <h2 class="section-title">Passport &amp; Visa</h2>
+        {% for label in ['Passport Number','Visa Status','Expiration Date'] %}
+          <div class="label-value-row">
+            <div class="label">{{ label }}</div>
+            <div class="value-container">N/A</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function selectSection(index) {
+      const sections = [
+        'personal-details-section',
+        'address-section',
+        'email-phone-section',
+        'emergency-contact-section',
+        'passport-visa-section'
+      ];
+      const navButtons = document.querySelectorAll('.nav-button');
+
+      sections.forEach((id, i) => {
+        document.getElementById(id).style.display = (i === index) ? 'block' : 'none';
+        navButtons[i].classList.toggle('selected', i === index);
+      });
+    }
+  </script>
+{% endblock %}

@@ -1,103 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - University Portal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="../static/css/university_dashboard_style.css"> 
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body>
-    {% include 'header.html' %} {# Assuming header.html has university branding and user info #}
+{% extends "profile_base.html" %}
 
-    <main class="dashboard-main-content">
-        <section class="dashboard-banner">
-            <div class="banner-image-container">
-                <img src="{{ url_for('static', filename='images/homepage_banner.png') }}" alt="University Campus or Student Life">
+{% block head_extra %}
+    {{ super() }} <link rel="stylesheet" href="../static/css/university_profile_sections_style.css">
+{% endblock %}
+
+{% block profile_content %}
+<div class="profile-section-container">
+    <h2 class="profile-section-title">Passport & Visa Information</h2>
+
+    <div class="profile-view-card">
+        <div class="profile-info-grid">
+            <div class="info-item">
+                <span class="info-label">Passport Number</span>
+                <span class="info-value">{{ visa.passport_number or 'Not Provided' }}</span>
             </div>
-            <div class="banner-overlay-text">
-                <h1>Welcome, {{ student_name or 'Student' }}!</h1> {# Personalize if student_name is available #}
-                <p>Your central hub for accessing all university services and information.</p>
-                <div class="banner-actions">
-                    <a href="/enrollment" class="btn btn-primary btn-lg">Enroll for Semester</a>
-                    <a href="/courses" class="btn btn-secondary btn-lg">View Course Catalog</a>
-                </div>
+            <div class="info-item">
+                <span class="info-label">Visa Status / Type</span>
+                <span class="info-value">{{ visa.status or 'Not Provided' }}</span>
             </div>
-        </section>
-
-        <section class="dashboard-quick-links">
-            <h2 class="section-title">Quick Access</h2>
-            <div class="dashboard-grid">
-                <div class="grid-item">
-                    <a href="{{ url_for('main_app_package.profile_details') }}"> {# Ensure correct url_for endpoint #}
-                        <div class="grid-item-icon"><i class="fas fa-user-cog"></i></div>
-                        <div class="grid-item-text">
-                            <h3>Student Profile</h3>
-                            <p>View and manage your personal details.</p>
-                        </div>
-                    </a>
-                </div>
-                <div class="grid-item">
-                    <a href="/enrollment"> {# Update with correct url_for if available #}
-                        <div class="grid-item-icon"><i class="fas fa-edit"></i></div>
-                        <div class="grid-item-text">
-                            <h3>My Enrollment</h3>
-                            <p>Check your current enrollment status.</p>
-                        </div>
-                    </a>
-                </div>
-                <div class="grid-item">
-                    <a href="/courses"> {# Update with correct url_for if available #}
-                        <div class="grid-item-icon"><i class="fas fa-book-open"></i></div>
-                        <div class="grid-item-text">
-                            <h3>Courses</h3>
-                            <p>Browse available courses and details.</p>
-                        </div>
-                    </a>
-                </div>
-                <div class="grid-item">
-                    <a href="/results"> {# Update with correct url_for if available #}
-                        <div class="grid-item-icon"><i class="fas fa-poll"></i></div>
-                        <div class="grid-item-text">
-                            <h3>Academic Results</h3>
-                            <p>View your grades and transcripts.</p>
-                        </div>
-                    </a>
-                </div>
-                <div class="grid-item">
-                     <a href="{{ url_for('auth_bp.logout') }}"> {# Assuming logout is in an auth_bp blueprint #}
-                        <div class="grid-item-icon"><i class="fas fa-sign-out-alt"></i></div>
-                         <div class="grid-item-text">
-                            <h3>Logout</h3>
-                            <p>Securely sign out of your account.</p>
-                        </div>
-                    </a>
-                </div>
+            <div class="info-item">
+                <span class="info-label">Visa Expiration Date</span>
+                <span class="info-value">{{ visa.expiry_date or 'Not Provided' }}</span>
             </div>
-        </section>
-
-        <section class="dashboard-announcements">
-            <h2 class="section-title">Latest Announcements</h2>
-            <div class="announcement-list">
-                <div class="announcement-item">
-                    <h4>Important: Semester Start Date Change</h4>
-                    <p class="announcement-meta">Posted on May 6, 2025 by Admin</p>
-                    <p>The start date for the upcoming semester has been moved to August 26th. Please check your emails for more details...</p>
-                    <a href="/announcements/1" class="read-more-link">Read More</a>
-                </div>
-                <div class="announcement-item">
-                    <h4>Library System Maintenance</h4>
-                    <p class="announcement-meta">Posted on May 4, 2025 by IT Services</p>
-                    <p>The online library portal will be unavailable on May 10th from 2 AM to 4 AM due to scheduled maintenance.</p>
-                    <a href="/announcements/2" class="read-more-link">Read More</a>
-                </div>
             </div>
-        </section>
 
-    </main>
-
-    {% include 'footer.html' %}
-</body>
-</html>
+        <div class="profile-actions">
+            <p class="form-text text-muted small">
+                Ensure your passport and visa information is always up to date. For any changes or to submit new documents, please contact the International Student Support office or Student Administrative Services.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

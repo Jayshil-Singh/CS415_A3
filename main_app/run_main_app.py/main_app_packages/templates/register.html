@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - USP Enrollment System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+            font-size: 0.875rem; /* text-sm */
+        }
+        .flash-success { background-color: #d1fae5; color: #065f46; }
+        .flash-error { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen py-12">
+    <div class="w-full max-w-lg p-8 space-y-6 bg-white rounded-xl shadow-2xl">
+        <div class="text-center">
+            <img src="https://placehold.co/100x100/003366/FFFFFF?text=USP" alt="USP Logo" class="mx-auto mb-4 rounded-full">
+            <h1 class="text-3xl font-bold text-gray-800">Create Student Account</h1>
+            <p class="text-gray-600">Join the USP Enrollment System</p>
+        </div>
+
+        <form class="space-y-5" action="#" method="POST"> <div>
+                <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                <input id="full_name" name="full_name" type="text" required
+                       class="w-full px-4 py-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                       placeholder="John Doe">
+            </div>
+
+            <div>
+                <label for="student_id" class="block text-sm font-medium text-gray-700">Student ID</label>
+                <input id="student_id" name="student_id" type="text" required
+                       class="w-full px-4 py-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                       placeholder="S12345678">
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                <input id="email" name="email" type="email" autocomplete="email" required
+                       class="w-full px-4 py-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                       placeholder="you@example.com">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input id="password" name="password" type="password" autocomplete="new-password" required
+                       class="w-full px-4 py-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                       placeholder="••••••••">
+            </div>
+             <div>
+                <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" required
+                       class="w-full px-4 py-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                       placeholder="••••••••">
+            </div>
+
+            <div>
+                <label for="programme" class="block text-sm font-medium text-gray-700">Programme</label>
+                <select id="programme" name="programme" required
+                        class="w-full px-4 py-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white">
+                    <option value="" disabled selected>Select your programme</option>
+                    <option value="bsc_cs">Bachelor of Science in Computer Science</option>
+                    <option value="ba_eng">Bachelor of Arts in English</option>
+                    <option value="bcomm_acc">Bachelor of Commerce in Accounting</option>
+                    <option value="dip_it">Diploma in Information Technology</option>
+                    <option value="cert_bus">Certificate in Business Studies</option>
+                </select>
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    <i class="fas fa-user-plus mr-2"></i>Register
+                </button>
+            </div>
+        </form>
+
+        <p class="mt-8 text-sm text-center text-gray-600">
+            Already have an account?
+            <a href="login.html" class="font-medium text-indigo-600 hover:text-indigo-500">Login here</a>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,192 +1,134 @@
-/* static/css/login.css */
+/* ───────────────────────────────────────────────────────────────── */
+/*                      LOGIN PAGE STYLESHEET                      */
+/* ───────────────────────────────────────────────────────────────── */
 
-/* Basic Reset and Body Styles */
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
-    background-color: #eef2f7; /* Light, slightly cool background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden; /* Prevent scrollbars if background image is large */
+body {
+  font-family: sans-serif;
+  background-color: rgb(172, 226, 228);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
 }
 
 .login-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    /* Optional: Add a background image for the entire page */
-    /* background: url("{{ url_for('static', filename='images/your-background-image.jpg') }}") no-repeat center center fixed; */
-    /* background-size: cover; */
+  padding: 20px;
 }
 
-/* This div can be used to create a blurred background effect if you have a page background image */
 .blur-background {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px; /* Add some padding for smaller screens */
-    box-sizing: border-box;
-    /* If using a background image on .login-container, you might apply a backdrop-filter here */
-    /* backdrop-filter: blur(5px); */
-    /* Or a semi-transparent overlay */
-    /* background-color: rgba(240, 242, 245, 0.6); */
+  border-radius: 24px;
+  backdrop-filter: blur(18px);
 }
 
 .login-card {
-    background-color: #ffffff;
-    padding: 30px 40px; /* Generous padding */
-    border-radius: 12px; /* Softer rounded corners */
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
-    text-align: center;
-    width: 100%;
-    max-width: 420px; /* Max width for the card */
-    animation: fadeInScale 0.5s ease-out forwards;
-    opacity: 0; /* Start hidden for animation */
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  /* card width can be increased here */
+  width: 300px;
+  max-width: 90%;
+  padding: 32px;
+  background-color: #009999;
+  border-radius: 0px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .usp-logo {
-    width: 100px; /* Adjust size as needed */
-    height: auto;
-    margin-bottom: 20px;
+  height: 70px;
+  margin-bottom: 20px;
 }
 
 .welcome-text {
-    font-size: 28px; /* Larger welcome text */
-    font-weight: 600; /* Bolder */
-    color: #333; /* Darker text */
-    margin-bottom: 8px;
+  font-size: 22px;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 4px;        /* tighter spacing */
+  text-align: center;
 }
 
 .login-continue-text {
-    font-size: 16px;
-    color: #666; /* Softer color for subtitle */
-    margin-bottom: 30px;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 12px;       /* tighter spacing */
+  text-align: center;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-}
 
+/* ───────────────────────────────────────────────────────────────── */
+/*   Input fields: full width, squared corners                     */
+/* ───────────────────────────────────────────────────────────────── */
 .input-field,
 .password-field {
-    width: 100%;
-    padding: 12px 15px; /* Comfortable padding */
-    margin-bottom: 20px;
-    border: 1px solid #d1d9e6; /* Softer border color */
-    border-radius: 8px; /* Consistent rounded corners */
-    box-sizing: border-box;
-    font-size: 16px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  padding: 14px 30px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  box-sizing: border-box;
 }
 
-.input-field:focus,
-.password-field:focus {
-    border-color: #007bff; /* Primary color for focus */
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15); /* Subtle focus glow */
-    outline: none;
+.input-field::placeholder,
+.password-field::placeholder {
+  color: #aaa;
 }
 
-.password-field-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px; /* Same margin as other input fields */
+/* ───────────────────────────────────────────────────────────────── */
+/* Password wrapper + toggle button                                */
+/* ───────────────────────────────────────────────────────────────── */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 28px;
 }
 
 .password-field {
-    margin-bottom: 0; /* Remove bottom margin as it's handled by the container */
-    padding-right: 40px; /* Make space for the icon */
+  /* leave space on the right for the toggle button */
+  padding-right: 48px;
 }
 
-.visibility-icon {
-    position: absolute;
-    right: 12px;
-    cursor: pointer;
-    color: #777; /* Icon color */
-    font-size: 20px; /* Adjust icon size if needed */
-    user-select: none; /* Prevent text selection on icon click */
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
-.visibility-icon:hover {
-    color: #333;
+.toggle-password .material-icons-outlined {
+  font-size: 24px;
+  color: #666;
+  transition: color 0.2s;
 }
 
+.toggle-password:hover .material-icons-outlined {
+  color: #000;
+}
+
+/* ───────────────────────────────────────────────────────────────── */
+/* Login button styling and centering                              */
+/* ───────────────────────────────────────────────────────────────── */
 .login-button {
-    background-color: #007bff; /* Primary button color (e.g., USP blue) */
-    color: white;
-    padding: 12px 15px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500; /* Medium weight */
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    text-transform: uppercase; /* Optional: for a more button-like feel */
-    letter-spacing: 0.5px; /* Optional */
+  width: 140px;
+  padding: 12px;
+  border: none;
+  border-radius: 24px;
+  background-color: #002B49;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 .login-button:hover {
-    background-color: #0056b3; /* Darker shade on hover */
-}
-
-.login-button:active {
-    transform: translateY(1px); /* Slight press effect */
-}
-
-/* Styling for error messages if you pass them from Flask to the template */
-.flash-messages {
-    list-style-type: none;
-    padding: 0;
-    margin-bottom: 15px;
-}
-
-.flash-messages .error {
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 10px;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-    .login-card {
-        padding: 25px 20px; /* Reduce padding on very small screens */
-        margin: 15px; /* Add some margin so it doesn't touch edges */
-    }
-
-    .welcome-text {
-        font-size: 24px;
-    }
-
-    .login-continue-text {
-        font-size: 14px;
-    }
-
-    .input-field,
-    .password-field,
-    .login-button {
-        font-size: 15px;
-    }
+  background-color: #001f36;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }

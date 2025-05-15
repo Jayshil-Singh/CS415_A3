@@ -1,17 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-  <title>Login | USP Student Services</title>
+{# templates/login.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>USP Student Services – Login</title>
+
+  <!-- Material Icons CDN -->
   <link
-    rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"
+    href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+    rel="stylesheet"
   />
-</head>
-<body>
+
+  <!-- page‐specific stylesheet -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/login.css') }}"
+  />
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block body %}
   <div class="login-container">
     <div class="blur-background">
       <div class="login-card">
@@ -20,10 +29,9 @@
           alt="USP Logo"
           class="usp-logo"
         />
-        <div class="welcome-text">Welcome.</div>
-        <div class="login-continue-text">Login to continue.</div>
-        
-        <!-- Real form wrapper -->
+        <h1 class="welcome-text">Welcome</h1>
+        <p class="login-continue-text">Login to continue</p>
+
         <form action="{{ url_for('login') }}" method="post">
           <input
             type="email"
@@ -32,45 +40,47 @@
             placeholder="Student Email"
             required
           />
-          <div class="password-field-container">
+
+          <div class="password-wrapper">
             <input
               type="password"
               name="password"
-              class="password-field"
+              class="input-field password-field"
               placeholder="Password"
               id="password"
               required
             />
-            <span
-              class="visibility-icon"
+            <button
+              type="button"
               id="togglePassword"
-            >&#128065;</span>
+              class="toggle-password"
+              aria-label="Show or hide password"
+            >
+              <span class="material-icons-outlined" id="toggleIcon">
+                visibility_off
+              </span>
+            </button>
           </div>
-          <button type="submit" class="login-button">
-            Login
-          </button>
+
+          <button type="submit" class="login-button">Login</button>
         </form>
       </div>
     </div>
   </div>
 
   <script>
-    const passwordInput =
-      document.getElementById("password");
-    const togglePasswordButton =
-      document.getElementById("togglePassword");
+    document.addEventListener('DOMContentLoaded', () => {
+      const pwdInput = document.getElementById('password');
+      const toggleBtn = document.getElementById('togglePassword');
+      const icon = document.getElementById('toggleIcon');
 
-    togglePasswordButton.addEventListener(
-      "click",
-      () => {
-        const type =
-          passwordInput.getAttribute("type") ===
-          "password"
-            ? "text"
-            : "password";
-        passwordInput.setAttribute("type", type);
-      }
-    );
+      toggleBtn.addEventListener('click', () => {
+        const isHidden = pwdInput.type === 'password';
+        // toggle the input
+        pwdInput.type = isHidden ? 'text' : 'password';
+        // swap the icon
+        icon.textContent = isHidden ? 'visibility' : 'visibility_off';
+      });
+    });
   </script>
-</body>
-</html>
+{% endblock %}

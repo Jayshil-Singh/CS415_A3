@@ -1,0 +1,149 @@
+/* PAGE BACKGROUND */
+body {
+  margin: 0;
+  padding: 0;
+}
+.enrollment-page {
+  background-color: #F6F0FB;
+  padding: 0.3rem;
+}
+
+/* CARD CONTAINER */
+.enrollment-card {
+  max-width: 1040px;
+  margin: 0 auto;
+  background: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 0;    /* <-- change from 4px to 0 */
+  overflow: visible;   /* allow any straight-edged children to show */
+}
+
+/* NAVBAR HEADER */
+.dashboard-header {
+  background-color: #082D57;
+  color: #FFFFFF;
+  padding: 0.75rem 1rem;
+  font-size: 1.125rem;
+  font-weight: bold;
+}
+
+/* BANNER */
+.banner-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 25%;
+  overflow: hidden;
+}
+.banner-image {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* SECTION STYLING */
+.section {
+  padding: 0.0rem 1rem;
+  border-top: 1px solid #E0E0E0;
+}
+.section:first-of-type {
+  border-top: none;
+}
+.section-title {
+  background-color: #009999;
+  color: #FFFFFF;
+  margin: 0 -1rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+.section-text {
+  margin-top: 1rem;
+  color: #333333;
+}
+
+/* ADD COURSE BUTTON */
+.add-course-wrapper {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: #FFFFFF;
+}
+/* pill shape, no border, no outline */
+.btn-add-course {
+  display: inline-block;
+  background-color: #009999;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border: none;           /* remove default border */
+  outline: none;          /* remove focus outline */
+  border-radius: 999px;   /* full pill shape */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.btn-add-course:hover {
+  background-color: #007F7F;
+}
+
+/* TABLE STYLES */
+.courses-table-wrapper {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+.courses-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.courses-table th,
+.courses-table td {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+.courses-table th {
+  background-color: #082D57;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+/* CARD LAYOUT (mobile) */
+.courses-cards {
+  margin-top: 1rem;
+}
+.course-card {
+  background: #FFFFFF;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.info-row {
+  margin-bottom: 0.5rem;
+}
+.label {
+  font-weight: bold;
+}
+.action-row {
+  text-align: right;
+}
+.btn-action {
+  background-color: #009999;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn-action:hover {
+  background-color: #007F7F;
+}
+
+/* RESPONSIVE: hide cards on wide, hide table on narrow */
+@media (min-width: 600px) {
+  .courses-cards { display: none; }
+}
+@media (max-width: 599px) {
+  .courses-table-wrapper { display: none; }
+}

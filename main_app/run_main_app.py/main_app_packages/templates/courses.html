@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>USP Student Services</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/courses.css') }}"
+  />
+
+{% endblock %}
+
+{% block body %}
+<main class="courses-page">
+  <div class="courses-card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      Courses / Prerequisites
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body">
+      <p>
+        This is the page for courses and prerequisites. Display course details,
+        prerequisites, and other related information here.
+      </p>
+    </div>
+
+  </div>
+</main>
+{% endblock %}
