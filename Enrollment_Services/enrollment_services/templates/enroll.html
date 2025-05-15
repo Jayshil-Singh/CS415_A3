@@ -160,15 +160,15 @@
                     </a>
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="dashboard.html"
+                            <a href="{{ url_for('dashboard') }}"
                                 class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
                             <a href="{{ url_for('enroll') }}"
                                 class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium"
                                 aria-current="page">Enroll</a>
-                            <a href="enrollment.html"
+                            <a href="{{ url_for('display_courses') }}"
                                 class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My
                                 Enrollment</a>
-                            <a href="fees.html"
+                            <a href="{{ url_for('fees') }}"
                                 class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
                             <a href="programmes.html"
                                 class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Programmes</a>
@@ -201,15 +201,15 @@
         </div>
         <div class="md:hidden hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="dashboard.html"
+                <a href="{{ url_for('dashboard') }}"
                     class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
                 <a href="{{ url_for('enroll') }}"
                     class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium"
                     aria-current="page">Enroll</a>
-                <a href="enrollment.html"
+                <a href="{{ url_for('display_courses') }}"
                     class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My
                     Enrollment</a>
-                <a href="fees.html"
+                <a href="{{ url_for('fees') }}"
                     class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
                 <a href="programmes.html"
                     class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Programmes</a>
@@ -331,7 +331,8 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="modal-button cancel" id="cancelEnroll">Cancel</button>
-                                    <button type="button" class="modal-button confirm" id="confirmEnroll">Enroll</button></div>
+                                    <button type="button" class="modal-button confirm" id="confirmEnroll">Enroll</button>
+                                </div>
                             </div>
                         </div>
 
