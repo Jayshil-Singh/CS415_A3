@@ -1,3 +1,5 @@
+/* static/css/SAdmin/SAdHomepage.css */
+
 body {
     font-family: sans-serif;
     background-color: #e0f2f7; /* Light teal background */
@@ -7,80 +9,124 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    box-sizing: border-box; /* Ensure padding and border don't add to width/height */
 }
 
-.header {
+/* Header styles (assuming #header-container is styled by loaded Header.html) */
+/* If you have specific styles for the header loaded into #header-container, they would go here or in a separate header.css */
+/* For example, if .header is inside #header-container: */
+#header-container .header, /* If header has class .header */
+#header-container > header { /* If header is a direct <header> tag */
     background-color: #008080; /* Teal header */
     color: white;
     padding: 20px;
     text-align: center;
     width: 100%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+
+.body-content {
+    flex-grow: 1; /* Allows main content to fill available space */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .dashboard-container {
     background-color: #ede7f6; /* Light indigo background */
-    padding: 20px;
+    padding: 25px; /* Slightly more padding */
     margin-top: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px; /* More rounded */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Softer, more spread shadow */
     width: 90%;
-    max-width: 600px;
+    max-width: 800px; /* Increased max-width for potentially more cards */
     text-align: center;
 }
 
 .welcome-text {
-    font-size: 24px;
+    font-size: 26px; /* Slightly larger */
     font-weight: bold;
     color: #3f51b5; /* Indigo color */
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 16px;
+    /* Ensure at least 180px for cards, but allow them to grow */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+    gap: 20px; /* Slightly larger gap */
+}
+
+/* Styling for the <a> tag wrapping the dashboard card */
+.dashboard-card-link {
+    text-decoration: none; /* Remove underline from link */
+    color: inherit; /* Inherit text color from parent */
+    display: block; /* Make the link a block element to contain the card properly */
+    outline: none; /* Remove default browser outline, we'll add custom focus */
 }
 
 .dashboard-card {
     background-color: white;
     border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Slightly softer shadow */
+    padding: 25px 20px; /* Adjusted padding */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
+    height: 100%; /* Make card fill the link wrapper if link has fixed height */
+    min-height: 150px; /* Ensure a minimum height */
+    box-sizing: border-box;
+    /* cursor: pointer; /* Not needed on the div if the <a> tag handles it */
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-out;
 }
 
-.dashboard-card:hover {
-    transform: scale(1.05);
+/* Hover and Focus states for the link wrapping the card */
+.dashboard-card-link:hover .dashboard-card,
+.dashboard-card-link:focus .dashboard-card {
+    transform: translateY(-5px) scale(1.03); /* Combined effect */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
+/* Specific focus style for keyboard navigation on the link itself */
+.dashboard-card-link:focus {
+    /* This outline will appear on the <a> tag.
+       If you prefer it on the .dashboard-card, style .dashboard-card-link:focus .dashboard-card
+    */
+    outline: 2px solid #0056b3; /* A distinct focus color */
+    outline-offset: 3px;
+    border-radius: 14px; /* Match card's border-radius + offset */
+}
+
 
 .card-icon {
-    font-size: 40px;
+    font-size: 48px; /* Larger icon */
     color: #008080; /* Teal color */
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .card-title {
     font-size: 16px;
     font-weight: 500;
     text-align: center;
+    color: #333; /* Ensure title color is set */
 }
 
+/* Drawer Styles */
 .drawer {
     background-color: white;
-    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
-    width: 250px;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+    width: 260px; /* Slightly wider */
     height: 100%;
     position: fixed;
     top: 0;
-    left: -250px; /* Initially hidden */
+    left: -260px; /* Initially hidden, matching width */
     transition: left 0.3s ease-in-out;
     overflow-y: auto;
+    z-index: 1000; /* Ensure drawer is on top */
 }
 
 .drawer.open {
@@ -88,7 +134,7 @@ body {
 }
 
 .drawer-header {
-    background-color: #008080; /* Teal drawer header */
+    background-color: #007070; /* Slightly darker teal for drawer header */
     color: white;
     padding: 20px;
     display: flex;
@@ -97,54 +143,75 @@ body {
 }
 
 .drawer-icon {
-    font-size: 40px;
+    font-size: 36px; /* Adjusted size */
     margin-bottom: 10px;
 }
 
 .drawer-title {
-    font-size: 22px;
+    font-size: 20px; /* Adjusted size */
+}
+
+/* Styling for the <a> tag wrapping the drawer item */
+.drawer-item-link {
+    text-decoration: none;
+    color: #333; /* Default text color for drawer items */
+    display: block; /* Make the link fill the width */
+    outline: none;
 }
 
 .drawer-item {
-    padding: 15px;
-    border-bottom: 1px solid #eee;
+    padding: 16px 20px; /* Adjusted padding */
+    border-bottom: 1px solid #f0f0f0; /* Lighter border */
     display: flex;
     align-items: center;
-    cursor: pointer;
+    /* cursor: pointer; /* Not needed on div if <a> handles it */
     transition: background-color 0.2s ease-in-out;
 }
 
-.drawer-item:hover {
-    background-color: #f9f9f9;
+/* Hover and Focus for the link wrapping the drawer item */
+.drawer-item-link:hover .drawer-item,
+.drawer-item-link:focus .drawer-item {
+    background-color: #e9ecef; /* Light grey hover/focus background */
+}
+/* Specific focus style for keyboard navigation on the link itself */
+.drawer-item-link:focus {
+    outline: 2px solid #0056b3;
+    /* No outline-offset needed if background change is sufficient indicator */
 }
 
+
 .drawer-item-icon {
-    font-size: 24px;
+    font-size: 22px; /* Adjusted size */
     color: #008080; /* Teal color */
-    margin-right: 15px;
+    margin-right: 18px; /* Adjusted margin */
 }
 
 .drawer-item-text {
-    font-size: 16px;
+    font-size: 15px; /* Adjusted size */
 }
 
-.footer {
-    background-color: #f5f5f5;
-    color: #777;
-    padding: 10px;
+/* Footer styles (assuming #footer-container is styled by loaded footer.html) */
+/* If you have specific styles for the footer loaded into #footer-container: */
+#footer-container .footer, /* If footer has class .footer */
+#footer-container > footer { /* If footer is a direct <footer> tag */
+    background-color: #343a40; /* Darker footer */
+    color: #adb5bd; /* Lighter text on dark background */
+    padding: 15px 20px; /* Adjusted padding */
     text-align: center;
     width: 100%;
-    margin-top: 20px;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
-    font-size: 12px;
+    margin-top: auto; /* Push to bottom if body is flex */
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.08);
+    font-size: 13px; /* Adjusted size */
+    box-sizing: border-box;
 }
 
-/* Basic icon styling - you might need to include an icon library */
+
+/* Basic icon styling - Material Icons */
 .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
-    font-size: 24px;
+    font-size: 24px; /* Default icon size */
     line-height: 1;
     letter-spacing: normal;
     text-transform: none;
@@ -153,6 +220,8 @@ body {
     word-wrap: normal;
     direction: ltr;
     -webkit-font-feature-settings: 'liga';
+    -moz-osx-font-smoothing: grayscale; /* Better rendering on Mac */
+    font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
 }
 
@@ -160,8 +229,35 @@ body {
 @media (max-width: 768px) {
     .dashboard-container {
         width: 95%;
+        padding: 20px; /* Adjust padding for smaller screens */
     }
     .dashboard-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Single column for cards */
+        gap: 15px;
+    }
+    .drawer {
+        width: 240px; /* Slightly narrower drawer */
+        left: -240px;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-text {
+        font-size: 20px;
+    }
+    .card-title {
+        font-size: 14px;
+    }
+    .drawer-item-text {
+        font-size: 14px;
+    }
+    .drawer-header {
+        padding: 15px;
+    }
+    .drawer-title {
+        font-size: 18px;
+    }
+    .drawer-icon {
+        font-size: 30px;
     }
 }

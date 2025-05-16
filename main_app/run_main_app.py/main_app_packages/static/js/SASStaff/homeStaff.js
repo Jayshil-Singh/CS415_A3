@@ -1,42 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
+    // DOM Elements - CRITICAL: These must be defined
     const menuButton = document.getElementById('menu-button');
     const drawer = document.getElementById('drawer');
     const overlay = document.getElementById('overlay');
-    const mainContent = document.getElementById('main-content'); // To push content
     const welcomeMessageElement = document.getElementById('welcome-message');
     const dashboardGridElement = document.getElementById('dashboard-grid');
     const drawerItemsListElement = document.getElementById('drawer-items-list');
 
-    // --- ViewModel Simulation ---
-    const viewModel = {
-        staffName: "Jane Doe", // Example staff name
-        // Navigation functions (will just log to console for this example)
-        navigateToRegister: function() {
-            console.log("Navigating to Register Student page...");
-            alert("Action: Navigate to Register Student");
-            closeDrawer();
-        },
-        navigateToEdit: function() {
-            console.log("Navigating to Edit Student page...");
-            alert("Action: Navigate to Edit Student");
-            closeDrawer();
-        },
-        putStudentOnHold: function() {
-            console.log("Action: Put Student on Hold...");
-            alert("Action: Put Student on Hold");
-            closeDrawer();
+    let staffName = "Staff Member"; // Default
+    let navLinks = {}; // This will be populated with URLs from Flask
+
+    const initialDataElement = document.getElementById('staff-home-initial-data');
+    if (initialDataElement) {
+        try {
+            const parsedData = JSON.parse(initialDataElement.textContent);
+            staffName = parsedData.staff_name || staffName;
+            navLinks = parsedData.navigation_links || {}; // navLinks gets populated here
+            console.log("JS: Staff home initial data loaded:", parsedData);
+        } catch (e) {
+            console.error("JS: Error parsing initial data for staff home:", e);
         }
-        // Add other navigation/action functions from your ViewModel as needed
-    };
+    } else {
+        console.warn("JS: Staff home initial data script tag not found.");
+    }
+
+    // Update welcome message
+    if (welcomeMessageElement) {
+        welcomeMessageElement.textContent = `Welcome, ${staffName}!`;
+    }
 
     // --- Data for Dashboard and Drawer ---
-    // (Corresponds to Flutter's `staffItems` and drawer items)
+    // Ensure actionKey matches keys in navigation_links from app.py
     const staffDashboardItems = [
         { icon: 'person_add', title: 'Register Student', actionKey: 'navigateToRegister' },
         { icon: 'edit', title: 'Edit Student', actionKey: 'navigateToEdit' },
         { icon: 'pause_circle_filled', title: 'Put on Hold', actionKey: 'putStudentOnHold' }
-        // Add more items as needed
     ];
 
     const drawerMenuItems = [
@@ -49,92 +47,123 @@ document.addEventListener('DOMContentLoaded', () => {
     function openDrawer() {
         if (drawer) drawer.classList.add('open');
         if (overlay) overlay.classList.add('active');
-        // Optional: push main content to the right
-        // if (mainContent) mainContent.style.marginLeft = '280px';
-        // if (document.getElementById('custom-header')) document.getElementById('custom-header').style.marginLeft = '280px';
     }
 
     function closeDrawer() {
         if (drawer) drawer.classList.remove('open');
         if (overlay) overlay.classList.remove('active');
-        // Optional: reset main content margin
-        // if (mainContent) mainContent.style.marginLeft = '0';
-        // if (document.getElementById('custom-header')) document.getElementById('custom-header').style.marginLeft = '0';
     }
 
     if (menuButton) {
         menuButton.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevent click from bubbling to overlay if menu button is part of header
-            if (drawer.classList.contains('open')) {
+            event.stopPropagation(); // Prevent click from bubbling up to document
+            if (drawer && drawer.classList.contains('open')) {
                 closeDrawer();
             } else {
                 openDrawer();
             }
         });
+    } else {
+        console.warn("JS: Menu button (#menu-button) not found.");
     }
 
     if (overlay) {
         overlay.addEventListener('click', closeDrawer);
     }
 
-
-    // --- Dynamic Content Rendering ---
-
-    // Update Welcome Message
-    if (welcomeMessageElement) {
-        welcomeMessageElement.textContent = `Welcome, ${viewModel.staffName}!`;
-    }
-
-    // Render Drawer Items
+    // Render Drawer Items as Links
     if (drawerItemsListElement) {
+        drawerItemsListElement.innerHTML = ''; // Clear any existing
         drawerMenuItems.forEach(item => {
+            const link = document.createElement('a');
+            link.href = navLinks[item.actionKey] || '#'; // Fallback to '#' if no URL found
+            link.classList.add('drawer-item-link');
+
             const listItem = document.createElement('li');
             listItem.classList.add('drawer-item');
+            listItem.setAttribute('role', 'menuitem');
+            listItem.setAttribute('tabindex', '0'); // Make focusable
             listItem.innerHTML = `
-                <span class="material-icons">${item.icon}</span>
-                <span>${item.title}</span>
+                <span class="material-icons drawer-item-icon">${item.icon}</span>
+                <span class="drawer-item-text">${item.title}</span>
             `;
-            listItem.addEventListener('click', () => {
-                if (viewModel[item.actionKey] && typeof viewModel[item.actionKey] === 'function') {
-                    viewModel[item.actionKey](); // Calls the corresponding function in viewModel
-                } else {
-                    console.warn(`Action ${item.actionKey} not found in viewModel.`);
-                }
-            });
-            drawerItemsListElement.appendChild(listItem);
+
+            // Handle JS-specific actions or navigation
+            if (item.actionKey === 'putStudentOnHold' && !navLinks[item.actionKey]) {
+                // This item is a JS action, not a navigation link
+                listItem.addEventListener('click', () => {
+                    console.log("JS: Action - Put Student on Hold (Drawer - JS simulated)");
+                    alert("JS Action: Put Student on Hold");
+                    closeDrawer(); // Close drawer after action
+                });
+                listItem.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault(); // Prevent default space scroll
+                        console.log("JS: Action - Put Student on Hold (Drawer - JS simulated via keydown)");
+                        alert("JS Action: Put Student on Hold");
+                        closeDrawer();
+                    }
+                });
+            } else {
+                // This item is a navigation link (handled by <a> tag)
+                // Add keydown for accessibility to activate the link within
+                listItem.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        link.click(); // Simulate click on the parent link
+                    }
+                });
+            }
+            link.appendChild(listItem);
+            drawerItemsListElement.appendChild(link);
         });
+    } else {
+        console.error("JS: Drawer items list element (#drawer-items-list) not found.");
     }
 
-    // Render Dashboard Cards
+    // Render Dashboard Cards as Links
     if (dashboardGridElement) {
+        dashboardGridElement.innerHTML = ''; // Clear any existing
         staffDashboardItems.forEach(item => {
+            const link = document.createElement('a');
+            link.href = navLinks[item.actionKey] || '#'; // Fallback to '#'
+            link.classList.add('dashboard-card-link');
+
             const card = document.createElement('div');
             card.classList.add('dashboard-card');
+            // card.setAttribute('role', 'link'); // The <a> tag is the link.
+            // card.setAttribute('tabindex', '0'); // The <a> tag is focusable.
+            card.innerHTML = `
+                <span class="material-icons card-icon">${item.icon}</span>
+                <p class="card-title">${item.title}</p>
+            `;
 
-            const iconElement = document.createElement('span');
-            iconElement.classList.add('material-icons');
-            iconElement.textContent = item.icon;
+            // Handle JS-specific actions or navigation
+            if (item.actionKey === 'putStudentOnHold' && !navLinks[item.actionKey]) {
+                // This card is a JS action
+                card.style.cursor = 'pointer'; // Indicate it's clickable
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0'); // Make card focusable if it's a JS action
+                card.addEventListener('click', () => {
+                    console.log("JS: Action - Put Student on Hold (Dashboard - JS simulated)");
+                    alert("JS Action: Put Student on Hold");
+                });
+                card.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        console.log("JS: Action - Put Student on Hold (Dashboard - JS simulated via keydown)");
+                        alert("JS Action: Put Student on Hold");
+                    }
+                });
+            }
+            // For items that are pure links, the parent <a> tag handles the click and focus.
 
-            const titleElement = document.createElement('p');
-            titleElement.classList.add('dashboard-card-title');
-            titleElement.textContent = item.title;
-
-            card.appendChild(iconElement);
-            card.appendChild(titleElement);
-
-            card.addEventListener('click', () => {
-                if (viewModel[item.actionKey] && typeof viewModel[item.actionKey] === 'function') {
-                    viewModel[item.actionKey](); // Calls the corresponding function in viewModel
-                } else {
-                    console.warn(`Action ${item.actionKey} not found or not a function in viewModel.`);
-                    alert(`Action: ${item.title}`); // Fallback alert
-                }
-            });
-            dashboardGridElement.appendChild(card);
+            link.appendChild(card);
+            dashboardGridElement.appendChild(link);
         });
+    } else {
+        console.error("JS: Dashboard grid element (#dashboard-grid) not found.");
     }
 
-    // --- Initial Setup ---
-    // (No specific initial setup needed beyond rendering for this example)
-
+    console.log("JS: Staff home page fully initialized.");
 });

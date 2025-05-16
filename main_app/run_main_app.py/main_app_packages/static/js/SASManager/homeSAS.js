@@ -4,89 +4,198 @@ document.addEventListener('DOMContentLoaded', () => {
     const openRegTile = document.getElementById('open-reg-tile');
     const closeRegTile = document.getElementById('close-reg-tile');
 
-    // ViewModel state (simulating Flutter's ViewModel)
+    // Action Confirmation Dialog Elements
+    const actionConfirmationDialog = document.getElementById('action-confirmation-dialog');
+    const confirmationDialogTitle = document.getElementById('confirmation-dialog-title');
+    const confirmationDialogMessage = document.getElementById('confirmation-dialog-message');
+    const cancelActionButton = document.getElementById('cancel-action-button');
+    const confirmActionButton = document.getElementById('confirm-action-button');
+
+    // --- NEW: Status Message Modal Elements ---
+    const statusMessageModal = document.getElementById('status-message-modal');
+    const statusModalTitle = document.getElementById('status-modal-title');
+    const statusModalMessage = document.getElementById('status-modal-message');
+    const statusModalOkButton = document.getElementById('status-modal-ok-button');
+
+    let pendingAction = null; // To store the action ('Open Registration' or 'Close Registration')
+
+    // ViewModel state
     const viewModel = {
         isRegistrationOpen: false, // Initial state
 
-        // Method to update registration status and UI
         setRegistrationStatus: function(isOpen) {
             this.isRegistrationOpen = isOpen;
             this.updateUI();
         },
 
-        // Method to handle tile taps
-        handleTileTap: function(action) {
+        performAction: function(action) {
+            // In a real application, you would make an API call here
+            // and then show success/error based on the API response.
             if (action === 'Open Registration') {
-                // Add any specific logic for opening registration here
-                // For example, show a confirmation dialog or make an API call
-                console.log('Attempting to open registration...');
+                console.log('Opening registration...');
                 this.setRegistrationStatus(true);
-                // You might want to show a success message or confirmation
-                alert('Registration has been opened.'); // Simple alert, replace with modal if preferred
+                showStatusModal('Success', 'Registration has been opened successfully.');
             } else if (action === 'Close Registration') {
-                // Add any specific logic for closing registration here
-                console.log('Attempting to close registration...');
+                console.log('Closing registration...');
                 this.setRegistrationStatus(false);
-                // You might want to show a success message or confirmation
-                alert('Registration has been closed.'); // Simple alert, replace with modal if preferred
+                showStatusModal('Success', 'Registration has been closed successfully.');
             }
+            pendingAction = null; 
         },
 
-        // Method to update the UI based on the current state
         updateUI: function() {
+            if (!registrationStatusElement || !openRegTile || !closeRegTile) {
+                console.error("One or more UI elements for registration status are missing.");
+                return;
+            }
             if (this.isRegistrationOpen) {
                 registrationStatusElement.textContent = 'Registration is Open';
-                // Optionally, disable the "Open Registration" button or change its style
-                openRegTile.classList.add('disabled-tile'); // Example: add a class to style it as disabled
+                openRegTile.classList.add('disabled-tile');
+                openRegTile.setAttribute('aria-disabled', 'true');
                 closeRegTile.classList.remove('disabled-tile');
+                closeRegTile.setAttribute('aria-disabled', 'false');
             } else {
                 registrationStatusElement.textContent = 'Registration is Closed';
-                // Optionally, disable the "Close Registration" button
                 closeRegTile.classList.add('disabled-tile');
+                closeRegTile.setAttribute('aria-disabled', 'true');
                 openRegTile.classList.remove('disabled-tile');
+                openRegTile.setAttribute('aria-disabled', 'false');
             }
         }
     };
 
-    // Event Listeners for the dashboard tiles
+    // --- Status Message Modal Logic ---
+    function showStatusModal(title, message, isSuccess = true) {
+        if (!statusMessageModal || !statusModalTitle || !statusModalMessage) {
+            console.error("Status message modal elements are missing.");
+            alert(`${title}: ${message}`); // Fallback to alert if modal elements are not found
+            return;
+        }
+        statusModalTitle.textContent = title;
+        statusModalMessage.textContent = message;
+        // Optionally, add classes for styling success/error
+        statusMessageModal.classList.toggle('success-modal', isSuccess);
+        statusMessageModal.classList.toggle('error-modal', !isSuccess);
+        
+        statusMessageModal.style.display = 'flex';
+        statusMessageModal.classList.add('show');
+    }
+
+    function hideStatusModal() {
+        if (statusMessageModal) {
+            statusMessageModal.style.display = 'none';
+            statusMessageModal.classList.remove('show');
+        }
+    }
+
+    // --- Confirmation Dialog Logic ---
+    function showConfirmationDialog(action) {
+        if (!actionConfirmationDialog || !confirmationDialogTitle || !confirmationDialogMessage) {
+            console.error("Action confirmation dialog elements are missing.");
+            // Fallback: directly perform action or show an alert
+            // viewModel.performAction(action); // Or alert("Confirmation dialog missing, performing action directly.")
+            return;
+        }
+        pendingAction = action;
+        if (action === 'Open Registration') {
+            confirmationDialogTitle.textContent = 'Confirm Open Registration';
+            confirmationDialogMessage.textContent = 'Are you sure you want to open course registration?';
+        } else if (action === 'Close Registration') {
+            confirmationDialogTitle.textContent = 'Confirm Close Registration';
+            confirmationDialogMessage.textContent = 'Are you sure you want to close course registration?';
+        }
+        actionConfirmationDialog.style.display = 'flex';
+        actionConfirmationDialog.classList.add('show');
+    }
+
+    function hideConfirmationDialog() {
+        if (actionConfirmationDialog) {
+            actionConfirmationDialog.style.display = 'none';
+            actionConfirmationDialog.classList.remove('show');
+        }
+        // Do not clear pendingAction here if cancel is clicked, only if confirmed or overlay click.
+        // Or clear it always and re-prompt if needed. For simplicity, let's clear it.
+        // pendingAction = null; 
+    }
+
+    // --- Keyboard Accessibility for Tiles ---
+    function handleKeydown(event, callback) {
+        if (event.key === 'Enter' || event.key === ' ' || event.keyCode === 13 || event.keyCode === 32) {
+            event.preventDefault();
+            if (typeof callback === 'function') {
+                callback();
+            }
+        }
+    }
+
+    // --- Event Listeners ---
     if (openRegTile) {
-        openRegTile.addEventListener('click', () => {
-            // Prevent action if registration is already open
+        const action = 'Open Registration';
+        const callback = () => {
             if (!viewModel.isRegistrationOpen) {
-                viewModel.handleTileTap('Open Registration');
+                showConfirmationDialog(action);
             } else {
                 console.log('Registration is already open.');
-                // Optionally, provide feedback that it's already open
+                showStatusModal('Information', 'Registration is already open.', true);
             }
-        });
+        };
+        openRegTile.addEventListener('click', callback);
+        openRegTile.addEventListener('keydown', (event) => handleKeydown(event, callback));
     }
 
     if (closeRegTile) {
-        closeRegTile.addEventListener('click', () => {
-            // Prevent action if registration is already closed
+        const action = 'Close Registration';
+        const callback = () => {
             if (viewModel.isRegistrationOpen) {
-                viewModel.handleTileTap('Close Registration');
+                showConfirmationDialog(action);
             } else {
                 console.log('Registration is already closed.');
-                // Optionally, provide feedback that it's already closed
+                showStatusModal('Information', 'Registration is already closed.', true);
+            }
+        };
+        closeRegTile.addEventListener('click', callback);
+        closeRegTile.addEventListener('keydown', (event) => handleKeydown(event, callback));
+    }
+
+    // Confirmation Dialog Button Listeners
+    if (cancelActionButton) {
+        cancelActionButton.addEventListener('click', () => {
+            hideConfirmationDialog();
+            pendingAction = null; // Ensure pending action is cleared on explicit cancel
+        });
+    }
+
+    if (confirmActionButton) {
+        confirmActionButton.addEventListener('click', () => {
+            if (pendingAction) {
+                viewModel.performAction(pendingAction);
+            }
+            hideConfirmationDialog();
+            // pendingAction is cleared within performAction or hideConfirmationDialog
+        });
+    }
+    
+    if(actionConfirmationDialog){
+        actionConfirmationDialog.addEventListener('click', (event) => {
+            if (event.target === actionConfirmationDialog) {
+                hideConfirmationDialog();
+                pendingAction = null; // Ensure pending action is cleared on overlay click
             }
         });
     }
 
-    // Initial UI setup based on the viewModel's default state
+    // --- NEW: Status Message Modal OK Button Listener ---
+    if (statusModalOkButton) {
+        statusModalOkButton.addEventListener('click', hideStatusModal);
+    }
+    if (statusMessageModal) {
+         statusMessageModal.addEventListener('click', (event) => {
+            if (event.target === statusMessageModal) { // Clicked on the overlay
+                hideStatusModal();
+            }
+        });
+    }
+
+    // Initial UI setup
     viewModel.updateUI();
 });
-
-// Add a simple CSS class for disabled tiles (optional)
-// You can add this to your style.css or here in a <style> tag in HTML
-/*
-.disabled-tile {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background-color: #f0f0f0; // Lighter background for disabled state
-}
-.disabled-tile:hover {
-    transform: none;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); // Keep original shadow
-}
-*/

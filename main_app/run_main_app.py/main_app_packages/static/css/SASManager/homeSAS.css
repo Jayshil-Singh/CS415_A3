@@ -1,12 +1,15 @@
+/* static/css/SASManager/homeSAS.css */
+
 /* General Body Styles */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+body, html { /* Added html for consistency */
     margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #e8eaf6; /* Approximate Colors.indigo[50] */
     color: #333;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    /* display: flex; flex-direction: column; min-height: 100vh; */
+    /* Removing flex from body/html to avoid potential conflicts with fixed modal positioning */
+    /* Ensure body can scroll if content overflows and modal is not active */
 }
 
 /* Custom Header Placeholder Styles */
@@ -16,6 +19,9 @@ body {
     padding: 15px 25px;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky; /* Make header sticky */
+    top: 0;
+    z-index: 999; /* Below modal but above other content */
 }
 
 #custom-header h1 {
@@ -25,11 +31,13 @@ body {
 
 /* Main Content Area */
 main {
-    flex-grow: 1;
+    /* flex-grow: 1; */ /* Not needed if body isn't flex container */
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: calc(100vh - 120px); /* Adjust based on header/footer height for full viewport feel */
+    box-sizing: border-box;
 }
 
 /* Registration Status Styles */
@@ -42,35 +50,51 @@ main {
 }
 
 #registration-status {
-    font-size: 20px; /* Equivalent to Flutter's fontSize: 20 */
-    font-weight: bold; /* Equivalent to Flutter's fontWeight: FontWeight.bold */
-    color: #3f51b5; /* Approximate Colors.indigo */
+    font-size: 20px;
+    font-weight: bold;
+    color: #3f51b5;
     margin: 0;
     text-align: center;
 }
 
+/* Action Message Styling (for on-page messages, if still used as fallback) */
+.action-message {
+    background-color: #d4edda; /* Light green for success */
+    color: #155724;
+    padding: 10px 15px;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    text-align: center;
+    margin: 0 auto 20px auto;
+    max-width: 600px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    /* display: none; /* Initially hidden */
+}
+
+
 /* Dashboard Grid Styles */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Simulates crossAxisCount: 2 */
-    gap: 16px; /* Simulates crossAxisSpacing and mainAxisSpacing */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px; /* Increased gap slightly */
     width: 100%;
-    max-width: 700px; /* Adjust as needed */
+    max-width: 700px;
 }
 
 /* Dashboard Tile Styles */
 .dashboard-tile {
     background-color: white;
-    border-radius: 12px; /* Equivalent to Flutter's borderRadius: BorderRadius.circular(12) */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Simulates elevation: 4 */
-    padding: 20px; /* Increased padding for better spacing */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 25px 20px; /* Adjusted padding */
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* mainAxisAlignment: MainAxisAlignment.center */
-    aspect-ratio: 1.2 / 1; /* Simulates childAspectRatio: 1.2, adjust if needed */
+    justify-content: center;
+    align-items: center; /* Ensure content inside tile is centered */
+    aspect-ratio: 1.2 / 1;
 }
 
 .dashboard-tile:hover {
@@ -78,25 +102,32 @@ main {
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
+.dashboard-tile:focus { /* Accessibility: focus style */
+    outline: 2px solid #007bff; /* Example focus color */
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25); /* Optional glow */
+}
+
+
 .tile-icon {
-    font-size: 40px; /* Equivalent to Flutter's icon size: 40 */
-    color: #3f51b5; /* Approximate Colors.indigo */
-    margin-bottom: 12px;
+    font-size: 40px; 
+    color: #3f51b5; 
+    margin-bottom: 15px; /* Increased margin */
 }
 
 .tile-title {
-    font-size: 16px; /* Equivalent to Flutter's fontSize: 16 */
-    font-weight: bold;
-    color: #3f51b5; /* Approximate Colors.indigo */
+    font-size: 17px; /* Slightly larger */
+    font-weight: 600; /* Slightly bolder */
+    color: #3f51b5; 
     margin-top: 0;
     margin-bottom: 8px;
 }
 
 .tile-description {
-    font-size: 12px; /* Equivalent to Flutter's fontSize: 12 */
-    color: #757575; /* Approximate Colors.grey */
+    font-size: 13px; /* Slightly larger */
+    color: #666; /* Slightly darker grey */
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 /* Custom Footer Placeholder Styles */
@@ -105,18 +136,138 @@ main {
     color: white;
     text-align: center;
     padding: 15px 25px;
-    margin-top: auto; /* Pushes footer to the bottom */
+    /* margin-top: auto; /* This works if main content area pushes it down */
 }
+
+/* --- MODAL STYLES --- */
+/* These styles will make your modals (#action-confirmation-dialog, #status-message-modal)
+   appear as centered overlays. */
+
+.modal {
+    display: none; /* Initially hidden. JS will change this to 'flex'. */
+    position: fixed; /* Stay in place, cover the whole screen */
+    z-index: 1000;   /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if modal content is too long */
+    background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity for backdrop */
+    
+    /* Flexbox for centering the .modal-content */
+    justify-content: center;
+    align-items: center;
+    
+    /* For transitions if using .show class */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.modal.show {
+    opacity: 1;
+    visibility: visible;
+    display: flex; /* This makes it visible AND uses flex for centering */
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    color: #333;
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+    width: 90%; 
+    max-width: 450px; 
+    text-align: left; 
+    position: relative; 
+    transform: scale(0.95); /* Initial state for animation */
+    transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: scale(1); /* Animate to full size */
+}
+
+.modal-content h3 { /* For dialog titles */
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+    color: #333;
+}
+
+.modal-content p { /* For dialog messages */
+    margin-bottom: 25px;
+    font-size: 1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end; /* Aligns buttons to the right */
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.dialog-button {
+    padding: 10px 20px;
+    font-size: 0.95em;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.dialog-button:active {
+    transform: translateY(1px);
+}
+
+.dialog-button.button-primary { /* For confirm/primary action buttons */
+    background-color: #007bff; 
+    color: white;
+}
+.dialog-button.button-primary:hover {
+    background-color: #0056b3;
+}
+
+/* For cancel buttons or secondary actions */
+#cancel-action-button, 
+#status-modal-ok-button { 
+    background-color: #6c757d; 
+    color: white;
+}
+#cancel-action-button:hover,
+#status-modal-ok-button:hover {
+    background-color: #545b62;
+}
+
+/* If OK button in status modal should be primary */
+#status-modal-ok-button.button-primary {
+    background-color: #007bff;
+}
+#status-modal-ok-button.button-primary:hover {
+    background-color: #0056b3;
+}
+
+
+/* Disabled tile style */
+.disabled-tile {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+/* --- END MODAL STYLES --- */
+
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 600px) {
     .dashboard-grid {
-        grid-template-columns: 1fr; /* Stack tiles vertically on smaller screens */
+        grid-template-columns: 1fr;
         gap: 20px;
     }
 
     .dashboard-tile {
-        aspect-ratio: auto; /* Adjust aspect ratio for single column */
+        aspect-ratio: auto;
         padding: 25px;
     }
 
@@ -126,5 +277,9 @@ main {
 
     #registration-status {
         font-size: 18px;
+    }
+
+    .modal-content { /* Ensure modal content is also responsive */
+        padding: 20px;
     }
 }

@@ -23,18 +23,22 @@
     </nav>
     <div id="overlay" class="overlay"></div>
 
-    <main id="main-content">
+    <main id="main-content" class="staff-home-main"> {# Added class for specific styling #}
         <div class="welcome-container">
-            <p id="welcome-message">Welcome, Staff Member!</p>
+            <p id="welcome-message">Welcome, Staff Member!</p> {# JS will update this #}
         </div>
 
         <div id="dashboard-grid" class="dashboard-grid">
             </div>
     </main>
-
     <footer id="custom-footer">
         <p>&copy; 2024 Staff Portal</p>
     </footer>
+
+    {# THIS IS THE SCRIPT TAG TO PASS DATA FROM FLASK #}
+    <script type="application/json" id="staff-home-initial-data">
+        {{ {"staff_name": staff_name, "navigation_links": navigation_links} | tojson | safe }}
+    </script>
 
     <script src="{{ url_for('static', filename='js/SASStaff/homeStaff.js') }}"></script>
 </body>

@@ -330,17 +330,25 @@ def sas_manager_home():
 
 @app.route('/sas-staff/home')
 def sas_staff_home():
-    # if session.get('user_type') != 'staff': abort(403) # Example authorization
-    return render_template('SASStaff/homeStaff.html')
+    # Define staff name (this would typically come from session or database)
+    staff_name_from_backend = "Jane Doe" # Example, retrieve actual name if possible
 
-@app.route('/sas-staff/edit-student')
-def sas_staff_edit_student():
-    # if session.get('user_type') != 'staff': abort(403)
-    return render_template('SASStaff/editST.html')
+    # Generate URLs for navigation items
+    navigation_links = {
+        "navigateToRegister": url_for('sas_staff_register_student'), # Route for registerST.html
+        "navigateToEdit": url_for('sas_staff_edit_student'),       # Route for editST.html
+        # Add other links here if needed, e.g.,
+        # "putStudentOnHold": url_for('sas_staff_put_on_hold_action_or_page')
+    }
+    return render_template(
+        'SASStaff/homeStaff.html',
+        staff_name=staff_name_from_backend,
+        navigation_links=navigation_links  # Pass links to the template
+    )
 
 @app.route('/sas-staff/register-student')
 def sas_staff_register_student():
-    # if session.get('user_type') != 'staff': abort(403)
+    # ... (your existing logic for fetching programs, etc.) ...
     programs_list = get_data_from_xml(
         filename='programs.xml',
         list_element_name='programs',
@@ -366,10 +374,15 @@ def sas_staff_register_student():
     return render_template(
         'SASStaff/registerST.html',
         programs=programs_list,
-        subprograms_map={}, # As per original, JS might need adaptation
+        subprograms_map={},
         all_subprogrammes=all_subprogrammes_list,
         campuses=campuses_list
     )
+
+@app.route('/sas-staff/edit-student')
+def sas_staff_edit_student():
+    # if session.get('user_type') != 'staff': abort(403) # Ensure proper authorization
+    return render_template('SASStaff/editST.html')
 
 @app.route('/super-admin/home')
 def super_admin_home():

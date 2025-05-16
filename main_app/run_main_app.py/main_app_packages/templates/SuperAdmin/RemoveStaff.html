@@ -1,32 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remove Staff/Manager</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/SAdmin/Remove.css') }}">
-</head>
-<body>
-    <header id="custom-header">
-        <h1 id="page-title">View & Remove Managers</h1>
-    </header>
+{# templates/SuperAdmin/RemoveStaff.html #}
+{% extends 'base.html' %}
 
-    <main>
-        <div class="toggle-buttons-container">
-            <button id="managers-toggle-btn" class="toggle-button selected">Managers</button>
-            <button id="staff-toggle-btn" class="toggle-button">Staff</button>
+{% block head %}
+    {{ super() }} {# Includes content from base.html's head block #}
+    <title>Remove Staff/Manager | USP Student Services</title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/SAdmin/Remove.css') }}"
+    />
+    {# If Material Icons are not in base.html, you might need them here if Remove.css or Remove.js uses them #}
+    {# <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> #}
+    <style>
+        /* Page-specific CSS tweaks, if any, beyond what's in Remove.css */
+    </style>
+{% endblock %}
+
+{# Header block is intentionally left empty as per your new pattern, assuming JS loads it #}
+{% block header %}{% endblock %}
+
+{% block body %}
+<main class="remove-staff-main"> {# Added a class for potential specific main styling #}
+    {# The original <header id="custom-header"> is removed as header is loaded by JS #}
+    {# The content of the original main tag starts here #}
+    <div class="page-title-container"> {# Added a container for the title for consistency #}
+        <h1 id="page-title">View & Remove Managers</h1> {# This was originally in the custom-header #}
+    </div>
+
+    <div class="toggle-buttons-container">
+        <button id="managers-toggle-btn" class="toggle-button selected">Managers</button>
+        <button id="staff-toggle-btn" class="toggle-button">Staff</button>
+    </div>
+
+    <div id="list-container" class="list-container">
+        </div>
+    <div id="empty-list-message" class="empty-list-message" style="display: none;">
         </div>
 
-        <div id="list-container" class="list-container">
-            </div>
-        <div id="empty-list-message" class="empty-list-message" style="display: none;">
-            </div>
-    </main>
-
-    <footer id="custom-footer">
-        <p>Custom Footer Content</p>
-    </footer>
-
+    {# The confirmation dialog is part of the main body content for this page #}
     <div id="confirmation-dialog" class="modal" style="display: none;">
         <div class="modal-content">
             <h2 id="dialog-title">Confirm Removal</h2>
@@ -37,7 +47,50 @@
             </div>
         </div>
     </div>
+</main>
+{% endblock %}
 
+{# Footer block is intentionally left empty, assuming JS loads it #}
+{% block footer %}{% endblock %}
+
+{% block scripts %}
+    {{ super() }} {# Includes scripts from base.html's scripts block, if any #}
+    <script>
+        // Asynchronously loads HTML content from a given URL into a target element.
+        async function loadHeaderAndFooter() {
+            // Assuming Header.html and footer.html are static snippets in static/partials/
+            const headerUrl = "{{ url_for('static', filename='partials/header.html') }}";
+            const footerUrl = "{{ url_for('static', filename='partials/footer.html') }}";
+
+            try {
+                const [hdrResponse, ftrResponse] = await Promise.all([
+                    fetch(headerUrl),
+                    fetch(footerUrl)
+                ]);
+
+                const headerContainer = document.getElementById('header-container');
+                const footerContainer = document.getElementById('footer-container');
+
+                if (hdrResponse.ok && headerContainer) {
+                    headerContainer.innerHTML = await hdrResponse.text();
+                } else if (headerContainer) {
+                    console.error(`Failed to load header: ${hdrResponse.status}`);
+                    headerContainer.innerHTML = '<p>Error loading header.</p>';
+                }
+
+                if (ftrResponse.ok && footerContainer) {
+                    footerContainer.innerHTML = await ftrResponse.text();
+                } else if (footerContainer) {
+                    console.error(`Failed to load footer: ${ftrResponse.status}`);
+                    footerContainer.innerHTML = '<p>Error loading footer.</p>';
+                }
+            } catch (err) {
+                console.error('Error in loadHeaderAndFooter:', err);
+                if(document.getElementById('header-container')) document.getElementById('header-container').innerHTML = '<p>Header could not be loaded.</p>';
+                if(document.getElementById('footer-container')) document.getElementById('footer-container').innerHTML = '<p>Footer could not be loaded.</p>';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', loadHeaderAndFooter);
+    </script>
     <script src="{{ url_for('static', filename='js/SAdmin/Remove.js') }}"></script>
-</body>
-</html>
+{% endblock %}

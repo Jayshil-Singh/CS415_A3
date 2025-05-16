@@ -1,108 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/SAdmin/SAdHomepage.css') }}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <div id="header-container">
-            </div>
+{# templates/SuperAdmin/SAdminHome.html #}
+{% extends 'base.html' %}
 
-        <div class="body-content">
-            <div class="dashboard-container">
-                <p class="welcome-text">Welcome, Super Admin!</p>
-                <div class="dashboard-grid">
-                    <div class="dashboard-card" 
-                         role="button" 
-                         tabindex="0" 
-                         onclick="navigateTo('remove_staff')" 
-                         onkeydown="handleKeydown(event, () => navigateTo('remove_staff'))">
+{% block head %}
+    {{ super() }} {# Includes head content from base.html #}
+    <title>Super Admin Dashboard | USP Student Services</title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/SAdmin/SAdHomepage.css') }}"
+    />
+    {# Material Icons are now expected to be fully handled by base.html #}
+    <style>
+        /* Page-specific CSS tweaks, if any */
+    </style>
+{% endblock %}
+
+{# Header and Footer are now handled by base.html using server-side includes.
+   These blocks can be empty or use {{ super() }} if base.html's blocks have default content
+   you wish to inherit alongside specific additions for this page.
+   If base.html's header/footer blocks directly include the partials,
+   then these blocks here don't strictly need {{ super() }} unless base.html
+   has other content in those blocks besides the include.
+#}
+{% block header %}
+    {{ super() }} {# This will render what's in base.html's header block (which includes partials/header.html) #}
+{% endblock %}
+
+{% block body %}
+<div class="container"> {# Ensure .container is styled appropriately in SAdHomepage.css or a global CSS #}
+    <div class="body-content"> 
+        <div class="dashboard-container">
+            <p class="welcome-text">Welcome, Super Admin!</p>
+            <div class="dashboard-grid">
+                <a href="{{ url_for('super_admin_remove_staff') }}" class="dashboard-card-link" aria-label="Remove Managers and Staffs">
+                    <div class="dashboard-card" role="link"> 
                         <i class="material-icons card-icon">person_remove</i>
                         <div class="card-title">Remove Managers and Staffs</div>
                     </div>
-                    </div>
-            </div>
+                </a>
+                </div>
         </div>
+    </div>
 
-        <div id="footer-container">
-            </div>
-
-        <div class="drawer">
-            <div class="drawer-header">
-                <i class="material-icons drawer-icon">supervisor_account</i>
-                <h2 class="drawer-title">Super Admin Menu</h2>
-            </div>
-            <div class="drawer-item" 
-                 role="button" 
-                 tabindex="0" 
-                 onclick="navigateTo('remove_staff')"
-                 onkeydown="handleKeydown(event, () => navigateTo('remove_staff'))">
+    <nav class="drawer" id="super-admin-drawer"> 
+        <div class="drawer-header">
+            <i class="material-icons drawer-icon">supervisor_account</i>
+            <h2 class="drawer-title">Super Admin Menu</h2>
+        </div>
+        <a href="{{ url_for('super_admin_remove_staff') }}" class="drawer-item-link" aria-label="Remove Managers and Staffs from menu">
+            <div class="drawer-item" role="link">  
                 <i class="material-icons drawer-item-icon">person_remove</i>
                 <span class="drawer-item-text">Remove Managers and Staffs</span>
             </div>
-            </div>
-    </div>
+        </a>
+        </nav>
+</div>
+{% endblock %}
 
-    <script>
-        // Asynchronously loads HTML content from a given URL into a target element.
-        async function loadHTML(url, targetElementId) {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const html = await response.text();
-                const targetElement = document.getElementById(targetElementId);
-                if (targetElement) {
-                    targetElement.innerHTML = html;
-                } else {
-                    console.error(`Target element with ID '${targetElementId}' not found.`);
-                }
-            } catch (error) {
-                console.error('Failed to load HTML:', error);
-                const targetElement = document.getElementById(targetElementId);
-                if (targetElement) {
-                    targetElement.innerHTML = '<p>Failed to load content.</p>';
-                }
-            }
-        }
+{% block footer %}
+    {{ super() }} {# This will render what's in base.html's footer block (which includes partials/footer.html) #}
+{% endblock %}
 
-        window.addEventListener('load', () => {
-            loadHTML("{{ url_for('static', filename='Header.html') }}", 'header-container');
-            loadHTML("{{ url_for('static', filename='footer.html') }}", 'footer-container');
-        });
-
-        // Navigation function
-        function navigateTo(action) {
-            if (action === 'remove_staff') {
-                window.location.href = "{{ url_for('super_admin_remove_staff') }}";
-            } else {
-                // Fallback for other actions if you add more cards/items
-                console.log('Action triggered:', action); 
-                alert('Action: ' + action); 
-            }
-        }
-        
-        // Generic keydown handler for custom interactive elements
-        function handleKeydown(event, actionCallback) {
-            // Check if the pressed key is Enter (key code 13) or Space (key code 32)
-            if (event.key === 'Enter' || event.key === ' ' || event.keyCode === 13 || event.keyCode === 32) {
-                event.preventDefault(); // Prevent default action (e.g., scrolling on Space)
-                if (typeof actionCallback === 'function') {
-                    actionCallback();
-                }
-            }
-        }
-
-        // If you have a generic showAlert and it's different from navigateTo:
-        // function showAlert(message) {
-        //     alert(message);
-        // }
-    </script>
+{% block scripts %}
+    {{ super() }} 
+    {# The loadHeaderAndFooter JavaScript function is REMOVED #}
+    {# Any page-specific JS for SAdminHome (e.g., drawer toggle) should be in SAdHomepage.js #}
     <script src="{{ url_for('static', filename='js/SAdmin/SAdHomepage.js') }}"></script>
-</body>
-</html>
+{% endblock %}
