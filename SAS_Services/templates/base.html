@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {# globally load Material Icons for every page #}
+    <link
+        href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+        rel="stylesheet"
+    />
+    {# Adding regular Material Icons as some of your pages use it #}
+    <link
+        href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+
+    {# Example for a common base stylesheet #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base_style.css') }}">
+
+    {% block head %}{# Page-specific head content #}{% endblock %}
+</head>
+<body>
+
+    <div id="header-container"> {# This div will be populated by the included header.html #}
+        {% block header %}
+            {% include 'partials/header.html' ignore missing %} {# Correct path to partials #}
+        {% endblock %}
+    </div>
+
+    <main class="page-content-wrapper"> {# Added a wrapper for main content #}
+        {% block body %}{% endblock %}
+    </main>
+
+    <div id="footer-container"> {# This div will be populated by the included footer.html #}
+        {% block footer %}
+            {% include 'partials/footer.html' ignore missing %} {# Correct path to partials #}
+        {% endblock %}
+    </div>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

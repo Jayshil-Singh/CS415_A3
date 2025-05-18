@@ -11,7 +11,7 @@
     <header id="custom-header">
         <button id="menu-button" class="menu-button material-icons">menu</button>
         <h1>Staff Dashboard</h1>
-    </header>
+        </header>
 
     <nav id="drawer" class="drawer">
         <div class="drawer-header">
@@ -20,10 +20,16 @@
         </div>
         <ul id="drawer-items-list" class="drawer-items-list">
             </ul>
+        <div class="drawer-logout-section">
+            <a href="{{ url_for('sas_logout') }}" class="drawer-logout-button">
+                <span class="material-icons">logout</span>
+                <span>Logout</span>
+            </a>
+        </div>
     </nav>
     <div id="overlay" class="overlay"></div>
 
-    <main id="main-content" class="staff-home-main"> {# Added class for specific styling #}
+    <main id="main-content" class="staff-home-main">
         <div class="welcome-container">
             <p id="welcome-message">Welcome, Staff Member!</p> {# JS will update this #}
         </div>

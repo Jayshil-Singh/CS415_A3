@@ -1,0 +1,100 @@
+{# templates/login.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>USP Student Services – SAS Login</title> {# Changed title slightly #}
+
+  <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/login.css') }}"
+  />
+{% endblock %}
+
+{% block header %}{% endblock %} {# Remove default header block content from base.html if any #}
+{% block footer %}{% endblock %} {# Remove default footer block content from base.html if any #}
+
+{% block body %}
+  <div class="login-container">
+    <div class="blur-background">
+      <div class="login-card">
+        <img
+          src="{{ url_for('static', filename='images/usp_logo.svg') }}"
+          alt="USP Logo"
+          class="usp-logo"
+        />
+        <h1 class="welcome-text">SAS Portal</h1> {# Updated welcome text #}
+        <p class="login-continue-text">Login to continue</p>
+
+        {# Flash messages for login errors or success #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {# Corrected form action and input field name #}
+        <form action="{{ url_for('sas_login') }}" method="post" class="login-form">
+          <div class="input-group">
+            <input
+              type="text" {# Changed from email to text #}
+              name="username_field" {# Changed from email to username_field #}
+              class="input-field"
+              placeholder="SAS ID / Username" {# Updated placeholder #}
+              required
+              aria-label="SAS ID or Username"
+            />
+          </div>
+
+          <div class="input-group password-wrapper">
+            <input
+              type="password"
+              name="password"
+              class="input-field password-field"
+              placeholder="Password"
+              id="password"
+              required
+              aria-label="Password"
+            />
+            <button
+              type="button"
+              id="togglePassword"
+              class="toggle-password"
+              aria-label="Show or hide password"
+            >
+              <span class="material-icons-outlined" id="toggleIcon">
+                visibility_off
+              </span>
+            </button>
+          </div>
+
+          <button type="submit" class="login-button">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const pwdInput = document.getElementById('password');
+      const toggleBtn = document.getElementById('togglePassword');
+      const icon = document.getElementById('toggleIcon');
+
+      if (pwdInput && toggleBtn && icon) { // Check if elements exist
+        toggleBtn.addEventListener('click', () => {
+          const isHidden = pwdInput.type === 'password';
+          // toggle the input type
+          pwdInput.type = isHidden ? 'text' : 'password';
+          // swap the icon
+          icon.textContent = isHidden ? 'visibility' : 'visibility_off';
+        });
+      }
+    });
+  </script>
+{% endblock %}
