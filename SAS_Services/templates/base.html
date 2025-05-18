@@ -3,40 +3,42 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    {# globally load Material Icons for every page #}
-    <link
-        href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
-        rel="stylesheet"
-    />
-    {# Adding regular Material Icons as some of your pages use it #}
-    <link
-        href="https://fonts.googleapis.com/icon?family=Material+Icons"
-        rel="stylesheet">
-
-    {# Example for a common base stylesheet #}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    {# Font Awesome - if used globally, otherwise link in specific page's head block #}
+    {# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> #}
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base_style.css') }}">
-
-    {% block head %}{# Page-specific head content #}{% endblock %}
+    {% block head %}{# Page-specific head content (title, page-specific CSS) #}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 
-    <div id="header-container"> {# This div will be populated by the included header.html #}
+    <div id="header-container">
         {% block header %}
-            {% include 'partials/header.html' ignore missing %} {# Correct path to partials #}
+            {% include 'partials/header.html' ignore missing %}
         {% endblock %}
     </div>
 
-    <main class="page-content-wrapper"> {# Added a wrapper for main content #}
-        {% block body %}{% endblock %}
+    {% block body_before_main %}
+        {# For elements like full-page navigation drawers #}
+    {% endblock %}
+
+    <main class="page-content-wrapper {% block main_class %}{% endblock %}">
+        {% block body %}
+            {# Main page content from child templates goes here #}
+        {% endblock %}
     </main>
 
-    <div id="footer-container"> {# This div will be populated by the included footer.html #}
+    {% block body_after_main %}
+    {% endblock %}
+
+    <div id="footer-container">
         {% block footer %}
-            {% include 'partials/footer.html' ignore missing %} {# Correct path to partials #}
+            {% include 'partials/footer.html' ignore missing %}
         {% endblock %}
     </div>
     
-    {% block scripts %}{% endblock %}
+    {% block scripts %}{# Global or page-specific scripts #}{% endblock %}
 </body>
 </html>

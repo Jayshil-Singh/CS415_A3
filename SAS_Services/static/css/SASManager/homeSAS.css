@@ -1,202 +1,210 @@
-/* static/css/SASManager/homeSAS.css */
-
-/* General Body Styles */
-body, html { /* Added html for consistency */
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e8eaf6; /* Approximate Colors.indigo[50] */
-    color: #333;
-    /* display: flex; flex-direction: column; min-height: 100vh; */
-    /* Removing flex from body/html to avoid potential conflicts with fixed modal positioning */
-    /* Ensure body can scroll if content overflows and modal is not active */
-}
-
-/* Custom Header Placeholder Styles */
-#custom-header {
-    background-color: #008080; /* headerTeal */
-    color: white;
-    padding: 15px 25px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    position: sticky; /* Make header sticky */
-    top: 0;
-    z-index: 999; /* Below modal but above other content */
-}
-
-#custom-header h1 {
-    margin: 0;
-    font-size: 1.8em;
-}
-
-/* Main Content Area */
-main {
-    /* flex-grow: 1; */ /* Not needed if body isn't flex container */
-    padding: 20px;
+.sas-manager-dashboard .container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    min-height: calc(100vh - 120px); /* Adjust based on header/footer height for full viewport feel */
-    box-sizing: border-box;
+    align-items: center; /* Center flex items (like status-container, dashboard-grid) horizontally */
+    width: 100%; /* Ensure the container takes available width from page-content-wrapper */
 }
 
-/* Registration Status Styles */
+/* Page Title Styling (if you have a specific H1 for "Registration Control") */
+.page-title-container { /* Assuming you have this div from previous HTML structures */
+    text-align: center;
+    margin-bottom: 30px; /* More space below the title */
+}
+
+.page-title-container h1 { /* If you have an h1 like "Registration Control" */
+    font-size: 1.8em; /* Adjust as needed */
+    color: #2c3e50; /* Consistent heading color */
+    font-weight: 600;
+    margin: 0;
+}
+
+
+/* Registration Status Notifier Styling */
 .status-container {
-    margin-bottom: 25px;
-    padding: 10px 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 650px; /* Or adjust to match dashboard-grid or desired width */
+    background-color: #ffffff;
+    color: #333;
+    padding: 18px 25px; /* Slightly more padding */
+    border-radius: 10px; /* Slightly more rounded */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07); /* Softer shadow */
+    margin-bottom: 30px; /* More space */
+    text-align: center;
+    border: 1px solid #e0e0e0;
 }
 
 #registration-status {
-    font-size: 20px;
-    font-weight: bold;
-    color: #3f51b5;
     margin: 0;
-    text-align: center;
+    font-size: 1.15em; /* Slightly larger */
+    font-weight: 500;
+    color: #00796b; /* Default to open/positive color, JS can change this */
+    /* Text wrapping will happen naturally due to max-width of .status-container */
+    line-height: 1.5; /* Ensure good readability if it wraps */
+}
+/* Example: Style for "Closed" status if JS adds a class */
+.status-container.closed #registration-status {
+    color: #c62828; /* Red for closed status */
+}
+.status-container.open #registration-status {
+    color: #2e7d32; /* Green for open status */
 }
 
-/* Action Message Styling (for on-page messages, if still used as fallback) */
+
+/* Action Message Styling (if used) */
 .action-message {
-    background-color: #d4edda; /* Light green for success */
-    color: #155724;
-    padding: 10px 15px;
-    border: 1px solid #c3e6cb;
+    width: 100%;
+    max-width: 650px; /* Match status container */
+    padding: 12px 20px;
+    margin-bottom: 25px;
     border-radius: 8px;
     text-align: center;
-    margin: 0 auto 20px auto;
-    max-width: 600px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    /* display: none; /* Initially hidden */
+    font-weight: 500;
+    font-size: 1em;
+    border: 1px solid transparent;
+}
+.action-message.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-color: #a5d6a7;
+}
+.action-message.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border-color: #ef9a9a;
 }
 
 
-/* Dashboard Grid Styles */
+/* Dashboard Grid (for the "Open/Close Registration" tiles) */
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px; /* Increased gap slightly */
+    display: flex;
+    justify-content: center; /* This will center the tiles if they don't fill the max-width */
+    align-items: stretch; 
+    flex-wrap: wrap; 
+    gap: 30px; /* Increased gap for better separation */
     width: 100%;
-    max-width: 700px;
+    max-width: 700px; /* Max width for the grid containing the two tiles */
+    margin-left: auto; /* Explicitly center the grid container itself */
+    margin-right: auto; /* Explicitly center the grid container itself */
+    padding: 10px 0; 
 }
 
-/* Dashboard Tile Styles */
+/* Dashboard Tile Styling */
 .dashboard-tile {
-    background-color: white;
+    background-color: #ffffff;
     border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    padding: 25px 20px; /* Adjusted padding */
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08); /* Slightly more pronounced shadow */
+    padding: 30px; /* Increased padding */
     text-align: center;
     cursor: pointer;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    border: 1px solid #e9ecef; /* Lighter border */
+    
+    width: calc(50% - 15px); /* (100% / 2 tiles) - (gap / 2) */
+    max-width: 320px; /* Max width for a single tile */
+    min-width: 250px; /* Min width to prevent too much squishing before wrapping */
+
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center; /* Ensure content inside tile is centered */
-    aspect-ratio: 1.2 / 1;
+    justify-content: center; 
+    min-height: 230px; 
+    box-sizing: border-box;
 }
 
 .dashboard-tile:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    transform: translateY(-6px) scale(1.03); /* More noticeable hover */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
-.dashboard-tile:focus { /* Accessibility: focus style */
-    outline: 2px solid #007bff; /* Example focus color */
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25); /* Optional glow */
+/* Styles for DISABLED tile state */
+.dashboard-tile.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f8f9fa; /* Lighter background when disabled */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Less shadow */
+}
+.dashboard-tile.disabled:hover {
+    transform: none; /* No hover effect when disabled */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Keep shadow minimal */
+}
+.dashboard-tile.disabled .tile-icon .fas,
+.dashboard-tile.disabled .tile-title,
+.dashboard-tile.disabled .tile-description {
+    color: #adb5bd; /* Greyed out text/icons */
 }
 
 
 .tile-icon {
-    font-size: 40px; 
-    color: #3f51b5; 
-    margin-bottom: 15px; /* Increased margin */
+    margin-bottom: 20px; /* More space */
+}
+
+.tile-icon .fas { /* Font Awesome icons */
+    font-size: 3.2em; 
+    color: #00796b; 
 }
 
 .tile-title {
-    font-size: 17px; /* Slightly larger */
-    font-weight: 600; /* Slightly bolder */
-    color: #3f51b5; 
+    font-size: 1.35em; /* Slightly larger */
+    font-weight: 600;
+    color: #343a40; /* Darker title */
     margin-top: 0;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .tile-description {
-    font-size: 13px; /* Slightly larger */
-    color: #666; /* Slightly darker grey */
+    font-size: 0.9em;
+    color: #6c757d; /* Softer grey for description */
+    line-height: 1.6;
     margin: 0;
-    line-height: 1.5;
+    flex-grow: 1; 
 }
 
-/* Custom Footer Placeholder Styles */
-#custom-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 15px 25px;
-    /* margin-top: auto; /* This works if main content area pushes it down */
-}
 
-/* --- MODAL STYLES --- */
-/* These styles will make your modals (#action-confirmation-dialog, #status-message-modal)
-   appear as centered overlays. */
-
+/* Modal Styles (Copied from previous version, ensure consistency) */
 .modal {
-    display: none; /* Initially hidden. JS will change this to 'flex'. */
-    position: fixed; /* Stay in place, cover the whole screen */
-    z-index: 1000;   /* Sit on top */
+    position: fixed;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto; /* Enable scroll if modal content is too long */
-    background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity for backdrop */
-    
-    /* Flexbox for centering the .modal-content */
+    background-color: rgba(0, 0, 0, 0.55);
+    display: none; 
     justify-content: center;
     align-items: center;
-    
-    /* For transitions if using .show class */
+    z-index: 2000;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    backdrop-filter: blur(3px);
 }
-
-.modal.show {
+.modal.active { 
     opacity: 1;
     visibility: visible;
-    display: flex; /* This makes it visible AND uses flex for centering */
     transition: opacity 0.3s ease, visibility 0s linear 0s;
 }
 
 .modal-content {
-    background-color: #ffffff;
-    color: #333;
+    background-color: white;
     padding: 25px 30px;
     border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
-    width: 90%; 
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    width: 90%;
     max-width: 450px; 
-    text-align: left; 
-    position: relative; 
-    transform: scale(0.95); /* Initial state for animation */
+    text-align: center;
+    transform: scale(0.95);
     transition: transform 0.3s ease;
 }
-
-.modal.show .modal-content {
-    transform: scale(1); /* Animate to full size */
+.modal.active .modal-content {
+    transform: scale(1);
 }
 
-.modal-content h3 { /* For dialog titles */
+.modal-content h3 { 
     margin-top: 0;
     margin-bottom: 15px;
     font-size: 1.4em;
     color: #333;
+    font-weight: 600;
 }
-
-.modal-content p { /* For dialog messages */
+.modal-content p { 
     margin-bottom: 25px;
     font-size: 1em;
     color: #555;
@@ -204,82 +212,70 @@ main {
 }
 
 .modal-actions {
+    margin-top: 20px;
     display: flex;
-    justify-content: flex-end; /* Aligns buttons to the right */
+    justify-content: flex-end; 
     gap: 10px;
-    margin-top: 10px;
 }
 
 .dialog-button {
     padding: 10px 20px;
-    font-size: 0.95em;
-    font-weight: 500;
-    border: none;
-    border-radius: 6px;
+    border: 1px solid transparent;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-.dialog-button:active {
-    transform: translateY(1px);
-}
-
-.dialog-button.button-primary { /* For confirm/primary action buttons */
-    background-color: #007bff; 
-    color: white;
-}
-.dialog-button.button-primary:hover {
-    background-color: #0056b3;
+    font-weight: 500;
+    font-size: 0.95em;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    min-width: 90px;
+    text-align: center;
 }
 
-/* For cancel buttons or secondary actions */
-#cancel-action-button, 
-#status-modal-ok-button { 
-    background-color: #6c757d; 
-    color: white;
+.dialog-button.btn-secondary,
+#cancel-action-button { 
+    background-color: #f0f0f0;
+    color: #444;
+    border-color: #ddd;
 }
-#cancel-action-button:hover,
+.dialog-button.btn-secondary:hover,
+#cancel-action-button:hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.dialog-button.button-primary, 
+.dialog-button.btn-primary,    
+#confirm-action-button,
+#status-modal-ok-button {
+    background-color: #00796b; 
+    color: white;
+    border-color: #00695c;
+}
+.dialog-button.button-primary:hover,
+.dialog-button.btn-primary:hover,
+#confirm-action-button:hover,
 #status-modal-ok-button:hover {
-    background-color: #545b62;
-}
-
-/* If OK button in status modal should be primary */
-#status-modal-ok-button.button-primary {
-    background-color: #007bff;
-}
-#status-modal-ok-button.button-primary:hover {
-    background-color: #0056b3;
+    background-color: #00695c; 
+    border-color: #005a4f;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 
-/* Disabled tile style */
-.disabled-tile {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-/* --- END MODAL STYLES --- */
-
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 600px) {
+/* Responsive adjustments for tiles */
+@media (max-width: 650px) { /* Breakpoint when tiles might become too squished */
     .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        flex-direction: column; 
+        align-items: center; 
+        max-width: 350px; /* Adjust width for a single column of tiles */
+        gap: 20px; /* Adjust gap for vertical stacking */
     }
-
     .dashboard-tile {
-        aspect-ratio: auto;
-        padding: 25px;
+        flex-basis: auto; 
+        width: 100%; /* Make tiles full width of the new dashboard-grid max-width */
+        min-height: 200px; /* Adjust min height for stacked view */
+        max-width: 100%; /* Allow it to take full width of its parent grid */
     }
-
-    #custom-header h1 {
-        font-size: 1.5em;
-    }
-
-    #registration-status {
-        font-size: 18px;
-    }
-
-    .modal-content { /* Ensure modal content is also responsive */
-        padding: 20px;
+    .status-container, .action-message {
+        max-width: 350px; /* Match the stacked dashboard grid width */
     }
 }

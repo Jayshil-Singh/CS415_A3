@@ -1,26 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/homeStaff.css') }}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<body>
-    <header id="custom-header">
-        <button id="menu-button" class="menu-button material-icons">menu</button>
-        <h1>Staff Dashboard</h1>
-        </header>
+{# templates/SASStaff/homeStaff.html #}
+{% extends 'base.html' %}
 
+{% block head %}
+    {{ super() }}
+    <title>SAS Staff Dashboard | SAS Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/homeStaff.css') }}">
+    {# Material Icons are loaded by base.html or partials/header.html #}
+{% endblock %}
+
+{% block header %}
+    {{ super() }} {# This renders the shared header. The #menu-button for the drawer is part of this. #}
+{% endblock %}
+
+{% block body_before_main %}
+    {# Staff-specific navigation drawer and its overlay #}
     <nav id="drawer" class="drawer">
         <div class="drawer-header">
             <span class="material-icons drawer-header-icon">admin_panel_settings</span>
             <h2 class="drawer-header-title">SAS Staff Menu</h2>
         </div>
         <ul id="drawer-items-list" class="drawer-items-list">
-            </ul>
+            {# Items will be populated by homeStaff.js #}
+        </ul>
         <div class="drawer-logout-section">
+            {# This logout is specific to the drawer. The main header also has a logout in user-menu. #}
+            {# You might want to decide if two logout buttons are needed or if one (in shared header) is enough. #}
             <a href="{{ url_for('sas_logout') }}" class="drawer-logout-button">
                 <span class="material-icons">logout</span>
                 <span>Logout</span>
@@ -28,24 +32,34 @@
         </div>
     </nav>
     <div id="overlay" class="overlay"></div>
+{% endblock %}
 
-    <main id="main-content" class="staff-home-main">
+{% block body %}
+    {# This content goes INSIDE the <main class="page-content-wrapper"> from base.html #}
+    {# The class "staff-home-main" is applied to the <main> tag itself by base.html via {% block main_class %} #}
+    {# We'll add a specific content wrapper here if needed, or directly use .container #}
+    <div class="container"> {# .container for consistent padding/max-width from base_style.css #}
         <div class="welcome-container">
             <p id="welcome-message">Welcome, Staff Member!</p> {# JS will update this #}
         </div>
 
         <div id="dashboard-grid" class="dashboard-grid">
-            </div>
-    </main>
-    <footer id="custom-footer">
-        <p>&copy; 2024 Staff Portal</p>
-    </footer>
+            {# Dashboard cards will be populated by homeStaff.js #}
+        </div>
+    </div>
+{% endblock %}
 
-    {# THIS IS THE SCRIPT TAG TO PASS DATA FROM FLASK #}
+{% block main_class %}staff-home-main{% endblock %} {# Add specific class to the <main> tag in base.html #}
+
+{% block footer %}
+    {{ super() }} {# This renders the shared footer #}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {# This script tag passes data from Flask to homeStaff.js #}
     <script type="application/json" id="staff-home-initial-data">
         {{ {"staff_name": staff_name, "navigation_links": navigation_links} | tojson | safe }}
     </script>
-
     <script src="{{ url_for('static', filename='js/SASStaff/homeStaff.js') }}"></script>
-</body>
-</html>
+{% endblock %}

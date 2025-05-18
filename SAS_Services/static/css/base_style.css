@@ -1,0 +1,89 @@
+/* static/css/base_style.css */
+
+html {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e8eaf6; /* Main background for areas outside constrained content */
+    color: #333;
+    display: flex;
+    flex-direction: column; /* Stack header, main, footer vertically */
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Header Container: Takes full width. Background is applied by .header in header_style.css */
+#header-container {
+    width: 100%;
+    /* position: sticky, top, z-index are handled by .header itself if it needs to be sticky */
+}
+
+/* Main Content Wrapper: Constrains width and centers content, allows vertical growth */
+.page-content-wrapper {
+    width: 100%; /* Takes full width initially */
+    max-width: 1200px; /* Adjust this to your preferred max content width */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 25px 20px; /* Padding for the content inside main */
+    flex-grow: 1; /* Allows main content to expand and push footer down */
+    box-sizing: border-box; /* Ensures padding doesn't add to max-width */
+}
+/* Special class for error pages if they need different main content styling */
+body.error-page-active .page-content-wrapper {
+    max-width: none;
+    padding: 0; /* Error page CSS will handle its own padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Footer Container: Takes full width. Background is applied by .custom-footer in footer_style.css */
+#footer-container {
+    width: 100%;
+}
+
+/* General Purpose Container (Optional, for use inside .page-content-wrapper) */
+.container {
+    width: 100%;
+    /* If you want .container to also have a max-width (often same as .page-content-wrapper or slightly less) */
+    /* max-width: 1140px; */
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    padding-left: 15px; /* Standard padding */
+    padding-right: 15px;
+}
+
+/* Basic Typography & Links */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.85rem; /* Slightly adjusted */
+    font-weight: 600;
+    color: #2c3e50;
+}
+p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+.material-icons,
+.material-icons-outlined {
+    vertical-align: middle;
+    line-height: 1;
+}

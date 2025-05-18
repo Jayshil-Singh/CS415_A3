@@ -1,0 +1,48 @@
+{# templates/errors/generic_http_error.html #}
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>Error {% if error and error.code %}{{ error.code }}{% endif %} | SAS Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/error_pages.css') }}">
+{% endblock %}
+
+{% block body_class %}error-page-active{% endblock %}
+{% block header %}{% endblock %} {# Hide default header #}
+
+{% block body %}
+<div class="error-page-container error-generic">
+    <div class="error-content">
+        <div class="error-character-container">
+            {# Generic error image/animation #}
+            <img src="{{ url_for('static', filename='images/generic_error.gif') }}" alt="Generic Error Animation" class="error-character" id="error-animation-generic">
+            {# Placeholder:
+            <span class="material-icons-outlined error-icon" style="font-size: 60px; color: #757575;">error_outline</span>
+            #}
+        </div>
+        <h1 class="error-title">
+            An Error Occurred 
+            {% if error and error.code %}({{ error.code }}){% endif %}
+        </h1>
+        <p class="error-message">
+            {% if error and error.description %}
+                {{ error.description }}
+            {% else %}
+                We're not quite sure what went wrong, but something definitely did.
+            {% endif %}
+        </p>
+        <p class="error-suggestion">Please try again or return to the homepage. If the problem persists, our apologies!</p>
+        <div class="error-actions">
+            <a href="{{ url_for('sas_login') }}" class="btn btn-primary">Go to Homepage</a>
+        </div>
+        {% if config.DEBUG and error %}
+            <div class="error-details">
+                <strong>Error Details (Development Mode):</strong>
+                <pre>{{ error }}</pre>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %} {# Hide default footer #}

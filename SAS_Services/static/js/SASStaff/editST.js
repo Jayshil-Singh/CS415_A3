@@ -1,4 +1,7 @@
+// static/js/SASStaff/editST.js
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("editST.js: DOMContentLoaded");
+
     // DOM Elements
     const loadingIndicator = document.getElementById('loading-indicator');
     const noStudentsMessage = document.getElementById('no-students-message');
@@ -6,9 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const studentsTableBody = document.getElementById('students-table-body');
 
     // Delete Confirmation Dialog Elements
-    const confirmationDialog = document.getElementById('confirmation-dialog');
-    const dialogTitle = document.getElementById('dialog-title');
-    const dialogMessage = document.getElementById('dialog-message');
+    const deleteConfirmationDialog = document.getElementById('delete-confirmation-dialog'); // Corrected ID from your HTML
+    // const dialogTitle = document.getElementById('dialog-title'); // This ID is generic, ensure it's the correct one for delete
+    const deleteDialogTitle = document.getElementById('delete-dialog-title'); // Specific ID from your HTML
+    const deleteDialogMessage = document.getElementById('delete-dialog-message'); // Specific ID
     const cancelDeleteButton = document.getElementById('cancel-delete-button');
     const confirmDeleteButton = document.getElementById('confirm-delete-button');
     
@@ -16,8 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const editStudentModal = document.getElementById('edit-student-modal');
     const editStudentForm = document.getElementById('edit-student-form');
     const cancelEditButton = document.getElementById('cancel-edit-button');
-    const saveChangesButton = document.getElementById('save-changes-button'); // Get reference to the save button
-    // Edit form fields
+    const saveChangesButton = document.getElementById('save-changes-button');
+    
+    // Edit form fields (ensure all these IDs exist in your edit modal form)
     const editStudentIdInput = document.getElementById('edit-student-id');
     const editFirstNameInput = document.getElementById('edit-first-name');
     const editMiddleNameInput = document.getElementById('edit-middle-name');
@@ -32,172 +37,222 @@ document.addEventListener('DOMContentLoaded', () => {
     const editStudentLevelInput = document.getElementById('edit-student-level');
     const editCampusInput = document.getElementById('edit-campus');
 
-    // --- NEW: Confirm Save Changes Modal Elements ---
+    // Confirm Save Changes Modal Elements
     const confirmSaveDialog = document.getElementById('confirm-save-dialog');
     const cancelSaveConfirmationButton = document.getElementById('cancel-save-confirmation-button');
     const confirmSaveFinalButton = document.getElementById('confirm-save-final-button');
 
     const snackbar = document.getElementById('snackbar');
 
-    // Early exits if critical elements are missing
-    if (!confirmationDialog || !dialogMessage || !cancelDeleteButton || !confirmDeleteButton) {
-        console.error("Delete confirmation dialog elements not found.");
+    // Check critical elements
+    if (!loadingIndicator || !noStudentsMessage || !studentTableContainer || !studentsTableBody) {
+        console.error("JS FATAL: Core page structure elements (loading, table container, etc.) are missing!");
+        if(loadingIndicator) loadingIndicator.innerHTML = "<p>Error: Page structure incomplete. Cannot load student data.</p>";
+        return; // Stop further execution if these are missing
     }
-    if (!editStudentModal || !editStudentForm || !cancelEditButton || !saveChangesButton) {
-        console.error("Edit student modal elements not found.");
-    }
-    if (!confirmSaveDialog || !cancelSaveConfirmationButton || !confirmSaveFinalButton) {
-        console.error("Save changes confirmation dialog elements not found.");
-    }
-    if (!snackbar) {
-        console.warn("Snackbar element not found.");
-    }
+    console.log("JS: Core page structure elements found.");
+
 
     let studentIdToDelete = null;
     let studentNameToDelete = ""; 
     let currentEditingStudent = null; 
-    let currentEditFormData = null; // To store validated form data before final save confirmation
+    let currentEditFormData = null;
 
-    // --- ViewModel Simulation ---
+    // --- ViewModel ---
     const viewModel = {
-        students: [],
+        students: [], // Will be populated by fetchStudents
         isLoading: true,
-        fetchStudents: async function() { /* ... (same as before) ... */ 
+
+        fetchStudents: async function() {
+            console.log("JS: viewModel.fetchStudents - Starting to fetch (mock)...");
             this.isLoading = true;
-            updateUIStates();
+            updateUIStates(); // Show loader, hide table/message
+            
             return new Promise((resolve) => {
                 setTimeout(() => {
+                    // Mock data (this will replace any HTML dummy data if renderStudentTable clears the tbody)
                     this.students = [
-                        { id: 'S1001', firstName: 'John', middleName: 'A.', lastName: 'Doe', address: '123 Main St, Suva', contact: '679-1234567', dateOfBirth: '1998-05-15', gender: 'Male', citizenship: 'Fijian', subprogram: 'Software Eng.', program: 'BSc IT', studentLevel: 'Year 2', campus: 'Laucala Campus' },
-                        { id: 'S1002', firstName: 'Jane', middleName: '', lastName: 'Smith', address: '456 Market Rd, Nadi', contact: '679-9876543', dateOfBirth: '1999-02-20', gender: 'Female', citizenship: 'Fijian', subprogram: 'Networking', program: 'BSc IT', studentLevel: 'Year 3', campus: 'Lautoka Campus' },
-                        { id: 'S1003', firstName: 'Peter', middleName: 'K.', lastName: 'Jones', address: '789 Queen St, Labasa', contact: '679-1122334', dateOfBirth: '2000-11-30', gender: 'Male', citizenship: 'Fijian', subprogram: 'Management', program: 'Dip Business', studentLevel: 'Year 1', campus: 'Labasa Campus' },
+                        { id: 'S1001', firstName: 'John (JS)', middleName: 'A.', lastName: 'Doe', address: '123 Main St, Suva', contact: '679-1234567', dateOfBirth: '1998-05-15', gender: 'Male', citizenship: 'Fijian', subprogram: 'Software Eng.', program: 'BSc IT', studentLevel: 'Year 2', campus: 'Laucala Campus' },
+                        { id: 'S1002', firstName: 'Jane (JS)', middleName: '', lastName: 'Smith', address: '456 Market Rd, Nadi', contact: '679-9876543', dateOfBirth: '1999-02-20', gender: 'Female', citizenship: 'Fijian', subprogram: 'Networking', program: 'BSc IT', studentLevel: 'Year 3', campus: 'Lautoka Campus' },
+                        { id: 'S1003', firstName: 'Peter (JS)', middleName: 'K.', lastName: 'Jones', address: '789 Queen St, Labasa', contact: '679-1122334', dateOfBirth: '2000-11-30', gender: 'Male', citizenship: 'Fijian', subprogram: 'Management', program: 'Dip Business', studentLevel: 'Year 1', campus: 'Labasa Campus' },
                     ];
                     this.isLoading = false;
-                    resolve();
-                }, 1500);
+                    console.log("JS: viewModel.fetchStudents - Mock data fetched:", this.students);
+                    resolve(); // Resolve after updating students
+                }, 1500); // Simulate network delay
             });
         },
-        deleteStudent: async function(studentId) { /* ... (same as before) ... */ 
-            console.log(`Attempting to delete student with ID: ${studentId}`);
+
+        deleteStudent: async function(studentId) { 
+            console.log(`JS: viewModel.deleteStudent - Attempting to delete student ID: ${studentId}`);
+            // In a real app, this would be an API call to the backend.
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     const initialLength = this.students.length;
                     this.students = this.students.filter(student => student.id !== studentId);
                     if (this.students.length < initialLength) {
-                        resolve("Student deleted successfully (simulated)");
+                        console.log("JS: viewModel.deleteStudent - Success (mock).");
+                        resolve("Student deleted successfully (simulated).");
                     } else {
+                        console.warn("JS: viewModel.deleteStudent - Failure, student not found (mock).");
                         reject("Student not found or could not be deleted (simulated).");
                     }
-                }, 1000);
+                }, 800);
             });
         },
-        updateStudent: async function(studentId, updatedData) { /* ... (same as before) ... */ 
-            console.log(`Attempting to update student ID: ${studentId} with data:`, updatedData);
+
+        updateStudent: async function(studentId, updatedData) { 
+            console.log(`JS: viewModel.updateStudent - Attempting to update student ID: ${studentId} with data:`, updatedData);
+            // In a real app, this would be an API call.
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     const studentIndex = this.students.findIndex(s => s.id === studentId);
                     if (studentIndex !== -1) {
                         this.students[studentIndex] = { ...this.students[studentIndex], ...updatedData, id: studentId }; 
-                        resolve("Student updated successfully (simulated)");
+                        console.log("JS: viewModel.updateStudent - Success (mock). Student data:", this.students[studentIndex]);
+                        resolve("Student updated successfully (simulated).");
                     } else {
+                        console.warn("JS: viewModel.updateStudent - Failure, student not found (mock).");
                         reject("Student not found for update (simulated).");
                     }
-                }, 1000);
+                }, 800);
             });
         }
     };
 
     // --- UI Update Functions ---
-    function updateUIStates() { /* ... (same as before) ... */ 
+    function updateUIStates() {
+        console.log("JS: updateUIStates called. isLoading:", viewModel.isLoading, "students.length:", viewModel.students.length);
         if (loadingIndicator) loadingIndicator.style.display = viewModel.isLoading ? 'block' : 'none';
+        
         if (!viewModel.isLoading) {
-            if (noStudentsMessage) noStudentsMessage.style.display = viewModel.students.length === 0 ? 'block' : 'none';
-            if (studentTableContainer) studentTableContainer.style.display = viewModel.students.length > 0 ? 'block' : 'none';
-        } else {
-            if (noStudentsMessage) noStudentsMessage.style.display = 'none';
+            if (viewModel.students.length > 0) {
+                if (studentTableContainer) studentTableContainer.style.display = 'block'; // Or 'flex' if CSS expects it
+                if (noStudentsMessage) noStudentsMessage.style.display = 'none';
+                console.log("JS: Showing student table.");
+            } else {
+                if (studentTableContainer) studentTableContainer.style.display = 'none';
+                if (noStudentsMessage) noStudentsMessage.style.display = 'block';
+                console.log("JS: Showing 'no students' message.");
+            }
+        } else { // Still loading
             if (studentTableContainer) studentTableContainer.style.display = 'none';
+            if (noStudentsMessage) noStudentsMessage.style.display = 'none';
+            console.log("JS: Still loading, table and 'no students' message hidden.");
         }
     }
-    function renderStudentTable() { /* ... (same as before, calls showEditModal) ... */ 
+
+    function renderStudentTable() {
+        console.log("JS: renderStudentTable called.");
         if (!studentsTableBody) {
-            console.error("studentsTableBody element not found. Cannot render table.");
+            console.error("JS ERROR: studentsTableBody element not found. Cannot render table.");
             return;
         }
-        studentsTableBody.innerHTML = ''; 
+        studentsTableBody.innerHTML = ''; // Clear previous content (including HTML dummy data)
 
-        if (viewModel.students.length === 0 && !viewModel.isLoading) {
-            updateUIStates(); 
+        if (viewModel.students.length === 0) {
+            console.log("JS: No students to render in table.");
+            updateUIStates(); // Ensure correct message (no students or loader) is shown
             return;
         }
 
         viewModel.students.forEach(student => {
             const row = studentsTableBody.insertRow();
-            row.insertCell().textContent = student.id || '';
-            row.insertCell().textContent = student.firstName || '';
-            row.insertCell().textContent = student.middleName || '';
-            row.insertCell().textContent = student.lastName || '';
-            row.insertCell().textContent = student.address || '';
-            row.insertCell().textContent = student.contact || '';
-            row.insertCell().textContent = student.dateOfBirth || '';
-            row.insertCell().textContent = student.gender || '';
-            row.insertCell().textContent = student.citizenship || '';
-            row.insertCell().textContent = student.subprogram || '';
-            row.insertCell().textContent = student.program || '';
-            row.insertCell().textContent = student.studentLevel || '';
-            row.insertCell().textContent = student.campus || '';
+            // Safely access properties with fallbacks
+            row.insertCell().textContent = student.id || 'N/A';
+            row.insertCell().textContent = student.firstName || 'N/A';
+            row.insertCell().textContent = student.middleName || ''; // Middle name can be empty
+            row.insertCell().textContent = student.lastName || 'N/A';
+            row.insertCell().textContent = student.address || 'N/A';
+            row.insertCell().textContent = student.contact || 'N/A';
+            row.insertCell().textContent = student.dateOfBirth || 'N/A';
+            row.insertCell().textContent = student.gender || 'N/A';
+            row.insertCell().textContent = student.citizenship || 'N/A';
+            row.insertCell().textContent = student.subprogram || 'N/A';
+            row.insertCell().textContent = student.program || 'N/A';
+            row.insertCell().textContent = student.studentLevel || 'N/A';
+            row.insertCell().textContent = student.campus || 'N/A';
 
             const actionsCell = row.insertCell();
             
             const editButton = document.createElement('button');
             editButton.innerHTML = '<span class="material-icons">edit</span>';
-            editButton.classList.add('action-button', 'edit');
-            editButton.title = "Edit Student";
-            editButton.onclick = () => {
-                showEditModal(student);
-            };
+            editButton.classList.add('action-button', 'edit-btn'); // Matched class from your HTML dummy data
+            editButton.title = `Edit ${student.firstName} ${student.lastName}`;
+            editButton.setAttribute('data-id', student.id);
+            editButton.setAttribute('aria-label', `Edit ${student.firstName} ${student.lastName}`);
+            editButton.onclick = () => showEditModal(student);
             actionsCell.appendChild(editButton);
 
             const deleteButton = document.createElement('button');
             deleteButton.innerHTML = '<span class="material-icons">delete</span>';
-            deleteButton.classList.add('action-button', 'delete');
-            deleteButton.title = "Delete Student";
-            deleteButton.onclick = () => {
-                showDeleteConfirmationDialog(student.id, `${student.firstName || ''} ${student.lastName || ''}`.trim());
-            };
+            deleteButton.classList.add('action-button', 'delete-btn'); // Matched class from your HTML dummy data
+            deleteButton.title = `Delete ${student.firstName} ${student.lastName}`;
+            deleteButton.setAttribute('data-id', student.id);
+            deleteButton.setAttribute('aria-label', `Delete ${student.firstName} ${student.lastName}`);
+            deleteButton.onclick = () => showDeleteConfirmationDialog(student.id, `${student.firstName || ''} ${student.lastName || ''}`.trim());
             actionsCell.appendChild(deleteButton);
         });
-        updateUIStates();
+        updateUIStates(); // Ensure table container is visible
+        console.log("JS: Student table rendered with data.");
     }
-    function showSnackbar(message) { /* ... (same as before) ... */ 
-        if (!snackbar) return;
+    
+    function showSnackbar(message, isSuccess = true) {
+        if (!snackbar) {
+            console.warn("JS WARN: Snackbar element not found. Using alert fallback.");
+            alert(message);
+            return;
+        }
         snackbar.textContent = message;
-        snackbar.classList.add('show');
+        snackbar.className = 'snackbar'; // Reset classes
+        snackbar.classList.add(isSuccess ? 'success' : 'error'); // Optional: for styling
+        snackbar.classList.add('show'); // Trigger CSS animation
         setTimeout(() => {
             snackbar.classList.remove('show');
         }, 3000);
     }
 
-    // --- Delete Confirmation Dialog Logic ---
-    function showDeleteConfirmationDialog(studentId, studentName) { /* ... (same as before) ... */ 
-        if (!confirmationDialog || !dialogMessage) return;
+    // --- Modal Control & Logic ---
+    function showModal(modalElement) {
+        if (!modalElement) return;
+        modalElement.style.display = 'flex';
+        setTimeout(() => modalElement.classList.add('active'), 10); // Use 'active' for CSS transitions
+    }
+
+    function hideModal(modalElement) {
+        if (!modalElement) return;
+        modalElement.classList.remove('active');
+        setTimeout(() => {
+            if (!modalElement.classList.contains('active')) {
+                modalElement.style.display = 'none';
+            }
+        }, 300); // Match CSS transition duration
+    }
+
+    // Delete Confirmation Dialog
+    function showDeleteConfirmationDialog(studentId, studentName) {
+        if (!deleteConfirmationDialog || !deleteDialogMessage || !deleteDialogTitle) {
+            console.error("JS Error: Delete confirmation dialog elements missing.");
+            return;
+        }
         studentIdToDelete = studentId;
         studentNameToDelete = studentName || "this student";
-        dialogMessage.textContent = `Are you sure you want to delete ${studentNameToDelete} (ID: ${studentIdToDelete})?`;
-        if (dialogTitle) dialogTitle.textContent = "Confirm Deletion";
-        confirmationDialog.style.display = 'flex';
-        confirmationDialog.classList.add('show');
+        deleteDialogMessage.textContent = `Are you sure you want to delete ${studentNameToDelete} (ID: ${studentIdToDelete})?`;
+        deleteDialogTitle.textContent = "Confirm Deletion"; // Set title if it's generic
+        showModal(deleteConfirmationDialog);
     }
-    function hideDeleteConfirmationDialog() { /* ... (same as before) ... */ 
-        if (!confirmationDialog) return;
-        confirmationDialog.style.display = 'none';
-        confirmationDialog.classList.remove('show');
+    function hideDeleteConfirmationDialog() {
+        hideModal(deleteConfirmationDialog);
         studentIdToDelete = null;
         studentNameToDelete = "";
     }
 
-    // --- Edit Student Modal Logic ---
-    function showEditModal(student) { /* ... (same as before) ... */ 
-        if (!editStudentModal || !editStudentForm) return;
+    // Edit Student Modal
+    function showEditModal(student) {
+        if (!editStudentModal || !editStudentForm) {
+            console.error("JS Error: Edit student modal or form not found.");
+            return;
+        }
         currentEditingStudent = student; 
 
         if(editStudentIdInput) editStudentIdInput.value = student.id || '';
@@ -216,19 +271,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         editStudentForm.querySelectorAll('.validation-error').forEach(el => el.textContent = '');
         editStudentForm.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
-
-        editStudentModal.style.display = 'flex';
-        editStudentModal.classList.add('show');
+        showModal(editStudentModal);
     }
-    function hideEditModal() { /* ... (same as before) ... */ 
+    function hideEditModal() {
         if (!editStudentModal) return;
-        editStudentModal.style.display = 'none';
-        editStudentModal.classList.remove('show');
+        hideModal(editStudentModal);
         if (editStudentForm) editStudentForm.reset(); 
         currentEditingStudent = null;
-        currentEditFormData = null; // Clear pending form data
+        currentEditFormData = null;
     }
-    function validateEditFormField(inputElement) { /* ... (same as before) ... */ 
+
+    function validateEditFormField(inputElement) { 
         if (!inputElement) return true;
         const errorElement = inputElement.closest('.form-group')?.querySelector('.validation-error');
         let isValid = true;
@@ -237,11 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
             isValid = false;
             errorMessage = "This field is required.";
         }
+        // Add more specific validations here if needed (e.g., for email, phone format)
         if (errorElement) errorElement.textContent = errorMessage;
         inputElement.classList.toggle('invalid', !isValid);
         return isValid;
     }
-    function validateEditForm() { /* ... (same as before) ... */ 
+    function validateEditForm() { 
         let isFormValid = true;
         if(editStudentForm){
             editStudentForm.querySelectorAll('input[required], select[required]').forEach(input => {
@@ -249,33 +303,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     isFormValid = false;
                 }
             });
+        } else {
+            isFormValid = false; // Form not found
         }
         return isFormValid;
     }
 
-    // --- NEW: Confirm Save Changes Dialog Logic ---
+    // Confirm Save Changes Dialog
     function showConfirmSaveChangesDialog(formData) {
         if (!confirmSaveDialog) {
-            console.error("Confirm save dialog element not found.");
-            // Fallback to direct save if dialog is missing, or handle error appropriately
+            console.error("JS Error: Confirm save dialog element not found. Saving directly (mock).");
             processSaveChanges(formData); 
             return;
         }
-        currentEditFormData = formData; // Store the data that passed edit form validation
-        confirmSaveDialog.style.display = 'flex';
-        confirmSaveDialog.classList.add('show');
+        currentEditFormData = formData; 
+        showModal(confirmSaveDialog);
     }
 
     function hideConfirmSaveChangesDialog() {
         if (!confirmSaveDialog) return;
-        confirmSaveDialog.style.display = 'none';
-        confirmSaveDialog.classList.remove('show');
-        // Don't clear currentEditFormData here, it's needed if user confirms. Clear it after processing or if edit is cancelled.
+        hideModal(confirmSaveDialog);
     }
 
     async function processSaveChanges(formData) {
         if (!currentEditingStudent || !currentEditingStudent.id || !formData) {
-            showSnackbar("Error: No student or data to save.", false);
+            showSnackbar("Error: No student data to save.", false);
             return;
         }
 
@@ -286,14 +338,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const message = await viewModel.updateStudent(currentEditingStudent.id, formData);
-            showSnackbar(message);
-            hideEditModal(); // Hide the main edit modal after successful save
-            renderStudentTable();
+            showSnackbar(message, true);
+            hideEditModal(); 
+            renderStudentTable(); // Re-render table with updated data
         } catch (error) {
             showSnackbar(String(error) || "Error updating student.", false);
             console.error("Update error:", error);
         } finally {
-            currentEditFormData = null; // Clear the stored form data
+            currentEditFormData = null; 
             if(saveChangesButton) {
                 saveChangesButton.disabled = false;
                 saveChangesButton.textContent = 'Save Changes';
@@ -301,105 +353,127 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Event Listeners ---
-    // Delete confirmation
-    if (cancelDeleteButton) { cancelDeleteButton.addEventListener('click', hideDeleteConfirmationDialog); }
-    if (confirmDeleteButton) { /* ... (same as before, calls hideDeleteConfirmationDialog) ... */ 
-        confirmDeleteButton.addEventListener('click', async () => {
-            if (studentIdToDelete) {
-                confirmDeleteButton.disabled = true;
-                confirmDeleteButton.textContent = 'Deleting...';
-                try {
-                    const message = await viewModel.deleteStudent(studentIdToDelete);
-                    showSnackbar(message);
-                    renderStudentTable(); 
-                } catch (error) {
-                    showSnackbar(String(error) || "Error deleting student.");
-                    console.error("Deletion error:", error);
-                } finally {
-                    hideDeleteConfirmationDialog();
-                    confirmDeleteButton.disabled = false;
-                    confirmDeleteButton.textContent = 'Delete';
+    // --- Event Listeners Setup ---
+    function setupEventListeners() {
+        console.log("JS: Setting up event listeners...");
+        // Delete confirmation
+        if (cancelDeleteButton) cancelDeleteButton.addEventListener('click', hideDeleteConfirmationDialog);
+        if (confirmDeleteButton) {
+            confirmDeleteButton.addEventListener('click', async () => {
+                if (studentIdToDelete) {
+                    confirmDeleteButton.disabled = true;
+                    confirmDeleteButton.textContent = 'Deleting...';
+                    try {
+                        const message = await viewModel.deleteStudent(studentIdToDelete);
+                        showSnackbar(message, true);
+                        renderStudentTable(); 
+                    } catch (error) {
+                        showSnackbar(String(error) || "Error deleting student.", false);
+                    } finally {
+                        hideDeleteConfirmationDialog();
+                        confirmDeleteButton.disabled = false;
+                        confirmDeleteButton.textContent = 'Delete';
+                    }
                 }
-            }
-        });
-    }
-    if (confirmationDialog) { confirmationDialog.addEventListener('click', (event) => { if (event.target === confirmationDialog) hideDeleteConfirmationDialog(); }); }
+            });
+        }
+        if (deleteConfirmationDialog) { 
+            deleteConfirmationDialog.addEventListener('click', (event) => { 
+                if (event.target === deleteConfirmationDialog) hideDeleteConfirmationDialog(); 
+            }); 
+        }
 
-    // Edit Modal
-    if (cancelEditButton) { cancelEditButton.addEventListener('click', hideEditModal); }
-    if (editStudentForm) {
-        editStudentForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            if (!currentEditingStudent) return;
+        // Edit Modal
+        if (cancelEditButton) cancelEditButton.addEventListener('click', hideEditModal);
+        if (editStudentForm) {
+            editStudentForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                console.log("JS: Edit form submitted.");
+                if (!currentEditingStudent) {
+                    console.error("JS Error: currentEditingStudent is not set.");
+                    return;
+                }
+                if (validateEditForm()) {
+                    console.log("JS: Edit form is valid.");
+                    const updatedDataFromForm = {
+                        firstName: editFirstNameInput?.value,
+                        middleName: editMiddleNameInput?.value,
+                        lastName: editLastNameInput?.value,
+                        address: editAddressInput?.value,
+                        contact: editContactInput?.value,
+                        dateOfBirth: editDobInput?.value,
+                        gender: editGenderSelect?.value,
+                        citizenship: editCitizenshipInput?.value,
+                        program: editProgramInput?.value,
+                        subprogram: editSubprogramInput?.value,
+                        studentLevel: editStudentLevelInput?.value,
+                        campus: editCampusInput?.value,
+                    };
+                    showConfirmSaveChangesDialog(updatedDataFromForm);
+                } else {
+                    console.warn("JS: Edit form validation failed.");
+                    showSnackbar("Please correct the errors in the form.", false);
+                }
+            });
+        }
+        if (editStudentModal) { 
+            editStudentModal.addEventListener('click', (event) => { 
+                if (event.target === editStudentModal) hideEditModal(); 
+            }); 
+        }
 
-            if (validateEditForm()) {
-                const updatedDataFromForm = {
-                    firstName: editFirstNameInput?.value,
-                    middleName: editMiddleNameInput?.value,
-                    lastName: editLastNameInput?.value,
-                    address: editAddressInput?.value,
-                    contact: editContactInput?.value,
-                    dateOfBirth: editDobInput?.value,
-                    gender: editGenderSelect?.value,
-                    citizenship: editCitizenshipInput?.value,
-                    program: editProgramInput?.value,
-                    subprogram: editSubprogramInput?.value,
-                    studentLevel: editStudentLevelInput?.value,
-                    campus: editCampusInput?.value,
-                };
-                // Instead of direct save, show the confirm save dialog
-                showConfirmSaveChangesDialog(updatedDataFromForm);
-            } else {
-                showSnackbar("Please correct the errors in the edit form.", false);
-            }
-        });
-    }
-    if (editStudentModal) { editStudentModal.addEventListener('click', (event) => { if (event.target === editStudentModal) hideEditModal(); }); }
-
-    // --- NEW: Event Listeners for Confirm Save Changes Modal ---
-    if (cancelSaveConfirmationButton) {
-        cancelSaveConfirmationButton.addEventListener('click', () => {
-            hideConfirmSaveChangesDialog();
-            // User wants to review, edit modal should still be open.
-            // Re-enable save changes button in edit modal if it was disabled
-            if (saveChangesButton) {
-                saveChangesButton.disabled = false;
-                saveChangesButton.textContent = 'Save Changes';
-            }
-        });
-    }
-
-    if (confirmSaveFinalButton) {
-        confirmSaveFinalButton.addEventListener('click', () => {
-            hideConfirmSaveChangesDialog();
-            if (currentEditFormData) { // If there's data pending confirmation
-                processSaveChanges(currentEditFormData);
-            }
-        });
-    }
-
-    if (confirmSaveDialog) {
-        confirmSaveDialog.addEventListener('click', (event) => {
-            if (event.target === confirmSaveDialog) { // Clicked on overlay
+        // Confirm Save Changes Modal
+        if (cancelSaveConfirmationButton) {
+            cancelSaveConfirmationButton.addEventListener('click', () => {
                 hideConfirmSaveChangesDialog();
-                // Re-enable save changes button in edit modal
+                // User wants to review, edit modal should still be open.
+                // Re-enable save changes button in edit modal if it was disabled
                 if (saveChangesButton) {
                     saveChangesButton.disabled = false;
                     saveChangesButton.textContent = 'Save Changes';
                 }
-            }
-        });
+            });
+        }
+        if (confirmSaveFinalButton) {
+            confirmSaveFinalButton.addEventListener('click', () => {
+                hideConfirmSaveChangesDialog();
+                if (currentEditFormData) { 
+                    processSaveChanges(currentEditFormData);
+                } else {
+                    console.warn("JS: No currentEditFormData to save.");
+                }
+            });
+        }
+        if (confirmSaveDialog) {
+            confirmSaveDialog.addEventListener('click', (event) => {
+                if (event.target === confirmSaveDialog) { 
+                    hideConfirmSaveChangesDialog();
+                    if (saveChangesButton) { // Also re-enable main save button
+                        saveChangesButton.disabled = false;
+                        saveChangesButton.textContent = 'Save Changes';
+                    }
+                }
+            });
+        }
+        console.log("JS: Event listeners set up.");
     }
 
     // --- Initial Load ---
-    async function initializePage() { /* ... (same as before) ... */ 
-        await viewModel.fetchStudents();
-        renderStudentTable();
+    async function initializePage() {
+        console.log("JS: Initializing page...");
+        await viewModel.fetchStudents(); // Fetches mock data into viewModel.students
+        renderStudentTable();          // Renders table from viewModel.students
+        // updateUIStates(); // Called at the end of fetchStudents and renderStudentTable
+        console.log("JS: Page initialized and table rendered.");
     }
-    if (studentsTableBody && loadingIndicator && noStudentsMessage && studentTableContainer && confirmationDialog && editStudentModal && confirmSaveDialog) {
+
+    // Check if all essential elements are present before initializing
+    if (studentsTableBody && loadingIndicator && noStudentsMessage && studentTableContainer &&
+        deleteConfirmationDialog && editStudentModal && confirmSaveDialog) {
         initializePage();
+        setupEventListeners(); // Setup event listeners after elements are confirmed
     } else {
-        console.error("One or more critical page elements for editST.js are missing. Page initialization skipped or incomplete.");
+        console.error("JS FATAL: One or more critical page elements for editST.js are missing. Full initialization aborted.");
+        if (loadingIndicator) loadingIndicator.innerHTML = "<p style='color:red;'>Error: Page components missing. Functionality will be limited.</p>";
     }
 });

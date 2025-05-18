@@ -1,17 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Student</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/registerST.css') }}">
-</head>
-<body>
-    <header id="custom-header">
-        <h1>Register New Student</h1>
-    </header>
+{# templates/SASStaff/registerST.html #}
+{% extends 'base.html' %}
 
-    <main>
+{% block head %}
+    {{ super() }} {# Includes head content from base.html (global CSS, icons, etc.) #}
+    <title>Register New Student | SAS Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/registerST.css') }}">
+    {# Material Icons are assumed to be loaded by base.html or partials/header.html #}
+{% endblock %}
+
+{% block header %}
+    {{ super() }} {# Renders the shared header from base.html #}
+{% endblock %}
+
+{% block body_class %}register-student-page{% endblock %} {# Optional: For page-specific body styling #}
+
+{% block body %}
+    {# This content is placed inside <main class="page-content-wrapper"> from base.html #}
+    <div class="container"> {# Uses .container from base_style.css for consistent padding/max-width #}
+
         <div id="loading-indicator" class="loading-indicator">
             <div class="spinner"></div>
             <p>Loading form data...</p>
@@ -21,51 +27,52 @@
             <p id="error-text"></p>
         </div>
 
+        {# This container holds the form card. registerST.css will ensure it's centered. #}
         <div id="registration-form-container" class="registration-form-container" style="display: none;">
-            <div class="form-card">
-                <h2>Student Registration</h2>
+            <div class="form-card"> 
+                <h2>Student Registration Details</h2>
                 <form id="student-registration-form" novalidate>
                     <fieldset>
                         <legend>Personal Details</legend>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="first-name">First Name <span class="required">*</span></label>
-                                <input type="text" id="first-name" name="firstName" required>
-                                <span class="validation-error"></span>
+                                <input type="text" id="first-name" name="firstName" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
                             </div>
                             <div class="form-group">
                                 <label for="middle-name">Middle Name</label>
                                 <input type="text" id="middle-name" name="middleName">
-                                <span class="validation-error"></span>
+                                <span class="validation-error" role="alert"></span>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="last-name">Last Name <span class="required">*</span></label>
-                                <input type="text" id="last-name" name="lastName" required>
-                                <span class="validation-error"></span>
+                                <input type="text" id="last-name" name="lastName" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
                             </div>
                             <div class="form-group">
                                 <label for="date-of-birth">Date of Birth <span class="required">*</span></label>
-                                <input type="date" id="date-of-birth" name="dateOfBirth" required>
-                                <span class="validation-error"></span>
+                                <input type="date" id="date-of-birth" name="dateOfBirth" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
                             </div>
                         </div>
-                         <div class="form-row">
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="gender">Gender <span class="required">*</span></label>
-                                <select id="gender" name="gender" required>
+                                <select id="gender" name="gender" required aria-required="true">
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
                                 </select>
-                                <span class="validation-error"></span>
+                                <span class="validation-error" role="alert"></span>
                             </div>
                             <div class="form-group">
                                 <label for="citizenship">Citizenship <span class="required">*</span></label>
-                                <input type="text" id="citizenship" name="citizenship" required>
-                                <span class="validation-error"></span>
+                                <input type="text" id="citizenship" name="citizenship" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
                             </div>
                         </div>
                     </fieldset>
@@ -75,13 +82,13 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="address">Address <span class="required">*</span></label>
-                                <input type="text" id="address" name="address" required>
-                                <span class="validation-error"></span>
+                                <input type="text" id="address" name="address" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
                             </div>
                             <div class="form-group">
                                 <label for="contact">Contact (e.g., 679-1234567) <span class="required">*</span></label>
-                                <input type="tel" id="contact" name="contact" placeholder="679-XXXXXXX" required>
-                                <span class="validation-error"></span>
+                                <input type="tel" id="contact" name="contact" placeholder="679-XXXXXXX" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
                             </div>
                         </div>
                     </fieldset>
@@ -91,90 +98,103 @@
                         <div class="form-row">
                              <div class="form-group">
                                 <label for="student-level">Student Level <span class="required">*</span></label>
-                                <input type="text" id="student-level" name="studentLevel" required>
-                                <span class="validation-error"></span>
+                                <input type="text" id="student-level" name="studentLevel" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
                             </div>
                             <div class="form-group">
                                 <label for="program">Program <span class="required">*</span></label>
-                                <select id="program" name="program" required>
+                                <select id="program" name="program" required aria-required="true">
                                     <option value="">Loading programs...</option>
+                                    {# Options populated by JS from initial data #}
                                 </select>
-                                <span class="validation-error"></span>
+                                <span class="validation-error" role="alert"></span>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="program-type">Program Type <span class="required">*</span></label>
-                                <select id="program-type" name="programType" required>
+                                <select id="program-type" name="programType" required aria-required="true">
                                     <option value="">Select Program Type</option>
                                     <option value="Single Major">Single Major</option>
                                     <option value="Double Major">Double Major</option>
                                     <option value="Prescribed Program">Prescribed Program</option>
                                 </select>
-                                <span class="validation-error"></span>
+                                <span class="validation-error" role="alert"></span>
                             </div>
                             <div class="form-group" id="subprogram1-group" style="display: none;">
                                 <label for="subprogram1">Subprogram 1 <span id="subprogram1-required-asterisk" class="required" style="display: none;">*</span></label>
                                 <select id="subprogram1" name="subprogram1">
                                     <option value="">Select subprogram 1</option>
+                                    {# Options populated by JS #}
                                 </select>
-                                <span class="validation-error"></span>
+                                <span class="validation-error" role="alert"></span>
                             </div>
                         </div>
                         <div class="form-row">
-                             <div class="form-group" id="subprogram2-group" style="display: none;">
+                            <div class="form-group" id="subprogram2-group" style="display: none;">
                                 <label for="subprogram2">Subprogram 2 <span id="subprogram2-required-asterisk" class="required" style="display: none;">*</span></label>
                                 <select id="subprogram2" name="subprogram2">
                                     <option value="">Select subprogram 2</option>
+                                    {# Options populated by JS #}
                                 </select>
-                                <span class="validation-error"></span>
+                                <span class="validation-error" role="alert"></span>
                             </div>
                             <div class="form-group">
                                 <label for="campus">Campus <span class="required">*</span></label>
-                                <select id="campus" name="campus" required>
+                                <select id="campus" name="campus" required aria-required="true">
                                     <option value="">Loading campuses...</option>
+                                    {# Options populated by JS #}
                                 </select>
-                                <span class="validation-error"></span>
+                                <span class="validation-error" role="alert"></span>
                             </div>
                         </div>
                     </fieldset>
 
                     <div class="form-actions">
-                        <button type="submit" id="register-button" class="button-primary">Register</button>
-                        <button type="button" id="clear-button" class="button-danger">Clear</button>
+                        <button type="submit" id="register-button" class="button-primary">Register Student</button>
+                        <button type="button" id="clear-button" class="button-danger">Clear Form</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div id="message-modal" class="modal" style="display:none;">
+        {# Modals for messages and confirmations #}
+        <div id="message-modal" class="modal" style="display:none;" role="alertdialog" aria-labelledby="modal-text-content">
             <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <p id="modal-text"></p>
+                <button class="close-button" aria-label="Close message">&times;</button>
+                <p id="modal-text-content"></p>
             </div>
         </div>
 
-        <div id="registration-confirmation-dialog" class="modal" style="display: none;">
+        <div id="registration-confirmation-dialog" class="modal" style="display: none;" role="dialog" aria-labelledby="registration-dialog-title" aria-modal="true">
             <div class="modal-content">
                 <h3 id="registration-dialog-title">Confirm Registration</h3>
                 <p id="registration-dialog-message">Are you sure you want to register this student with the provided details?</p>
                 <div class="modal-actions">
-                    <button id="cancel-registration-button" class="dialog-button">Cancel</button>
-                    <button id="confirm-registration-button" class="dialog-button button-primary">Confirm Register</button>
+                    <button id="cancel-registration-button" class="dialog-button btn btn-secondary">Cancel</button>
+                    <button id="confirm-registration-button" class="dialog-button button-primary btn btn-primary">Confirm Register</button>
                 </div>
             </div>
         </div>
-    </main>
+    </div> {# End .container #}
+{% endblock %}
 
-    <script src="{{ url_for('static', filename='js/SASStaff/registerST.js') }}"></script>
+{% block footer %}
+    {{ super() }} {# Renders the shared footer #}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }} {# Includes any scripts from base.html #}
+    
+    {# Data passed from Flask to registerST.js #}
     <script id="registration-initial-data" type="application/json">
+        {# Ensure all variables are defined in the Flask route context or provide defaults #}
         {{ {
-            "programs": programs if programs else [],
-            "subprograms_map": subprograms_map if subprograms_map else {},
-            "campuses": campuses if campuses else [],
-            "all_subprogrammes": all_subprogrammes if all_subprogrammes else []
+            "programs": programs if programs is defined else [],
+            "subprograms_map": subprograms_map if subprograms_map is defined else {},
+            "campuses": campuses if campuses is defined else [],
+            "all_subprogrammes": all_subprogrammes if all_subprogrammes is defined else []
         } | tojson | safe }}
     </script>
-
-</body>
-</html>
+    <script src="{{ url_for('static', filename='js/SASStaff/registerST.js') }}"></script>
+{% endblock %}

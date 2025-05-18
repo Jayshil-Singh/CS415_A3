@@ -1,0 +1,48 @@
+{# templates/errors/500.html #}
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <title>500 - Server's Gone Fishing! | SAS Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/error_pages.css') }}">
+{% endblock %}
+
+{% block body_class %}error-page-active{% endblock %} {# Add class to body #}
+
+{% block header %}{% endblock %} {# Hide default header #}
+
+{% block body %}
+<div class="error-page-container error-500">
+    <div class="error-content">
+        <div class="error-character-container">
+            {# Replace with your actual animated GIF or Lottie embed #}
+            <img src="{{ url_for('static', filename='images/sleepy_server.gif') }}" alt="Server Problem Animation" class="error-character" id="error-animation-500">
+        </div>
+        <h1 class="error-title">Bula! Our Server is on Fiji Time...</h1>
+        <p class="error-message">It seems our server decided to take a little kava break and is now "relaxing" a bit too much. We've sent a search party (with more kava, just in case).</p>
+        <p class="error-suggestion">Try giving it a friendly nudge by refreshing, or come back after it's had its nap.</p>
+        <div class="error-actions">
+            <button onclick="location.reload();" class="btn btn-secondary">Nudge Server (Refresh)</button>
+            <a href="{{ url_for('sas_login') }}" class="btn btn-primary">Escape to Homepage!</a>
+        </div>
+        {% if config.DEBUG and error %}
+            <div class="error-details">
+                <strong>Error Details (Development Mode):</strong>
+                <pre>{{ error }}</pre>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %} {# Hide default footer #}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        // Optional JS for the 500 page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Could add a countdown to auto-refresh or other fun interactions
+        });
+    </script>
+{% endblock %}

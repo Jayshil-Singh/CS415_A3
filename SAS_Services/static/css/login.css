@@ -5,10 +5,10 @@
 body {
   font-family: sans-serif;
   background-color: rgb(172, 226, 228);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  display: flex;            /* Enables flexbox */
+  justify-content: center;  /* Centers child horizontally */
+  align-items: center;      /* Centers child vertically */
+  min-height: 100vh;        /* Ensures body takes full viewport height */
   margin: 0;
 }
 
@@ -30,8 +30,11 @@ body {
   border-radius: 0px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  margin-left: auto;   /* Key for centering */
+  margin-right: auto;  /* Key for centering */
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 

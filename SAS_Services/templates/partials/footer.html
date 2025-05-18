@@ -1,0 +1,28 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/footer_style.css') }}"/>
+
+<footer class="custom-footer">
+  <div class="footer-content-container">
+    <div class="footer-left">
+      <span style="white-space: nowrap;">
+        <a href="#" class="footer-link">Copyright Policy</a> {# Example link #}
+        <span class="separator"> | </span>
+        <a href="#" class="footer-link">Contact SAS</a> {# Example link #}
+      </span>
+      <p class="footer-line">©{{ current_year }}. All Rights Reserved.</p>
+    </div>
+
+    <div class="footer-center">
+      <img
+        src="{{ url_for('static', filename='images/usp_logo.svg') }}"
+        alt="USP Logo"
+        class="footer-logo"
+      />
+    </div>
+
+    <div class="footer-right">
+      <p>The University of the South Pacific</p>
+      <p>Laucala Campus, Suva, Fiji</p>
+      <p>Tel: +679 323 1000</p>
+    </div>
+  </div>
+</footer>

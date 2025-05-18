@@ -1,0 +1,219 @@
+/* static/css/header_style.css */
+/* Top navbar */
+.header {
+  display: flex;
+  justify-content: space-between; /* Key for spacing logo, title, user menu */
+  align-items: center;
+  background: #009999; /* Your teal color */
+  padding: 0 20px; /* Adjusted padding for space from screen edges */
+  height: 65px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%; /* Ensure header itself is full width */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Logo styling */
+.header .logo-link {
+  display: inline-flex; /* Use inline-flex for better vertical alignment if needed */
+  align-items: center;
+  flex-shrink: 0; /* Prevent logo from shrinking */
+}
+.header .logo {
+  height: 50px; /* Adjust as needed, e.g., 50px or 55px */
+  width: auto; /* Maintain aspect ratio */
+}
+
+/* NEW/UPDATED: Styles for the header title container and text */
+.header .header-title-container {
+  flex-grow: 1; /* Allow title container to take available middle space */
+  text-align: center; /* Center the title text within its container */
+  padding: 0 15px; /* Add some padding around the title, if desired */
+  overflow: hidden; /* Prevent title from causing layout issues if too long */
+}
+
+.header .header-title-text {
+  color: white;
+  font-size: 1.4em; /* Adjust font size as needed */
+  font-weight: 600;
+  margin: 0; /* Remove default h1 margin */
+  white-space: nowrap; /* Prevent title from wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ellipsis if title is very long */
+}
+
+/* User-menu wrapper */
+.header .user-menu {
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0; /* Prevent user menu from shrinking */
+}
+
+/* User icon */
+.header .user-icon {
+  font-size: 35px;
+  color: white;
+  padding: 4px; /* Consistent padding */
+  display: flex; /* Helps center the icon if it's just a span */
+  align-items: center;
+}
+
+/* Dropdown container (hidden by default) */
+.header .dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem); /* Position below the user-menu, with a small gap */
+  /* margin-top: 0.5rem; /* This is now part of 'top' calculation */
+  background: #fff;
+  border-radius: 4px; /* Slightly rounded corners for modern look */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Softer shadow */
+  min-width: 230px; /* Adjusted min-width */
+  list-style: none;
+  padding: 0;
+  overflow: hidden;
+  z-index: 1010;
+  font-family: 'Roboto', 'Segoe UI', sans-serif; /* Match body font or specific UI font */
+}
+
+/* only show when .open is toggled via JavaScript */
+.header .user-menu.open .dropdown {
+  display: block;
+}
+
+/* Greeting header in dropdown */
+.header .dropdown-header {
+  padding: 0.85rem 1.1rem; /* Adjusted padding */
+  color: #555; /* Slightly darker for better readability */
+  border-bottom: 1px solid #e9ecef; /* Lighter border */
+  font-weight: 600; /* Bolder */
+  font-size: 0.9em;
+}
+
+/* Divider in dropdown */
+.header .divider {
+  border-top: 1px solid #e9ecef; /* Lighter border */
+  margin: 0.5rem 0;
+}
+
+/* Links in the dropdown */
+.header .dropdown li a {
+  display: flex;
+  align-items: center;
+  padding: 0.85rem 1.1rem; /* Adjusted padding */
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-size: 0.95em;
+}
+
+/* icon inside each dropdown item */
+.header .dropdown .mi {
+  margin-right: 0.85rem; /* Adjusted margin */
+  font-size: 1.25rem; /* Slightly larger icon */
+  vertical-align: middle;
+  color: #00796b; /* Teal accent for icons, or match hover state */
+}
+
+/* Hover state for dropdown links */
+.header .dropdown li a:hover {
+  background-color: #00796b; /* Teal accent hover */
+  color: #fff;
+}
+.header .dropdown li a:hover .mi {
+  color: #fff; /* Icon color matches text on hover */
+}
+
+/* When menu is open, style the icon */
+.header .user-menu.open .user-icon {
+  color: #00564d; /* Darker teal or primary color */
+  background: rgba(255,255,255,0.25); /* Lighter background */
+  border-radius: 50%;
+  /* padding: 4px; /* Already defined for .user-icon, ensure it's consistent */
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/*─────────────────────────────────────────────────────────
+  Custom Logout Confirmation Modal
+─────────────────────────────────────────────────────────*/
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.55); /* Slightly darker overlay */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(3px); /* Optional: Frosted glass effect for background */
+}
+
+.modal-dialog {
+  background: #FFFFFF;
+  padding: 2rem; /* More padding */
+  width: 90%;
+  max-width: 360px; /* Slightly wider for better text flow */
+  border-radius: 8px; /* Rounded corners for modal */
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+}
+.modal-dialog.small { /* This class is used in your header.html for the logout modal */
+    max-width: 360px;
+}
+
+.modal-dialog p {
+  margin: 0 0 1.5rem; /* More space below message */
+  color: #333;
+  font-size: 1.05rem; /* Slightly larger text */
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem; /* Consistent gap */
+}
+
+.modal-actions .btn {
+  min-height: 40px; /* Taller buttons */
+  padding: 0 1.5rem; /* More horizontal padding */
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 5px; /* Rounded corners for buttons */
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  letter-spacing: 0.5px;
+}
+.modal-actions .btn:active {
+    transform: translateY(1px); /* Slight press effect */
+}
+
+.btn-secondary { /* For Cancel button */
+  background: #f0f0f0; /* Lighter grey */
+  color: #444; /* Darker text */
+  border: 1px solid #ddd; /* Subtle border */
+}
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+  border-color: #ccc;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.btn-primary { /* For Confirm (Log Out) button */
+  background: #d32f2f; /* Standard danger red */
+  color: #FFFFFF;
+}
+.btn-primary:hover {
+  background-color: #c62828; /* Darker red on hover */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.modal-actions .btn:focus {
+  outline: 2px solid #007bff; /* Standard focus blue */
+  outline-offset: 2px;
+}
