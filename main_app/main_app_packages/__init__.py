@@ -11,6 +11,7 @@ from .error_handlers import (
     ResourceNotFoundError, ValidationError, ServiceUnavailableError
 )
 from .logger import setup_logger, request_logger
+from .audit import AuditLogger
 
 # db = SQLAlchemy() # Example
 # login_manager = LoginManager() # Example
@@ -29,12 +30,17 @@ def create_app(config_class=Config):
 
     # Setup logging
     setup_logger(app)
+    
+    # Setup audit logging
+    audit_logger = AuditLogger(app)
 
     # Import and register blueprints
-    from .routes import main_bp  # Corrected to relative import for blueprint
+    from .routes import main_bp
     from .auth import auth_bp
+    from .routes.audit_routes import audit_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(audit_bp)
 
     # Initialize app
     config_class.init_app(app)
