@@ -3,7 +3,6 @@
 
 {% block head %}
   <title>USP Student Profile</title>
-  <!-- page-specific stylesheet -->
   <link
     rel="stylesheet"
     href="{{ url_for('static', filename='css/studentProfile.css') }}"
@@ -21,19 +20,29 @@
 
   <main>
     <div class="card">
-      <!-- Personal Details -->
       <div id="personal-details-section">
         <h2 class="section-title">Personal Details</h2>
         <div class="photo-upload-section">
-          <p>Upload Passport Size Photo</p>
-          <div>
-            <button class="upload-button">Choose File</button>
-            <span>No file chosen</span>
+          {# Container to align avatar and upload info horizontally #}
+          <div class="photo-and-info-row">
+            <div class="avatar-display"> {# Avatar display container for the image #}
+              <img id="profile-avatar" src="{{ url_for('static', filename='images/icon.png') }}" alt="Profile Avatar">
+            </div>
+            <div class="upload-info-group"> {# This group contains all the text and buttons for upload #}
+              <p>Upload Passport Size Photo</p>
+              {# Hidden file input #}
+              <input type="file" id="file-upload-input" accept="image/jpeg, image/png" style="display: none;">
+              {# Moved button to its own line, directly under the text #}
+              <button class="upload-button" id="change-photo-btn">Change Profile Photo</button>
+              {# Moved file name display to its own line #}
+              <p id="file-name-display-container"><span id="file-name-display">No file chosen</span></p>
+            </div>
           </div>
           <p class="error-text">
             Please ensure that the photo you upload is your true resemblance and is of a passport size.
-            Only JPG files less than 5MB permitted.
+            Only JPG/PNG files less than 5MB permitted.
           </p>
+          {# MOVED: Save button is now under the error text #}
           <button class="save-button">Save</button>
         </div>
         {% for label, value in [
@@ -62,7 +71,6 @@
         </div>
       </div>
 
-      <!-- Address -->
       <div id="address-section" style="display: none;">
         <h2 class="section-title">Address</h2>
         {% for label in ['Street','City','State/Province','Country','Postal Code'] %}
@@ -73,7 +81,6 @@
         {% endfor %}
       </div>
 
-      <!-- Email & Phone -->
       <div id="email-phone-section" style="display: none;">
         <h2 class="section-title">Email &amp; Phone</h2>
         {% for label in ['Email','Phone'] %}
@@ -84,7 +91,6 @@
         {% endfor %}
       </div>
 
-      <!-- Emergency Contact -->
       <div id="emergency-contact-section" style="display: none;">
         <h2 class="section-title">Emergency Contact</h2>
         {% for label in ['First Name','Middle Name','Last Name','Relationship','Contact Phone'] %}
@@ -95,7 +101,6 @@
         {% endfor %}
       </div>
 
-      <!-- Passport & Visa -->
       <div id="passport-visa-section" style="display: none;">
         <h2 class="section-title">Passport &amp; Visa</h2>
         {% for label in ['Passport Number','Visa Status','Expiration Date'] %}
@@ -124,5 +129,33 @@
         navButtons[i].classList.toggle('selected', i === index);
       });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const changePhotoBtn = document.getElementById('change-photo-btn');
+        const fileUploadInput = document.getElementById('file-upload-input');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const profileAvatar = document.getElementById('profile-avatar');
+
+        function triggerFileInput() {
+            fileUploadInput.click();
+        }
+
+        changePhotoBtn.addEventListener('click', triggerFileInput);
+
+        fileUploadInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                fileNameDisplay.textContent = this.files[0].name;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileAvatar.src = e.target.result;
+                };
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                fileNameDisplay.textContent = 'No file chosen';
+                profileAvatar.src = "{{ url_for('static', filename='images/icon.png') }}";
+            }
+        });
+    });
   </script>
 {% endblock %}
