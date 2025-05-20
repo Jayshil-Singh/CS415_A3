@@ -154,21 +154,21 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
-                    <a href="dashboard.html" class="flex-shrink-0">
+                    <a href="{{ url_for('enrollment.dashboard') }}" class="flex-shrink-0">
                         <img class="h-10 w-auto" src="https://placehold.co/150x50/003366/FFFFFF?text=USP+Enroll"
                             alt="USP Logo">
                     </a>
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="{{ url_for('dashboard') }}"
+                            <a href="{{ url_for('enrollment.dashboard') }}"
                                 class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                            <a href="{{ url_for('enroll') }}"
+                            <a href="{{ url_for('enrollment.enroll') }}"
                                 class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium"
                                 aria-current="page">Enroll</a>
-                            <a href="{{ url_for('display_courses') }}"
+                            <a href="{{ url_for('enrollment.display_courses') }}"
                                 class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My
                                 Enrollment</a>
-                            <a href="{{ url_for('fees') }}"
+                            <a href="{{ url_for('enrollment.fees') }}"
                                 class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
                             <a href="programmes.html"
                                 class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Programmes</a>
@@ -201,15 +201,15 @@
         </div>
         <div class="md:hidden hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="{{ url_for('dashboard') }}"
+                <a href="{{ url_for('enrollment.dashboard') }}"
                     class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
-                <a href="{{ url_for('enroll') }}"
+                <a href="{{ url_for('enrollment.enroll') }}"
                     class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium"
                     aria-current="page">Enroll</a>
-                <a href="{{ url_for('display_courses') }}"
+                <a href="{{ url_for('enrollment.display_courses') }}"
                     class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My
                     Enrollment</a>
-                <a href="{{ url_for('fees') }}"
+                <a href="{{ url_for('enrollment.fees') }}"
                     class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
                 <a href="programmes.html"
                     class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Programmes</a>
@@ -279,7 +279,7 @@
                     <p class="mb-4 text-sm text-indigo-600"><i class="fas fa-info-circle mr-1"></i> You can select a
                         maximum of 4 courses.</p>
 
-                    <form id="enrollment-form" action="{{ url_for('enroll') }}" method="POST">
+                    <form id="enrollment-form" action="{{ url_for('enrollment.enroll') }}" method="POST">
                         <div class="space-y-4">
                             {% for course in courses %}
                             <div
