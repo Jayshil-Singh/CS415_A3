@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Home - USP SAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background-color: #0d6efd;
+            padding: 1rem 2rem;
+        }
+        .navbar-brand {
+            color: white !important;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        .nav-link:hover {
+            color: white !important;
+        }
+        .user-greeting {
+            color: white;
+            margin-right: 1rem;
+        }
+        .main-content {
+            padding: 2rem;
+        }
+        .welcome-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .feature-card {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .feature-icon {
+            font-size: 2rem;
+            color: #0d6efd;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">USP SAS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/student_home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="viewProfile()">My Profile</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="user-greeting" id="userGreeting"></span>
+                    <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <div class="welcome-card">
+            <h1 id="welcomeMessage">Welcome!</h1>
+            <p class="lead">Access your student services and manage your profile.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-person-circle"></i>
+                    </div>
+                    <h3>My Profile</h3>
+                    <p>View and update your personal information</p>
+                    <button class="btn btn-primary" onclick="viewProfile()">View Profile</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <h3>Appointments</h3>
+                    <p>Schedule and manage your appointments</p>
+                    <button class="btn btn-primary" onclick="viewAppointments()">View Appointments</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-chat-dots"></i>
+                    </div>
+                    <h3>Messages</h3>
+                    <p>Check your messages and notifications</p>
+                    <button class="btn btn-primary" onclick="viewMessages()">View Messages</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Check if user is logged in
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            if (!token || !user) {
+                window.location.href = 'http://127.0.0.1:5002/';
+                return;
+            }
+            
+            // Update welcome message and greeting
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${user.username}!`;
+            document.getElementById('userGreeting').textContent = `Hello, ${user.username}`;
+        }
+
+        // View profile
+        function viewProfile() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            window.location.href = `http://127.0.0.1:5000/student_profile/${user.id}`;
+        }
+
+        // View appointments
+        function viewAppointments() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            window.location.href = `http://127.0.0.1:5000/student_appointments/${user.id}`;
+        }
+
+        // View messages
+        function viewMessages() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            window.location.href = `http://127.0.0.1:5000/student_messages/${user.id}`;
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'http://127.0.0.1:5002/';
+        }
+
+        // Check authentication when page loads
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,21 @@
+{# templates/footer.html #}
+<footer class="site-footer-main">
+    <link rel="stylesheet" href="../static/css/university_styles.css">
+    <div class="footer-container">
+        <div class="footer-copyright">
+            <p>&copy; <span id="currentYear"></span> The University of the South Pacific. All Rights Reserved.</p>
+            <p>USP Student Portal - Suva, Fiji</p> {# CUSTOMIZE: Add specific portal name or location if desired #}
+        </div>
+        <div class="footer-links">
+            <a href="/privacy-policy">Privacy Policy</a>
+            <a href="/terms-of-service">Terms of Service</a>
+            <a href="https://www.usp.ac.fj/contact-us/" target="_blank" rel="noopener noreferrer">Contact USP</a>
+            {# Add other relevant links here, e.g., Accessibility, Sitemap #}
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Small script to set the current year dynamically
+    document.getElementById("currentYear").textContent = new Date().getFullYear();
+</script>

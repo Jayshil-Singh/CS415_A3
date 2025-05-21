@@ -1,0 +1,295 @@
+/* Basic Body and HTML setup */
+/* These can be moved to your main style.css if you prefer */
+html {
+    box-sizing: border-box; /* Better box model */
+    scroll-behavior: smooth;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif; /* CUSTOMIZE: University default font */
+    background-color: #f4f7f9; /* Light background for the page */
+    color: #333;
+    line-height: 1.5; /* Default line height for readability */
+}
+
+/* General Container for the Dashboard */
+.dashboard-main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 0 30px 0;
+}
+
+/* Basic Button Styles (University Themed) */
+/* These provide a base for .btn and can be expanded in your style.css or here */
+.btn {
+    display: inline-block;
+    font-weight: 600; /* Bolder text for buttons */
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 0.65rem 1.25rem; /* Slightly larger padding */
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 5px; /* Consistent border radius */
+    text-decoration: none;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, transform 0.2s ease;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #0056a0; /* CUSTOMIZE: University primary action color */
+    border-color: #0056a0; /* CUSTOMIZE */
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #00417d; /* CUSTOMIZE: Darker shade for hover */
+    border-color: #003366; /* CUSTOMIZE */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d; /* CUSTOMIZE: University secondary action color (e.g., a neutral grey or secondary brand color) */
+    border-color: #6c757d; /* CUSTOMIZE */
+}
+
+.btn-secondary:hover {
+    color: #fff;
+    background-color: #5a6268; /* CUSTOMIZE: Darker shade */
+    border-color: #545b62; /* CUSTOMIZE */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.btn-lg { /* For larger call-to-action buttons */
+    padding: 0.8rem 1.75rem !important; /* Even more padding */
+    font-size: 1.1em !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Banner Section */
+.dashboard-banner {
+    position: relative;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 40px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.banner-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.banner-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.banner-overlay-text {
+    position: relative;
+    z-index: 2;
+    background-color: rgba(0, 51, 102, 0.75); /* CUSTOMIZE: University primary color with opacity */
+    padding: 40px;
+    border-radius: 8px;
+    max-width: 700px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.banner-overlay-text h1 {
+    font-family: 'Lato', 'Open Sans', sans-serif; /* CUSTOMIZE: University heading font */
+    font-size: 2.8em;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.banner-overlay-text p {
+    font-size: 1.15em;
+    margin-bottom: 25px;
+    line-height: 1.6;
+    color: #e0e6ed;
+}
+
+.banner-actions .btn {
+    margin: 10px 10px; /* Ensure some space when side-by-side */
+}
+
+/* Section Title Styling */
+.section-title {
+    font-family: 'Lato', 'Open Sans', sans-serif;
+    font-size: 1.8em;
+    color: #003366; /* CUSTOMIZE: University primary color */
+    margin-bottom: 30px; /* Increased margin */
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 40px;
+}
+.dashboard-quick-links, .dashboard-announcements {
+    padding: 0 20px;
+}
+
+/* Dashboard Grid Styling */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+    padding: 0 15px;
+}
+
+.grid-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: #ffffff;
+    padding: 30px 20px; /* Increased padding */
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    text-decoration: none;
+    color: #333;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    height: 100%;
+    border: 1px solid #e9ecef; /* Subtle border */
+}
+
+.grid-item a:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 75, 141, 0.15); /* CUSTOMIZE: Shadow with university accent */
+    border-color: #0056a0; /* CUSTOMIZE: Accent color border on hover */
+}
+
+.grid-item-icon {
+    font-size: 2.8em;
+    margin-bottom: 20px; /* Increased space */
+    color: #0056a0; /* CUSTOMIZE: University accent color */
+    line-height: 1;
+}
+
+.grid-item-text h3 {
+    font-family: 'Lato', 'Open Sans', sans-serif;
+    font-size: 1.25em;
+    color: #003366; /* CUSTOMIZE: University primary color */
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.grid-item-text p {
+    font-size: 0.9em;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* Announcements Section */
+.announcement-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px; /* Increased gap */
+    padding: 0 15px;
+}
+
+.announcement-item {
+    background-color: #fff;
+    padding: 25px; /* Increased padding */
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    border-left: 5px solid #007bff; /* CUSTOMIZE: University primary action or accent color */
+    transition: box-shadow 0.2s ease-in-out;
+}
+.announcement-item:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.announcement-item h4 {
+    font-family: 'Lato', 'Open Sans', sans-serif;
+    font-size: 1.15em;
+    color: #003366; /* CUSTOMIZE */
+    margin-top: 0;
+    margin-bottom: 8px; /* Increased space */
+}
+
+.announcement-meta {
+    font-size: 0.8em;
+    color: #777;
+    margin-bottom: 12px; /* Increased space */
+}
+
+.announcement-item p {
+    font-size: 0.95em;
+    line-height: 1.6;
+    margin-bottom: 15px; /* Increased space */
+}
+
+.read-more-link {
+    font-size: 0.9em;
+    color: #0056a0; /* CUSTOMIZE */
+    text-decoration: none;
+    font-weight: 600;
+}
+.read-more-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .banner-overlay-text h1 {
+        font-size: 2.2em;
+    }
+    .banner-overlay-text p {
+        font-size: 1em;
+    }
+    .banner-actions .btn {
+        padding: 10px 20px;
+        font-size: 0.95em;
+        display: block;
+        margin: 10px auto;
+        width: 80%;
+        max-width: 250px;
+    }
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    .section-title {
+        font-size: 1.6em;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-overlay-text h1 {
+        font-size: 1.8em;
+    }
+    .dashboard-banner {
+        height: auto;
+        min-height: 300px;
+    }
+     .banner-overlay-text {
+        padding: 25px;
+    }
+}

@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - University Portal{% endblock %}
+
+{% block head_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/university_profile_layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/university_profile_sections_style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_style.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="profile-page-container">
+    <aside class="profile-navigation-sidebar">
+        <div class="sidebar-header">
+            <h4>Profile Menu</h4>
+        </div>
+        <nav class="profile-nav-links">
+            <a href="{{ url_for('main_bp.get_profile', student_id=profile_data.student_id) }}" class="nav-item {% if request.path == url_for('main_bp.get_profile', student_id=profile_data.student_id) %}active{% endif %}">
+                <i class="fas fa-user-circle nav-icon"></i> Overview
+            </a>
+            <a href="{{ url_for('main_bp.get_profile', student_id=profile_data.student_id) }}#address" class="nav-item">
+                <i class="fas fa-map-marker-alt nav-icon"></i> Address
+            </a>
+            <a href="{{ url_for('main_bp.get_profile', student_id=profile_data.student_id) }}#contact" class="nav-item">
+                <i class="fas fa-envelope nav-icon"></i> Email & Phone
+            </a>
+            <a href="{{ url_for('main_bp.get_profile', student_id=profile_data.student_id) }}#passport" class="nav-item">
+                <i class="fas fa-passport nav-icon"></i> Passport & Visa
+            </a>
+        </nav>
+    </aside>
+
+    <main class="profile-main-content">
+        <div class="profile-section-container main-profile-details"> 
+            <h2 class="profile-section-title">Personal Profile Overview</h2>
+        
+            <div class="profile-summary-header">
+                <div class="profile-pic-upload-area">
+                    <img id="profileImage" src="{{ profile_data.profile_pic_url or url_for('static', filename='images/default_avatar.png') }}" alt="Profile Picture" class="profile-main-pic">
+                    <form id="uploadForm" action="{{ url_for('main_bp.upload_profile_picture', student_id=profile_data.student_id) }}" method="post" enctype="multipart/form-data" target="upload_iframe" class="upload-form">
+                        <label for="photoUpload" class="btn btn-primary btn-sm upload-button-styled">Change Photo</label>
+                        <input type="file" id="photoUpload" name="photo" accept="image/*" onchange="submitUploadForm();" style="display: none;">
+                    </form>
+                    <iframe name="upload_iframe" style="display: none;"></iframe>
+                    <div id="uploadStatus" class="upload-status-message"></div>
+                    <small class="file-type-hint">Allowed: .png, .jpg, .jpeg, .gif</small>
+                </div>
+                <div class="profile-header-main-info">
+                    <h3>{{ profile_data.first_name or 'N/A' }} {{ profile_data.last_name or 'N/A' }}</h3>
+                    <p><span class="info-label-inline">Program:</span> {{ profile_data.program or 'Not Provided' }}</p>
+                    <p><span class="info-label-inline">Student ID:</span> {{ profile_data.student_id or 'Not Provided' }}</p>
+                </div>
+            </div>
+        
+            <div class="profile-view-card">
+                <h4 class="card-subheader">Personal Details</h4>
+                <div class="profile-info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Full Name</span>
+                        <span class="info-value">{{ profile_data.first_name or '' }} {{ profile_data.middle_name or '' }} {{ profile_data.last_name or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Date of Birth</span>
+                        <span class="info-value">{{ profile_data.dob or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Gender</span>
+                        <span class="info-value">{{ profile_data.gender or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Citizenship</span>
+                        <span class="info-value">{{ profile_data.citizenship or 'Not Provided' }}</span>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="profile-view-card">
+                <h4 class="card-subheader">Academic Details</h4>
+                <div class="profile-info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Student Level</span>
+                        <span class="info-value">{{ profile_data.student_level or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Registered Campus</span>
+                        <span class="info-value">{{ profile_data.student_campus or 'Not Provided' }}</span>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="profile-view-card verification-notice-card">
+                <h4 class="card-subheader notice-header">Please Verify Your Information</h4>
+                <p>If any of the information displayed in your profile is incorrect, please contact the Student Administrative Services Office at your earliest convenience. You may need to provide appropriate documentary evidence for corrections.</p>
+                <p>Email: <a href="mailto:sas@university.example.com">sas@university.example.com</a> (Replace with actual email)</p>
+                <p>Phone: +123-456-7890 (Replace with actual phone)</p>
+            </div>
+        </div>
+
+        <div id="address" class="profile-section-container">
+            <h2 class="profile-section-title">Mailing Address</h2>
+        
+            <div class="profile-view-card">
+                <div class="profile-info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Street Address</span>
+                        <span class="info-value">{{ profile_data.address.street or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">City / Town</span>
+                        <span class="info-value">{{ profile_data.address.city or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">State / Province / Division</span>
+                        <span class="info-value">{{ profile_data.address.state or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Country</span>
+                        <span class="info-value">{{ profile_data.address.country or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Postal Code / Zip Code</span>
+                        <span class="info-value">{{ profile_data.address.postal_code or 'Not Provided' }}</span>
+                    </div>
+                </div>
+        
+                <div class="profile-actions">
+                    <p class="form-text text-muted small">
+                        To update your address, please visit the Student Administrative Services office or contact them directly.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="contact" class="profile-section-container">
+            <h2 class="profile-section-title">Contact Information</h2>
+        
+            <div class="profile-view-card">
+                <div class="profile-info-grid">
+                    <div class="info-item">
+                        <span class="info-label">University Email Address</span>
+                        <span class="info-value">{{ profile_data.email or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Primary Phone Number</span>
+                        <span class="info-value">{{ profile_data.phone or 'Not Provided' }}</span>
+                    </div>
+                </div>
+        
+                <div class="profile-actions">
+                    <p class="form-text text-muted small">
+                        Your university email is your official contact method. To update your phone number, please visit the Student Administrative Services office.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="passport" class="profile-section-container">
+            <h2 class="profile-section-title">Passport & Visa Information</h2>
+        
+            <div class="profile-view-card">
+                <div class="profile-info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Passport Number</span>
+                        <span class="info-value">{{ profile_data.passport_visa.passport_number or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Visa Status / Type</span>
+                        <span class="info-value">{{ profile_data.passport_visa.visa_status or 'Not Provided' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Visa Expiration Date</span>
+                        <span class="info-value">{{ profile_data.passport_visa.expiry_date or 'Not Provided' }}</span>
+                    </div>
+                </div>
+        
+                <div class="profile-actions">
+                    <p class="form-text text-muted small">
+                        Ensure your passport and visa information is always up to date. For any changes or to submit new documents, please contact the International Student Support office or Student Administrative Services.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function submitUploadForm() {
+    var form = document.getElementById('uploadForm');
+    var status = document.getElementById('uploadStatus');
+    status.innerHTML = 'Uploading...';
+    
+    form.onsubmit = function() {
+        var iframe = document.getElementsByName('upload_iframe')[0];
+        iframe.onload = function() {
+            try {
+                var response = JSON.parse(iframe.contentWindow.document.body.innerHTML);
+                if (response.profile_pic_url) {
+                    document.getElementById('profileImage').src = response.profile_pic_url;
+                    status.innerHTML = 'Upload successful!';
+                } else {
+                    status.innerHTML = 'Upload failed: ' + (response.error || 'Unknown error');
+                }
+            } catch (e) {
+                status.innerHTML = 'Upload failed: Invalid response';
+            }
+        };
+    };
+    form.submit();
+}
+</script>
+{% endblock %}

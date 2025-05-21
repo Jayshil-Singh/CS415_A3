@@ -1,0 +1,59 @@
+{# templates/header.html #}
+<header class="site-header">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/university_styles.css') }}">
+    <div class="header-container">
+        <a href="{{ url_for('main_bp.index') }}" class="header-brand-link">
+            <img src="{{ url_for('static', filename='images/usp_logo.png') }}" alt="University Logo" class="header-logo">
+            <span class="header-site-name">USP Student Portal</span>
+        </a>
+
+        <div class="header-user-controls">
+            <div id="userInfo" style="display: none;">
+                <a href="#" onclick="viewProfile(); return false;" class="header-profile-link" title="My Profile">
+                    <img id="headerUserAvatar" src="{{ url_for('static', filename='images/default_avatar_icon.png') }}" alt="Profile" class="header-avatar">
+                    <span id="headerUserName" class="header-user-name">Profile</span>
+                </a>
+                <a href="#" onclick="logout(); return false;" class="btn btn-small btn-header-action">Logout</a>
+            </div>
+            <div id="loginButton" style="display: none;">
+                <a href="{{ config['LOGIN_SERVICE_URL'] }}" class="btn btn-small btn-header-action">Login</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    function checkAuth() {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+        
+        const userInfo = document.getElementById('userInfo');
+        const loginButton = document.getElementById('loginButton');
+        const headerUserName = document.getElementById('headerUserName');
+        
+        if (token && user) {
+            userInfo.style.display = 'flex';
+            loginButton.style.display = 'none';
+            headerUserName.textContent = user.username;
+        } else {
+            userInfo.style.display = 'none';
+            loginButton.style.display = 'block';
+        }
+    }
+
+    function viewProfile() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user) {
+            window.location.href = `{{ url_for('main_bp.get_profile', student_id='') }}${user.id}`;
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '{{ config["LOGIN_SERVICE_URL"] }}';
+    }
+
+    // Check authentication when page loads
+    document.addEventListener('DOMContentLoaded', checkAuth);
+</script>
