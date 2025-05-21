@@ -24,13 +24,11 @@ app = Flask (
 )
 
 # --- Application Configuration ---
-app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY_SAS', 'sas_default_insecure_secret_key_CHANGE_THIS_V5')
+app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY_SAS', 'sas_default_insecure_secret_key_CHANGE_THIS_V5') # Ensure this is strong and unique
 app.config['DEBUG'] = os.environ.get('FLASK_DEBUG', 'True').lower() in ['true', '1', 't']
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_FOLDER = os.path.join(BASE_DIR, 'xml_data')
-# app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'profile_pictures_storage')
-# app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
 
 # --- User Context Injection ---
@@ -74,14 +72,13 @@ def get_data_from_xml(filename, list_element_name, item_element_name,
         app.logger.debug(f"Using container <{item_container.tag}> to find <{item_element_name}> items in {filename}")
 
         if sub_item_map: 
+            # Logic for hierarchical XML data (e.g., programs with nested subprograms)
             parent_id_tag_or_attr = sub_item_map['parent_id_tag_or_attr']
             parent_id_is_attribute = sub_item_map.get('parent_id_is_attribute', False)
             sub_item_list_tag = sub_item_map['sub_item_list_tag']
             sub_item_tag = sub_item_map['sub_item_tag']
-            # How to get the text/value for the sub-item
             sub_item_value_attribute = sub_item_map.get('sub_item_value_attribute') 
-            sub_item_text_from_element = sub_item_map.get('sub_item_text_from_element', not sub_item_value_attribute)
-
+            sub_item_text_from_element = sub_item_map.get('sub_item_text_from_element', not sub_item_value_attribute) # Default to text if attribute not specified
 
             parent_nodes_found = item_container.findall(item_element_name)
             app.logger.debug(f"Found {len(parent_nodes_found)} <{item_element_name}> parent nodes for hierarchical parsing.")
@@ -90,45 +87,41 @@ def get_data_from_xml(filename, list_element_name, item_element_name,
                 parent_id_value = None
                 if parent_id_is_attribute:
                     parent_id_value = parent_node.get(parent_id_tag_or_attr)
-                else: # Get from child element text
+                else: 
                     parent_id_element = parent_node.find(parent_id_tag_or_attr)
                     if parent_id_element is not None and parent_id_element.text:
                         parent_id_value = parent_id_element.text.strip()
                 
-                # Fallback or primary: if value_attribute is specified for the parent item_element_name itself
-                # This is useful if the key for the dictionary is an attribute of the item_element_name tag
-                if value_attribute and parent_id_value is None: # Use if parent_id_tag_or_attr didn't yield a value
+                # Fallback: if value_attribute is specified for the parent item_element_name itself
+                # and parent_id_tag_or_attr didn't yield a value (e.g. key is an attribute of the parent item)
+                if value_attribute and parent_id_value is None: 
                     parent_id_value = parent_node.get(value_attribute)
 
-
                 if parent_id_value:
-                    app.logger.debug(f"  Parent item {i+1} Key: '{parent_id_value}'")
+                    # app.logger.debug(f"  Parent item {i+1} Key: '{parent_id_value}'") # Can be noisy
                     current_sub_items_list = []
                     sub_items_container_node = parent_node.find(sub_item_list_tag)
 
                     if sub_items_container_node is not None:
                         sub_item_nodes_found = sub_items_container_node.findall(sub_item_tag)
-                        app.logger.debug(f"    Found {len(sub_item_nodes_found)} <{sub_item_tag}> sub-items in <{sub_items_container_node.tag}>")
                         for j, sub_item_node in enumerate(sub_item_nodes_found):
                             sub_text = None
-                            if sub_item_value_attribute: # Prioritize attribute if specified
+                            if sub_item_value_attribute:
                                 sub_text = sub_item_node.get(sub_item_value_attribute)
-                            elif sub_item_text_from_element and sub_item_node.text: # Then check element text if flag is true
+                            elif sub_item_text_from_element and sub_item_node.text:
                                 sub_text = sub_item_node.text.strip()
-                            
+                            # Fallback if neither specific attribute nor text_from_element is true, but node has text
+                            elif sub_item_node.text and not sub_item_value_attribute and not sub_item_text_from_element:
+                                sub_text = sub_item_node.text.strip()
+                                
                             if sub_text:
                                 current_sub_items_list.append(sub_text)
-                            # else:
-                                # app.logger.debug(f"      Sub-item {j+1} <{sub_item_tag}> has no suitable text/attribute.")
-                    # else:
-                        # app.logger.debug(f"    No <{sub_item_list_tag}> container found for parent '{parent_id_value}'")
                     data_dict_for_hierarchical[parent_id_value] = current_sub_items_list
-                # else:
-                    # app.logger.debug(f"  Parent item {i+1} <{item_element_name}> missing key value via '{parent_id_tag_or_attr}' or '{value_attribute}'.")
             return data_dict_for_hierarchical
         else: 
+            # Logic for a flat list of items
             item_nodes_found = item_container.findall(item_element_name)
-            app.logger.debug(f"Found {len(item_nodes_found)} <{item_element_name}> items for flat list under <{item_container.tag}>") # Corrected syntax
+            app.logger.debug(f"Found {len(item_nodes_found)} <{item_element_name}> items for flat list under <{item_container.tag}>.")
             for i, item_node in enumerate(item_nodes_found):
                 item_text = None
                 if value_attribute: 
@@ -138,13 +131,14 @@ def get_data_from_xml(filename, list_element_name, item_element_name,
 
                 if item_text:
                     data_list_for_flat.append(item_text)
-                # else:
-                    # app.logger.debug(f"  Item {i+1} <{item_element_name}> has no text or attribute '{value_attribute}'.")
+                else:
+                    app.logger.debug(f"  Item {i+1} <{item_element_name}> in {filename} has no text or attribute '{value_attribute}'.")
             return data_list_for_flat
     except ET.ParseError as e: 
         app.logger.error(f"XML ParseError in {xml_file_path}: {e}", exc_info=True)
     except Exception as e: 
         app.logger.error(f"An unexpected error occurred while parsing {xml_file_path}: {e}", exc_info=True)
+    # Fallback return in case of any error during parsing
     return data_list_for_flat if sub_item_map is None else data_dict_for_hierarchical
 
 
@@ -209,6 +203,8 @@ def sas_staff_home():
     navigation_links = {
         "navigateToRegister": url_for('sas_staff_register_student'),
         "navigateToEdit": url_for('sas_staff_edit_student'),
+        "navigateToAllSTGrades": url_for('sas_staff_all_student_enrollments'), # Ensure this endpoint exists
+        "navigateToGradeRecheck": url_for('sas_staff_grade_rechecks'),     # Ensure this endpoint exists
     }
     return render_template(
         'SASStaff/homeStaff.html',
@@ -249,34 +245,59 @@ def sas_staff_register_student():
         programs=programs_list,
         all_subprogrammes=all_subprogrammes_list,
         campuses=campuses_list
+        # If you need a subprograms_map (e.g., program -> list of its subprograms), 
+        # you would call get_data_from_xml with a properly configured sub_item_map argument
+        # and pass that map to the template.
     )
 
 @app.route('/sas-staff/edit-student')
 def sas_staff_edit_student():
     if session.get('user_type') != 'staff': abort(403)
+    # You might want to pass student data here if this page loads a specific student by ID from URL
     return render_template('SASStaff/editST.html')
+
+@app.route('/sas-staff/grade-rechecks')
+def sas_staff_grade_rechecks():
+    if session.get('user_type') != 'staff': abort(403)
+    recheck_applications = [ # Mock data
+        {"student_id": "S11223344", "first_name": "Alice", "last_name": "Wonderland", "campus": "Laucala", "course_code": "CS111", "coordinator_name": "Dr. Elara Vance", "receipt_image_url": url_for('static', filename='images/mock_receipt1.png')},
+        {"student_id": "S11000077", "first_name": "Bob", "last_name": "The Builder", "campus": "Lautoka", "course_code": "MA111", "coordinator_name": "Prof. Ian Field", "receipt_image_url": url_for('static', filename='images/mock_receipt2.png')}
+    ]
+    return render_template('SASStaff/gradeRE.html', applications=recheck_applications)
+
+@app.route('/sas-staff/all-students-grades')
+def sas_staff_all_student_enrollments():
+    if session.get('user_type') != 'staff': abort(403)
+    student_enrollments_data = [ # Mock data
+        {"student_id": "S11223344", "full_name": "Alice Wonderland", "course_enrolled_in": "CS111 - Introduction to Computing", "campus": "Laucala" },
+        {"student_id": "S11000077", "full_name": "Bob The Builder", "course_enrolled_in": "MA111 - Calculus I", "campus": "Lautoka"}
+    ]
+    for enrollment in student_enrollments_data:
+        course_parts = enrollment["course_enrolled_in"].split(" - ")
+        course_code = course_parts[0] if len(course_parts) > 0 else "UNKNOWN"
+        enrollment["change_grade_action"] = f"change_grade('{enrollment['student_id']}', '{course_code}')"
+    return render_template('SASStaff/allST.html', enrollments=student_enrollments_data)
+
 
 # --- Error Handlers ---
 def render_error_page(error, status_code):
     error_template = f"errors/{status_code}.html"
-    # Fallback to generic error page if specific one doesn't exist OR if the specific one IS generic_http_error.html
-    # This prevents a loop if generic_http_error.html itself is missing.
     specific_template_path = os.path.join(app.template_folder, error_template)
     generic_template_path = os.path.join(app.template_folder, "errors/generic_http_error.html")
 
-    if not os.path.exists(specific_template_path) or error_template == "errors/generic_http_error.html":
+    final_template_to_render = error_template
+    if not os.path.exists(specific_template_path):
         if os.path.exists(generic_template_path):
-            error_template = "errors/generic_http_error.html"
-        else: # Absolute fallback if generic_http_error.html is also missing
-            app.logger.critical(f"CRITICAL: Fallback error template 'errors/generic_http_error.html' not found for status {status_code}. Original error: {error}", exc_info=True)
+            final_template_to_render = "errors/generic_http_error.html"
+        else:
+            app.logger.critical(f"CRITICAL: Fallback error template 'errors/generic_http_error.html' AND specific '{error_template}' not found for status {status_code}. Original error: {error}", exc_info=True)
             return f"Internal Server Error ({status_code}). Critical error: Error page template missing.", status_code
-
     try:
-        return render_template(error_template, error=error), status_code
+        return render_template(final_template_to_render, error=error), status_code
     except Exception as e_render:
-        app.logger.critical(f"CRITICAL: Error rendering error page '{error_template}' for status {status_code}. Original error: {error}. Render error: {e_render}", exc_info=True)
-        return f"Internal Server Error ({status_code}). An additional error occurred while trying to display the error page.", status_code
-
+        app.logger.critical(f"CRITICAL: Error rendering error page '{final_template_to_render}' for status {status_code}. Original error: {error}. Render error: {e_render}", exc_info=True)
+        # Avoid rendering another template here to prevent loops if base.html has issues
+        return f"Internal Server Error ({status_code}). An additional error occurred while trying to display the error page. Please check server logs.", status_code
 
 @app.errorhandler(403)
 def handle_403(e):
@@ -293,20 +314,22 @@ def handle_500(e):
     app.logger.error(f"Internal Server Error (500) at path: {request.path}. Error: {e}", exc_info=True)
     return render_error_page(e, 500)
 
-@app.errorhandler(HTTPException)
+@app.errorhandler(HTTPException) # Catches other HTTP errors
 def handle_http_exception(e):
     status_code = e.code if hasattr(e, 'code') and e.code is not None else 500
+    # Avoid re-triggering specific handlers if they are already defined for this code
+    if status_code in [403, 404, 500] and app.error_handler_spec[None].get(status_code):
+         # If a specific handler (like @app.errorhandler(404)) exists, let it handle it.
+         # This check might need refinement based on Flask version or if using blueprints.
+         # For simplicity, we can let render_error_page handle the fallback.
+         pass # Or just call render_error_page directly
     app.logger.warning(f"HTTP Exception (code {status_code}) at path: {request.path}. Description: {e.description}. Error: {e}")
     return render_error_page(e, status_code)
 
-@app.errorhandler(Exception)
+@app.errorhandler(Exception) # Catch-all for non-HTTP exceptions
 def handle_all_other_exceptions(e):
-    if isinstance(e, HTTPException):
-        # This ensures that abort(code) calls are handled by their respective error handlers (HTTPException or specific codes)
-        # and then by render_error_page.
-        # If an error occurs *within* an error handler that tries to render a template,
-        # render_error_page's try-except will catch it.
-        return e 
+    if isinstance(e, HTTPException): # Should have been caught by HTTPException or specific code handlers
+        return e # Let Werkzeug/Flask handle it further if it's already an HTTPException
     app.logger.error(f"Unhandled Non-HTTP Exception at path: {request.path}. Error: {e}", exc_info=True)
     return render_error_page(e, 500)
 
@@ -321,7 +344,7 @@ if __name__ == '__main__':
             app.logger.error(f"Could not create DATA_FOLDER: {e}")
 
     app.logger.info(f"Flask App '{app.name}' (SAS_Services) starting...")
-    if app.config['SECRET_KEY'] == 'sas_default_insecure_secret_key_CHANGE_THIS_V4': # Match updated default
+    if app.config['SECRET_KEY'] == 'sas_default_insecure_secret_key_CHANGE_THIS_V5':
         app.logger.warning("SECURITY WARNING: Flask SECRET_KEY is using the INSECURE default value.")
     app.logger.info(f"Debug mode: {app.debug}")
     app.logger.info(f"Template folder: {os.path.join(BASE_DIR, app.template_folder)}")

@@ -1,0 +1,181 @@
+/* static/css/SASStaff/gradeRE.css */
+
+.grade-recheck-page .page-content-wrapper .container {
+    /* Styles specific to the container on this page, if needed */
+}
+
+.page-title-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-title-container h1 {
+    font-size: 1.8em;
+    color: #00796b; /* Theme color */
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Loading Indicator & No Applications Message (similar to other pages) */
+.loading-indicator,
+.no-applications-message {
+    text-align: center;
+    padding: 30px 20px;
+    color: #555;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+.no-applications-message p {
+    margin:0;
+    font-style: italic;
+}
+
+.spinner { /* Assuming you have this globally or copy from other CSS */
+    border: 5px solid #e0e0e0; 
+    border-top: 5px solid #00796b; 
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px auto;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/* Table Styling */
+.applications-table-container {
+    width: 100%;
+    max-width: 1140px; /* Adjust as needed, should match .container or be slightly less */
+    margin-left: auto;
+    margin-right: auto; /* Center the table container */
+    margin-bottom: 30px;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Horizontal scroll for wide tables */
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+}
+
+#grade-recheck-table {
+    width: 100%;
+    min-width: 900px; /* Minimum width before horizontal scroll appears */
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+#grade-recheck-table th,
+#grade-recheck-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle; /* Align content vertically in cells */
+}
+
+#grade-recheck-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap; /* Prevent headers from wrapping */
+    position: sticky;
+    top: 0; /* For sticky headers within .table-wrapper */
+    z-index: 1; /* Keep header above scrolling content */
+}
+
+#grade-recheck-table tbody tr:nth-child(even) {
+    background-color: #fdfdfd;
+}
+
+#grade-recheck-table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+.receipt-thumbnail {
+    max-width: 80px; /* Adjust size as needed */
+    max-height: 60px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    object-fit: cover; /* Ensures image covers the area without distortion */
+    cursor: pointer; /* If you add a lightbox later */
+    transition: transform 0.2s ease;
+}
+.receipt-thumbnail:hover {
+    transform: scale(1.1);
+}
+.receipt-image-link {
+    display: inline-block; /* To allow transform on hover */
+}
+
+
+#grade-recheck-table td:last-child { /* Actions column */
+    text-align: center;
+    white-space: nowrap;
+}
+
+.action-button {
+    background: none;
+    border: 1px solid transparent; /* Base border */
+    cursor: pointer;
+    padding: 6px 10px;
+    margin: 0 4px;
+    font-size: 0.85em; /* Smaller text for buttons */
+    border-radius: 5px;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    font-weight: 500;
+    display: inline-flex; /* Align icon and text */
+    align-items: center;
+    gap: 5px; /* Space between icon and text */
+}
+.action-button .material-icons-outlined {
+    font-size: 18px; /* Adjust icon size */
+}
+
+.action-button.approve-btn {
+    color: #28a745; /* Green */
+    border-color: #28a745;
+}
+.action-button.approve-btn:hover {
+    background-color: #28a745;
+    color: white;
+    box-shadow: 0 1px 3px rgba(40, 167, 69, 0.3);
+}
+
+.action-button.reject-btn {
+    color: #dc3545; /* Red */
+    border-color: #dc3545;
+}
+.action-button.reject-btn:hover {
+    background-color: #dc3545;
+    color: white;
+    box-shadow: 0 1px 3px rgba(220, 53, 69, 0.3);
+}
+
+
+/* Responsive adjustments for table */
+@media (max-width: 768px) {
+    #grade-recheck-table th,
+    #grade-recheck-table td {
+        padding: 10px 8px;
+        font-size: 0.85em;
+    }
+    .receipt-thumbnail {
+        max-width: 60px;
+        max-height: 40px;
+    }
+    .action-button {
+        padding: 5px 8px;
+        font-size: 0.8em;
+    }
+    .action-button .material-icons-outlined {
+        font-size: 16px;
+    }
+}

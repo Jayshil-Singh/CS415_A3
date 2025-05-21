@@ -1,0 +1,142 @@
+{# templates/SASStaff/allST.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+{{ super() }}
+<title>Student Enrollments & Grades | SAS Portal</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/allST.css') }}">
+{% endblock %}
+
+{% block header %}
+{{ super() }}
+{% endblock %}
+
+{% block body_class %}all-students-grades-page{% endblock %}
+
+{% block body %}
+
+<div class="container">
+
+    <div class="page-title-container">
+        <h1>Student Enrollments - Grade Management</h1>
+    </div>
+
+    <div id="loading-indicator-allST" class="loading-indicator" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading enrollments...</p>
+    </div>
+
+    <div id="no-enrollments-message-allST" class="no-enrollments-message" style="display: none;">
+        <p>No student enrollments found.</p>
+    </div>
+
+    <div id="enrollments-table-container-allST" class="enrollments-table-container">
+        <div class="table-controls-allST">
+            <input type="text" id="search-input-allST" placeholder="Search by Student ID, Name, or Course...">
+        </div>
+        <div class="table-wrapper">
+            <table id="enrollments-table-allST">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Full Name</th>
+                        <th>Course Enrolled In</th>
+                        <th>Current Grade</th> {# Display current grade in table #}
+                        <th>Change Grade</th>
+                    </tr>
+                </thead>
+                <tbody id="enrollments-table-body-allST">
+                    {% if enrollments %}
+                        {% for enrollment in enrollments %}
+                            <tr data-student-id="{{ enrollment.student_id }}"
+                                data-full-name="{{ enrollment.full_name }}"
+                                data-course="{{ enrollment.course_enrolled_in }}"
+                                data-current-grade="{{ enrollment.current_grade | default('N/A', true) }}"> {# Pass current grade for JS #}
+                                <td>{{ enrollment.student_id }}</td>
+                                <td>{{ enrollment.full_name }}</td>
+                                <td>{{ enrollment.course_enrolled_in }}</td>
+                                <td class="current-grade-cell">{{ enrollment.current_grade | default('N/A', true) }}</td> {# Display current grade #}
+                                <td>
+                                    <button class="action-button change-grade-btn"
+                                            data-student-id="{{ enrollment.student_id }}"
+                                            data-course-code="{{ enrollment.course_enrolled_in.split(' - ')[0] }}"
+                                            data-current-grade="{{ enrollment.current_grade | default('', true) }}" {# MODIFIED: Ensures data-attribute is empty if no grade #}
+                                            aria-label="Change grade for {{ enrollment.full_name }} in {{ enrollment.course_enrolled_in }}"
+                                            {% if enrollment.current_grade == None or enrollment.current_grade == '' or enrollment.current_grade == 'N/A' %}
+                                                disabled
+                                                title="No grade initially given"
+                                            {% endif %}>
+                                        <span class="material-icons-outlined">history_edu</span> Change
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            {# Adjusted colspan to 6 #}
+                            <td colspan="6" class="no-data-message">No student enrollments to display.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div> {# End .container #}
+
+{# Modal for Initial Grade Change Input #}
+<div id="change-grade-modal" class="modal" style="display:none;" role="dialog" aria-labelledby="change-grade-modal-title" aria-modal="true">
+    <div class="modal-content">
+        <button class="modal-close-button" aria-label="Close modal">&times;</button>
+        <h3 id="change-grade-modal-title">Change Grade</h3>
+        <p>Student: <span id="modal-student-name"></span> (ID: <span id="modal-student-id"></span>)</p>
+        <p>Course: <span id="modal-course-code"></span></p>
+        <p>Current Grade: <strong id="modal-current-grade"></strong></p>
+
+        <div class="form-group">
+            <label for="new-grade-input">New Grade:<span class="required">*</span></label>
+            <input type="text" id="new-grade-input" class="form-control" placeholder="e.g., A+, B, C-" required>
+            <span class="validation-error"></span>
+        </div>
+        <div class="modal-actions">
+            <button type="button" id="cancel-change-grade" class="dialog-button btn btn-secondary">Cancel</button>
+            {# This button will now trigger the second confirmation modal #}
+            <button type="button" id="confirm-change-grade" class="dialog-button btn btn-primary">Proceed to Confirm</button>
+        </div>
+    </div>
+</div>
+
+{# NEW Modal for Final Confirmation of Grade Change #}
+<div id="final-confirm-grade-modal" class="modal" style="display:none;" role="dialog" aria-labelledby="final-confirm-grade-modal-title" aria-modal="true">
+    <div class="modal-content">
+        <button class="modal-close-button" aria-label="Close modal">&times;</button>
+        <h3 id="final-confirm-grade-modal-title">Confirm New Grade</h3>
+        <p id="final-confirm-grade-message">Are you sure this is the correct new grade?</p> {# JS will update this #}
+        <div class="modal-actions">
+            <button type="button" id="cancel-final-save" class="dialog-button btn btn-secondary">Go Back</button>
+            <button type="button" id="confirm-final-save" class="dialog-button btn btn-danger">Confirm & Save Grade</button>
+        </div>
+    </div>
+</div>
+
+<div id="grade-change-success-modal" class="modal" style="display:none;" role="dialog" aria-labelledby="grade-change-success-modal-title" aria-modal="true">
+    <div class="modal-content">
+        <button class="modal-close-button" aria-label="Close modal">&times;</button>
+        <h3 id="grade-change-success-modal-title">Success!</h3>
+        <p id="grade-change-success-message">The grade has been updated successfully.</p>
+        <div class="modal-actions">
+            <button type="button" id="grade-change-success-ok-btn" class="dialog-button btn btn-primary">OK</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+{{ super() }}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/SASStaff/allST.js') }}"></script>
+{% endblock %}
