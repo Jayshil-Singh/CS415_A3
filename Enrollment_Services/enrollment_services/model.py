@@ -2,8 +2,27 @@
 from .db import db
 from datetime import datetime
 from sqlalchemy import PrimaryKeyConstraint # Import PrimaryKeyConstraint for composite keys
-
+from werkzeug.security import generate_password_hash, check_password_hash # Import for password hashing
 # --- Core Entities ---
+# --- User Management Entities (NEW SECTION) ---
+class User(db.Model):
+    __tablename__ = 'users' # Good practice to name tables in plural
+    id = db.Column(db.String(50), primary_key=True) # Corresponds to student_id, manager_id etc.
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False) # Store hashed password
+    role = db.Column(db.String(50), nullable=False, default='student') # e.g., 'student', 'sas_manager', 'admin'
+
+    def set_password(self, password):
+        """Hashes the password and stores it."""
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        """Checks if the provided password matches the stored hash."""
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f'<User {self.username} (ID: {self.id}, Role: {self.role})>'
 
 class Program(db.Model):
     __tablename__ = 'Program'

@@ -7,42 +7,37 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 from datetime import datetime
-from sqlalchemy.exc import IntegrityError, InvalidRequestError
+from sqlalchemy.exc import IntegrityError, InvalidRequestError # Ensure InvalidRequestError is imported
 from sqlalchemy.orm import joinedload # For eager loading relationships
+import jwt # For JSON Web Tokens
+from functools import wraps # For creating decorators
+from flask import current_app # Import current_app for accessing app.config in decorators/endpoints
 
-# Import db and models from your package. These assume db.py and model.py exist in the same directory.
+# Import db and models from your package.
 from .db import db
 from .model import (
     Program, SubProgram, Semester, Course, CourseAvailability,
     Student, StudentLevel, Hold,
-    Enrollment, CourseFee, StudentCourseFee
+    Enrollment, CourseFee, StudentCourseFee,
+    User # Import the new User model for authentication
 )
 
 # --- Blueprint Initialization ---
 # Create a Blueprint for all enrollment service routes.
-# 'enrollment' is the blueprint's name, used for url_for.
-# '__name__' tells Flask where to find resources relative to this file.
-# 'template_folder' specifies where to find HTML templates relative to this blueprint's root.
 enrollment_bp = Blueprint('enrollment', __name__, template_folder='templates')
 
 # --- Logging Setup ---
-# Configure basic logging to catch errors.
 logging.basicConfig(level=logging.ERROR)
 
 # --- Mock Data (IMPORTANT: To be Replaced with Actual Database Interactions) ---
-# These global variables currently simulate data that would typically be fetched
-# dynamically from your SQLite database using SQLAlchemy ORM.
-# For demonstration purposes, they allow the frontend routes to function.
+# These are placeholders for data that should eventually come from your database.
 
-# Simulates courses completed by the logged-in student.
-student_completed_courses = {'CS111'}
+student_completed_courses = {'CS111'} # Example of courses completed by a student
 
 def get_mock_courses_data():
     """
-    This function currently returns hardcoded course data.
-    In a production application, this should be replaced with database queries
-    to fetch 'Course' entities along with their 'SubProgram', 'CourseAvailability',
-    'CourseFee', and 'PrerequisiteCourse' relationships.
+    Simulates fetching course data from the database.
+    Replace with actual database queries from the Course model.
     """
     return [
         {
@@ -79,7 +74,7 @@ def get_mock_courses_data():
         }
     ]
 
-# Mock student details and invoice details.
+# Mock student and invoice details
 student_details = {
     'name': 'Ratu Epeli Nailatikau',
     'id': 's11223344'
@@ -91,7 +86,7 @@ invoice_details = {
     'payment_status': 'Paid'
 }
 
-# --- Helper Functions for Data Processing ---
+# --- Helper Functions for Data Processing and Serialization ---
 
 def calculate_invoice(enrolled_courses_codes):
     """Calculates the invoice details for the given course codes."""
@@ -112,14 +107,12 @@ def calculate_invoice(enrolled_courses_codes):
             total_amount += subtotal
     return invoice_items, total_amount
 
-# --- Serialization Functions for API Responses ---
 
+# Serialization functions (to convert SQLAlchemy models to dictionaries for JSON response)
 def serialize_program(program):
     return {
         "ProgramID": program.ProgramID,
         "ProgramName": program.ProgramName,
-        # The SubProgramID here should be carefully considered based on the ERD.
-        # If Program.SubProgramID is a composite PK part, or a FK, ensure its purpose.
         "SubProgramID": program.SubProgramID if hasattr(program, 'SubProgramID') else None
     }
 
@@ -136,6 +129,9 @@ def serialize_semester(semester):
         "SemesterID": semester.SemesterID,
         "SemesterName": semester.SemesterName
     }
+# enrollment_services/routes.py (continued from Part 1)
+
+# --- Serialization Functions for API Responses (continued) ---
 
 def serialize_course(course):
     return {
@@ -217,17 +213,160 @@ def serialize_hold(hold):
     }
 
 
+# --- Authentication Decorator and Endpoints ---
+# enrollment_services/routes.py (update this function)
+
+def token_required(f):
+    """
+    Decorator to protect routes that require a valid JWT.
+    It checks for token in Flask session (for HTML pages) or Authorization header (for API calls).
+    """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        # 1. Try to get token from Flask session (for HTML page loads)
+        if 'jwt_token' in session:
+            token = session['jwt_token']
+        # 2. If not in session, try to get from Authorization header (for API calls)
+        elif 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            if len(auth_header.split(" ")) == 2 and auth_header.split(" ")[0].lower() == 'bearer':
+                token = auth_header.split(" ")[1]
+
+        if not token:
+            # If no token is found in session or header, redirect to login for HTML requests
+            # Or return JSON error for API requests
+            if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+                flash("Authentication required to access this page.", "error")
+                return redirect(url_for('login_page')) # Redirect to the app's login page
+            else: # Assume it's an API request expecting JSON
+                return jsonify({'message': 'Token is missing!'}), 401
+
+        try:
+            data = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=["HS256"])
+            current_user = User.query.get(data['user_id'])
+            if not current_user:
+                if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+                    flash("Invalid user associated with token. Please log in again.", "error")
+                    return redirect(url_for('login_page'))
+                else:
+                    return jsonify({'message': 'User not found!'}), 401
+
+        except jwt.ExpiredSignatureError:
+            if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+                flash("Your session has expired. Please log in again.", "error")
+                return redirect(url_for('login_page'))
+            else:
+                return jsonify({'message': 'Token has expired!'}), 401
+        except jwt.InvalidTokenError:
+            if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+                flash("Invalid authentication token. Please log in again.", "error")
+                return redirect(url_for('login_page'))
+            else:
+                return jsonify({'message': 'Token is invalid!'}), 401
+        except Exception as e:
+            logging.error(f"Token verification error: {e}")
+            if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+                flash("Authentication error. Please log in again.", "error")
+                return redirect(url_for('login_page'))
+            else:
+                return jsonify({'message': 'Token verification failed: ' + str(e)}), 401
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
+# ... (rest of your routes.py code, all other routes remain as they were in the previous parts) ...
+
+
+@enrollment_bp.route('/auth/login', methods=['POST'])
+def login():
+    """
+    Handles user login, authenticates credentials, and issues a JWT.
+    Expects JSON input: {"username": "...", "password": "..."}
+    """
+    data = request.json
+    if not data or not 'username' in data or not 'password' in data:
+        return jsonify({'message': 'Missing username or password'}), 400
+
+    user = User.query.filter_by(username=data['username']).first()
+    if not user or not user.check_password(data['password']):
+        return jsonify({'message': 'Invalid credentials'}), 401
+
+    # If credentials are valid, generate a JWT
+    token_payload = {
+        'user_id': user.id,
+        'username': user.username,
+        'role': user.role,
+        'exp': datetime.utcnow() + current_app.config['JWT_EXPIRATION_DELTA']
+    }
+    token = jwt.encode(token_payload, current_app.config['JWT_SECRET_KEY'], algorithm="HS256")
+
+    # Store token in Flask session upon successful login (for HTML route authentication check)
+    session['jwt_token'] = token
+
+    return jsonify({'message': 'Login successful', 'token': token, 'user': {'id': user.id, 'username': user.username, 'role': user.role}}), 200
+
+@enrollment_bp.route('/auth/verify_token', methods=['GET'])
+@token_required # Protect this endpoint itself for demonstration
+def verify_token(current_user):
+    """
+    Verifies the provided JWT and returns user information.
+    Accessible only with a valid token.
+    """
+    # If the decorator passed, the token is valid and current_user is set
+    return jsonify({
+        'message': 'Token is valid',
+        'user_id': current_user.id,
+        'username': current_user.username,
+        'role': current_user.role
+    }), 200
+# enrollment_services/routes.py (add this in the authentication section)
+
+@enrollment_bp.route('/auth/set_session_token', methods=['POST'])
+def set_session_token():
+    """
+    Receives a JWT from the client and stores it in the Flask session.
+    This is used to bridge client-side localStorage/cookies with server-side session
+    for HTML page authentication checks.
+    """
+    data = request.json
+    token = data.get('token')
+
+    if token:
+        # Optionally, you could decode and validate the token here again,
+        # but for this flow, we assume it's just received from a successful login
+        # and its validation will happen on actual protected routes.
+        session['jwt_token'] = token
+        return jsonify({'message': 'Token set in session successfully'}), 200
+    else:
+        return jsonify({'message': 'No token provided'}), 400
+
+# ... (rest of your routes.py code) ...
+# enrollment_services/routes.py (continued from Part 2)
+
 # --- Frontend-facing Routes (HTML Rendering) ---
+# These routes handle displaying HTML pages and simple user interactions that might
+# involve session data. They will be prefixed by the blueprint's url_prefix (e.g., /enrollment_services/)
+# when registered in run_es.py.
+# All these routes are now protected by the token_required decorator.
 
 @enrollment_bp.route('/')
 @enrollment_bp.route('/dashboard')
-def dashboard():
-    """Renders the dashboard page."""
+@token_required # Protect the dashboard route
+def dashboard(current_user): # Add current_user parameter to receive user info from decorator
+    """Renders the dashboard page. Requires authentication."""
+    # You can now use current_user.username, current_user.role etc. in your dashboard.html template
+    # Example: return render_template('dashboard.html', user=current_user)
     return render_template('dashboard.html')
 
 @enrollment_bp.route('/enroll', methods=['GET', 'POST'])
-def enroll():
+@token_required # Protect the enroll route
+def enroll(current_user): # Add current_user parameter
+    """Handles course enrollment. Requires authentication."""
     try:
+        # Fetch courses from mock data (To be replaced with DB queries from Course model)
         courses_data = get_mock_courses_data()
 
         if 'enrolled_courses' not in session:
@@ -263,8 +402,9 @@ def enroll():
         return render_template('500.html'), 500
 
 @enrollment_bp.route('/display_courses')
-def display_courses():
-    """Displays the courses currently selected/enrolled by the student (from session)."""
+@token_required # Protect the display_courses route
+def display_courses(current_user): # Add current_user parameter
+    """Displays the courses currently selected/enrolled by the student (from session). Requires authentication."""
     try:
         courses_data = get_mock_courses_data()
         enrolled_courses_codes = session.get('enrolled_courses', [])
@@ -275,8 +415,9 @@ def display_courses():
         return render_template('500.html'), 500
 
 @enrollment_bp.route('/drop_course/<course_code>')
-def drop_course(course_code):
-    """Allows a student to drop a course from their current session enrollment."""
+@token_required # Protect the drop_course route
+def drop_course(current_user, course_code): # Add current_user parameter
+    """Allows a student to drop a course from their current session enrollment. Requires authentication."""
     try:
         if 'enrolled_courses' in session:
             session['enrolled_courses'] = [code for code in session['enrolled_courses'] if code != course_code]
@@ -288,8 +429,9 @@ def drop_course(course_code):
         return render_template('500.html'), 500
 
 @enrollment_bp.route('/fees')
-def fees():
-    """Renders the fees overview page, showing calculated invoice details."""
+@token_required # Protect the fees route
+def fees(current_user): # Add current_user parameter
+    """Renders the fees overview page, showing calculated invoice details. Requires authentication."""
     try:
         enrolled_courses_codes = session.get('enrolled_courses', [])
         invoice_items, total_amount = calculate_invoice(enrolled_courses_codes)
@@ -305,8 +447,9 @@ def fees():
         return render_template('500.html'), 500
 
 @enrollment_bp.route('/download_invoice_pdf')
-def download_invoice_pdf():
-    """Generates and provides a PDF download of the invoice."""
+@token_required # Protect the download_invoice_pdf route
+def download_invoice_pdf(current_user): # Add current_user parameter
+    """Generates and provides a PDF download of the invoice. Requires authentication."""
     try:
         enrolled_courses_codes = session.get('enrolled_courses', [])
         invoice_items, total_amount = calculate_invoice(enrolled_courses_codes)
@@ -359,28 +502,45 @@ def download_invoice_pdf():
 @enrollment_bp.errorhandler(404)
 def page_not_found(e):
     """Custom 404 error handler for blueprint routes."""
+    # This error handler does not take current_user as it's for 404s,
+    # which can happen before or after authentication.
     return render_template('404.html'), 404
 
+
+# enrollment_services/routes.py (continued from Part 3)
+
 # --- API Endpoints (JSON Responses) ---
+# These routes provide data for your frontend or other services.
+# They are prefixed by the blueprint's url_prefix and are now protected by token_required.
 
 # Program Endpoints
 @enrollment_bp.route('/programs', methods=['GET'])
-def get_programs():
-    """Retrieves all programs from the database."""
+@token_required # Protect this route
+def get_programs(current_user): # Add current_user parameter
+    """Retrieves all programs from the database. Requires authentication."""
+    # Example: You can implement role-based access control here if needed
+    # if current_user.role not in ['admin', 'sas_manager']:
+    #     return jsonify({'message': 'Unauthorized: Access restricted'}), 403
     programs = Program.query.all()
     return jsonify([serialize_program(p) for p in programs])
 
 @enrollment_bp.route('/programs/<string:program_id>', methods=['GET'])
-def get_program(program_id):
-    """Retrieves a single program by its ID."""
+@token_required # Protect this route
+def get_program(current_user, program_id): # Add current_user parameter
+    """Retrieves a single program by its ID. Requires authentication."""
     program = Program.query.get(program_id)
     if not program:
         return jsonify({"message": "Program not found"}), 404
     return jsonify(serialize_program(program))
 
 @enrollment_bp.route('/programs', methods=['POST'])
-def add_program():
-    """Adds a new program to the database."""
+@token_required # Protect this route
+def add_program(current_user): # Add current_user parameter
+    """Adds a new program to the database. Requires authentication."""
+    # Example: Only admins can add programs
+    if current_user.role != 'admin':
+        return jsonify({'message': 'Unauthorized: Only administrators can add programs'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['ProgramID', 'ProgramName', 'SubProgramID']):
         return jsonify({"message": "Missing program data (requires ProgramID, ProgramName, SubProgramID)"}), 400
@@ -388,7 +548,7 @@ def add_program():
     new_program = Program(
         ProgramID=data['ProgramID'],
         ProgramName=data['ProgramName'],
-        SubProgramID=data['SubProgramID']
+        SubProgramID=data['SubProgramID'] # Assuming this is part of the composite PK or a FK
     )
     db.session.add(new_program)
     try:
@@ -403,8 +563,12 @@ def add_program():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/programs/<string:program_id>', methods=['PUT'])
-def update_program(program_id):
-    """Updates an existing program by its ID."""
+@token_required # Protect this route
+def update_program(current_user, program_id): # Add current_user parameter
+    """Updates an existing program by its ID. Requires authentication."""
+    if current_user.role != 'admin':
+        return jsonify({'message': 'Unauthorized: Only administrators can update programs'}), 403
+
     program = Program.query.get(program_id)
     if not program:
         return jsonify({"message": "Program not found"}), 404
@@ -430,8 +594,12 @@ def update_program(program_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/programs/<string:program_id>', methods=['DELETE'])
-def delete_program(program_id):
-    """Deletes a program by its ID."""
+@token_required # Protect this route
+def delete_program(current_user, program_id): # Add current_user parameter
+    """Deletes a program by its ID. Requires authentication."""
+    if current_user.role != 'admin':
+        return jsonify({'message': 'Unauthorized: Only administrators can delete programs'}), 403
+
     program = Program.query.get(program_id)
     if not program:
         return jsonify({"message": "Program not found"}), 404
@@ -451,22 +619,28 @@ def delete_program(program_id):
 
 # SubProgram Endpoints
 @enrollment_bp.route('/subprograms', methods=['GET'])
-def get_subprograms():
-    """Retrieves all subprograms from the database."""
+@token_required # Protect this route
+def get_subprograms(current_user): # Add current_user parameter
+    """Retrieves all subprograms from the database. Requires authentication."""
     subprograms = SubProgram.query.all()
     return jsonify([serialize_subprogram(s) for s in subprograms])
 
 @enrollment_bp.route('/subprograms/<string:subprogram_id>', methods=['GET'])
-def get_subprogram(subprogram_id):
-    """Retrieves a single subprogram by its ID."""
+@token_required # Protect this route
+def get_subprogram(current_user, subprogram_id): # Add current_user parameter
+    """Retrieves a single subprogram by its ID. Requires authentication."""
     subprogram = SubProgram.query.get(subprogram_id)
     if not subprogram:
         return jsonify({"message": "SubProgram not found"}), 404
     return jsonify(serialize_subprogram(subprogram))
 
 @enrollment_bp.route('/subprograms', methods=['POST'])
-def add_subprogram():
-    """Adds a new subprogram to the database."""
+@token_required # Protect this route
+def add_subprogram(current_user): # Add current_user parameter
+    """Adds a new subprogram to the database. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can add subprograms'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['SubProgramID', 'SubProgramName', 'ProgramID']):
         return jsonify({"message": "Missing subprogram data (requires SubProgramID, SubProgramName, ProgramID)"}), 400
@@ -494,8 +668,12 @@ def add_subprogram():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/subprograms/<string:subprogram_id>', methods=['PUT'])
-def update_subprogram(subprogram_id):
-    """Updates an existing subprogram by its ID."""
+@token_required # Protect this route
+def update_subprogram(current_user, subprogram_id): # Add current_user parameter
+    """Updates an existing subprogram by its ID. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update subprograms'}), 403
+
     subprogram = SubProgram.query.get(subprogram_id)
     if not subprogram:
         return jsonify({"message": "SubProgram not found"}), 404
@@ -523,8 +701,12 @@ def update_subprogram(subprogram_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/subprograms/<string:subprogram_id>', methods=['DELETE'])
-def delete_subprogram(subprogram_id):
-    """Deletes a subprogram by its ID."""
+@token_required # Protect this route
+def delete_subprogram(current_user, subprogram_id): # Add current_user parameter
+    """Deletes a subprogram by its ID. Requires authentication."""
+    if current_user.role != 'admin': # Only admins can delete subprograms
+        return jsonify({'message': 'Unauthorized: Only administrators can delete subprograms'}), 403
+
     subprogram = SubProgram.query.get(subprogram_id)
     if not subprogram:
         return jsonify({"message": "SubProgram not found"}), 404
@@ -544,22 +726,28 @@ def delete_subprogram(subprogram_id):
 
 # Semester Endpoints
 @enrollment_bp.route('/semesters', methods=['GET'])
-def get_semesters():
-    """Retrieves all semesters from the database."""
+@token_required # Protect this route
+def get_semesters(current_user): # Add current_user parameter
+    """Retrieves all semesters from the database. Requires authentication."""
     semesters = Semester.query.all()
     return jsonify([serialize_semester(s) for s in semesters])
 
 @enrollment_bp.route('/semesters/<string:semester_id>', methods=['GET'])
-def get_semester(semester_id):
-    """Retrieves a single semester by its ID."""
+@token_required # Protect this route
+def get_semester(current_user, semester_id): # Add current_user parameter
+    """Retrieves a single semester by its ID. Requires authentication."""
     semester = Semester.query.get(semester_id)
     if not semester:
         return jsonify({"message": "Semester not found"}), 404
     return jsonify(serialize_semester(semester))
 
 @enrollment_bp.route('/semesters', methods=['POST'])
-def add_semester():
-    """Adds a new semester to the database."""
+@token_required # Protect this route
+def add_semester(current_user): # Add current_user parameter
+    """Adds a new semester to the database. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can add semesters'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['SemesterID', 'SemesterName']):
         return jsonify({"message": "Missing semester data (requires SemesterID, SemesterName)"}), 400
@@ -581,8 +769,12 @@ def add_semester():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/semesters/<string:semester_id>', methods=['PUT'])
-def update_semester(semester_id):
-    """Updates an existing semester by its ID."""
+@token_required # Protect this route
+def update_semester(current_user, semester_id): # Add current_user parameter
+    """Updates an existing semester by its ID. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update semesters'}), 403
+
     semester = Semester.query.get(semester_id)
     if not semester:
         return jsonify({"message": "Semester not found"}), 404
@@ -603,8 +795,12 @@ def update_semester(semester_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/semesters/<string:semester_id>', methods=['DELETE'])
-def delete_semester(semester_id):
-    """Deletes a semester by its ID."""
+@token_required # Protect this route
+def delete_semester(current_user, semester_id): # Add current_user parameter
+    """Deletes a semester by its ID. Requires authentication."""
+    if current_user.role != 'admin': # Only admins can delete semesters
+        return jsonify({'message': 'Unauthorized: Only administrators can delete semesters'}), 403
+
     semester = Semester.query.get(semester_id)
     if not semester:
         return jsonify({"message": "Semester not found"}), 404
@@ -622,16 +818,28 @@ def delete_semester(semester_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 
+# enrollment_services/routes.py (continued from Part 4)
+
+# --- API Endpoints (JSON Responses) continued ---
+
 # Student Endpoints
 @enrollment_bp.route('/students', methods=['GET'])
-def get_students():
-    """Retrieves all students from the database."""
+@token_required # Protect this route
+def get_students(current_user): # Add current_user parameter
+    """Retrieves all students from the database. Requires authentication."""
+    # Example: Only admins or SAS managers can view all students
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Access restricted to administrators and SAS managers'}), 403
     students = Student.query.all()
     return jsonify([serialize_student(s) for s in students])
 
 @enrollment_bp.route('/students', methods=['POST'])
-def create_student():
-    """Creates a new student record in the database."""
+@token_required # Protect this route
+def create_student(current_user): # Add current_user parameter
+    """Creates a new student record in the database. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators and SAS managers can create students'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['StudentID', 'FirstName', 'LastName', 'Email']):
         return jsonify({"message": "Missing student data (requires StudentID, FirstName, LastName, Email)"}), 400
@@ -655,16 +863,28 @@ def create_student():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/students/<string:student_id>', methods=['GET'])
-def get_student(student_id):
-    """Retrieves a single student by their ID."""
+@token_required # Protect this route
+def get_student(current_user, student_id): # Add current_user parameter
+    """Retrieves a single student by their ID. Requires authentication."""
+    # A student should only be able to view their own profile, managers/admins can view any
+    if current_user.role == 'student' and current_user.id != student_id:
+        return jsonify({'message': 'Unauthorized: You can only view your own student profile'}), 403
+
     student = Student.query.get(student_id)
     if not student:
         return jsonify({"message": "Student not found"}), 404
     return jsonify(serialize_student(student))
 
 @enrollment_bp.route('/students/<string:student_id>', methods=['PUT'])
-def update_student(student_id):
-    """Updates an existing student's details."""
+@token_required # Protect this route
+def update_student(current_user, student_id): # Add current_user parameter
+    """Updates an existing student's details. Requires authentication."""
+    # Students can only update their own profile; admins/managers can update any
+    if current_user.role == 'student' and current_user.id != student_id:
+        return jsonify({'message': 'Unauthorized: You can only update your own student profile'}), 403
+    if current_user.role not in ['admin', 'sas_manager', 'student']: # Add 'student' if students can update certain fields
+        return jsonify({'message': 'Unauthorized: Insufficient privileges to update student'}), 403
+
     student = Student.query.get(student_id)
     if not student:
         return jsonify({"message": "Student not found"}), 404
@@ -672,6 +892,13 @@ def update_student(student_id):
     data = request.json
     if not data:
         return jsonify({"message": "No data provided for update"}), 400
+
+    # Example: Allow students to update only their email/name, not ID
+    if current_user.role == 'student':
+        if 'StudentID' in data and data['StudentID'] != student_id: # Prevent ID change
+             return jsonify({"message": "Unauthorized: Cannot change your Student ID"}), 403
+        if 'role' in data: # Prevent role change for students
+             return jsonify({"message": "Unauthorized: Cannot change role"}), 403
 
     if 'FirstName' in data:
         student.FirstName = data['FirstName']
@@ -681,6 +908,7 @@ def update_student(student_id):
         if Student.query.filter(Student.Email == data['Email'], Student.StudentID != student_id).first():
             return jsonify({"message": "Email already registered to another student"}), 409
         student.Email = data['Email']
+    # Admins/Managers could potentially update more fields like role, but students cannot.
 
     try:
         db.session.commit()
@@ -691,8 +919,12 @@ def update_student(student_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/students/<string:student_id>', methods=['DELETE'])
-def delete_student(student_id):
-    """Deletes a student and associated records (enrollments, fees, holds, levels)."""
+@token_required # Protect this route
+def delete_student(current_user, student_id): # Add current_user parameter
+    """Deletes a student and associated records (enrollments, fees, holds, levels). Requires authentication."""
+    if current_user.role != 'admin': # Only admins can delete student records
+        return jsonify({'message': 'Unauthorized: Only administrators can delete student records'}), 403
+
     student = Student.query.get(student_id)
     if not student:
         return jsonify({"message": "Student not found"}), 404
@@ -714,23 +946,29 @@ def delete_student(student_id):
 
 
 # Course Endpoints
-@enrollment_bp.route('/courses_api', methods=['GET'])
-def get_courses_api():
-    """Retrieves all courses with their subprogram and availability details."""
+@enrollment_bp.route('/courses_api', methods=['GET']) # Using _api suffix to differentiate from frontend course list
+@token_required # Protect this route
+def get_courses_api(current_user): # Add current_user parameter
+    """Retrieves all courses with their subprogram and availability details. Requires authentication."""
     courses = Course.query.options(db.joinedload(Course.subprogram), db.joinedload(Course.course_availabilities).joinedload(CourseAvailability.semester)).all()
     return jsonify([serialize_course(course) for course in courses])
 
 @enrollment_bp.route('/courses_api/<string:course_id>', methods=['GET'])
-def get_course_api(course_id):
-    """Retrieves a single course by its ID with subprogram and availability details."""
+@token_required # Protect this route
+def get_course_api(current_user, course_id): # Add current_user parameter
+    """Retrieves a single course by its ID with subprogram and availability details. Requires authentication."""
     course = Course.query.options(db.joinedload(Course.subprogram), db.joinedload(Course.course_availabilities).joinedload(CourseAvailability.semester)).get(course_id)
     if not course:
         return jsonify({"message": "Course not found"}), 404
     return jsonify(serialize_course(course))
 
 @enrollment_bp.route('/courses_api', methods=['POST'])
-def add_course_api():
-    """Adds a new course to the database."""
+@token_required # Protect this route
+def add_course_api(current_user): # Add current_user parameter
+    """Adds a new course to the database. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators and SAS managers can add courses'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['CourseID', 'CourseName', 'SubProgramID']):
         return jsonify({"message": "Missing course data (requires CourseID, CourseName, SubProgramID)"}), 400
@@ -764,8 +1002,12 @@ def add_course_api():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/courses_api/<string:course_id>', methods=['PUT'])
-def update_course_api(course_id):
-    """Updates an existing course by its ID."""
+@token_required # Protect this route
+def update_course_api(current_user, course_id): # Add current_user parameter
+    """Updates an existing course by its ID. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators and SAS managers can update courses'}), 403
+
     course = Course.query.get(course_id)
     if not course:
         return jsonify({"message": "Course not found"}), 404
@@ -798,8 +1040,12 @@ def update_course_api(course_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/courses_api/<string:course_id>', methods=['DELETE'])
-def delete_course_api(course_id):
-    """Deletes a course by its ID."""
+@token_required # Protect this route
+def delete_course_api(current_user, course_id): # Add current_user parameter
+    """Deletes a course by its ID. Requires authentication."""
+    if current_user.role != 'admin': # Only admins can delete courses
+        return jsonify({'message': 'Unauthorized: Only administrators can delete courses'}), 403
+
     course = Course.query.get(course_id)
     if not course:
         return jsonify({"message": "Course not found"}), 404
@@ -827,8 +1073,9 @@ def delete_course_api(course_id):
 
 # Course Availability Endpoints
 @enrollment_bp.route('/course_availabilities', methods=['GET'])
-def get_course_availabilities():
-    """Retrieves all course availabilities, with related course and semester details."""
+@token_required # Protect this route
+def get_course_availabilities(current_user): # Add current_user parameter
+    """Retrieves all course availabilities, with related course and semester details. Requires authentication."""
     availabilities = CourseAvailability.query.options(db.joinedload(CourseAvailability.course), db.joinedload(CourseAvailability.semester)).all()
     return jsonify([{
         "CourseAvailabilityID": ca.CourseAvailabilityID,
@@ -840,8 +1087,9 @@ def get_course_availabilities():
     } for ca in availabilities])
 
 @enrollment_bp.route('/course_availabilities/<string:ca_id>', methods=['GET'])
-def get_course_availability(ca_id):
-    """Retrieves a single course availability by its ID."""
+@token_required # Protect this route
+def get_course_availability(current_user, ca_id): # Add current_user parameter
+    """Retrieves a single course availability by its ID. Requires authentication."""
     availability = CourseAvailability.query.options(db.joinedload(CourseAvailability.course), db.joinedload(CourseAvailability.semester)).get(ca_id)
     if not availability:
         return jsonify({"message": "Course availability not found"}), 404
@@ -855,8 +1103,12 @@ def get_course_availability(ca_id):
     })
 
 @enrollment_bp.route('/course_availabilities', methods=['POST'])
-def add_course_availability():
-    """Adds a new course availability record."""
+@token_required # Protect this route
+def add_course_availability(current_user): # Add current_user parameter
+    """Adds a new course availability record. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators and SAS managers can add course availabilities'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['CourseAvailabilityID', 'CourseID', 'SemesterID']):
         return jsonify({"message": "Missing course availability data (requires CourseAvailabilityID, CourseID, SemesterID)"}), 400
@@ -894,8 +1146,12 @@ def add_course_availability():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/course_availabilities/<string:ca_id>', methods=['PUT'])
-def update_course_availability(ca_id):
-    """Updates an existing course availability record."""
+@token_required # Protect this route
+def update_course_availability(current_user, ca_id): # Add current_user parameter
+    """Updates an existing course availability record. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators and SAS managers can update course availabilities'}), 403
+
     availability = CourseAvailability.query.get(ca_id)
     if not availability:
         return jsonify({"message": "Course availability not found"}), 404
@@ -916,8 +1172,12 @@ def update_course_availability(ca_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/course_availabilities/<string:ca_id>', methods=['DELETE'])
-def delete_course_availability(ca_id):
-    """Deletes a course availability record."""
+@token_required # Protect this route
+def delete_course_availability(current_user, ca_id): # Add current_user parameter
+    """Deletes a course availability record. Requires authentication."""
+    if current_user.role != 'admin':
+        return jsonify({'message': 'Unauthorized: Only administrators can delete course availabilities'}), 403
+
     availability = CourseAvailability.query.get(ca_id)
     if not availability:
         return jsonify({"message": "Course availability not found"}), 404
@@ -931,24 +1191,46 @@ def delete_course_availability(ca_id):
         logging.error(f"Error deleting course availability {ca_id}: {e}")
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
+# enrollment_services/routes.py (continued from Part 5)
+
+# --- API Endpoints (JSON Responses) continued ---
+
 # Enrollment Endpoints
 @enrollment_bp.route('/enrollments_api', methods=['GET'])
-def get_enrollments_api():
-    """Retrieves all enrollments with related student and course details."""
-    enrollments = Enrollment.query.options(db.joinedload(Enrollment.student), db.joinedload(Enrollment.course)).all()
+@token_required # Protect this route
+def get_enrollments_api(current_user): # Add current_user parameter
+    """Retrieves all enrollments with related student and course details. Requires authentication."""
+    # Example: Students can only view their own enrollments; others can view all
+    if current_user.role == 'student':
+        enrollments = Enrollment.query.options(db.joinedload(Enrollment.student), db.joinedload(Enrollment.course)).filter_by(StudentID=current_user.id).all()
+    else: # admin, sas_manager
+        enrollments = Enrollment.query.options(db.joinedload(Enrollment.student), db.joinedload(Enrollment.course)).all()
     return jsonify([serialize_enrollment(e) for e in enrollments])
 
 @enrollment_bp.route('/enrollments_api/<string:enrollment_id>', methods=['GET'])
-def get_enrollment_api(enrollment_id):
-    """Retrieves a single enrollment by its ID."""
+@token_required # Protect this route
+def get_enrollment_api(current_user, enrollment_id): # Add current_user parameter
+    """Retrieves a single enrollment by its ID. Requires authentication."""
     enrollment = Enrollment.query.options(db.joinedload(Enrollment.student), db.joinedload(Enrollment.course)).get(enrollment_id)
     if not enrollment:
         return jsonify({"message": "Enrollment not found"}), 404
+
+    # Students can only view their own specific enrollment
+    if current_user.role == 'student' and enrollment.StudentID != current_user.id:
+        return jsonify({'message': 'Unauthorized: You can only view your own enrollments'}), 403
+
     return jsonify(serialize_enrollment(enrollment))
 
 @enrollment_bp.route('/enrollments_api', methods=['POST'])
-def create_enrollment_api():
-    """Creates a new enrollment record."""
+@token_required # Protect this route
+def create_enrollment_api(current_user): # Add current_user parameter
+    """Creates a new enrollment record. Requires authentication."""
+    # Only students can enroll themselves; admins/managers can enroll anyone
+    if current_user.role == 'student' and request.json.get('StudentID') != current_user.id:
+        return jsonify({'message': 'Unauthorized: Students can only create enrollments for themselves'}), 403
+    if current_user.role not in ['admin', 'sas_manager', 'student']:
+         return jsonify({'message': 'Unauthorized: Insufficient privileges to create enrollment'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['EnrollmentID', 'StudentID', 'CourseID']):
         return jsonify({"message": "Missing enrollment data (requires EnrollmentID, StudentID, CourseID)"}), 400
@@ -960,6 +1242,7 @@ def create_enrollment_api():
     if not course:
         return jsonify({"message": "Course not found"}), 404
 
+    # Prevent duplicate enrollments for the same student in the same course
     existing_enrollment = Enrollment.query.filter_by(StudentID=data['StudentID'], CourseID=data['CourseID']).first()
     if existing_enrollment:
         return jsonify({"message": "Student already enrolled in this course"}), 409
@@ -974,7 +1257,7 @@ def create_enrollment_api():
     try:
         db.session.commit()
         return jsonify({"message": "Enrollment created successfully", "enrollment_id": new_enrollment.EnrollmentID}), 201
-    except IntegrityError:
+    except IntegrityError: # Catches if EnrollmentID is duplicated
         db.session.rollback()
         return jsonify({"message": "Enrollment with this ID already exists"}), 409
     except Exception as e:
@@ -983,8 +1266,13 @@ def create_enrollment_api():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/enrollments_api/<string:enrollment_id>', methods=['PUT'])
-def update_enrollment_api(enrollment_id):
-    """Updates an existing enrollment record."""
+@token_required # Protect this route
+def update_enrollment_api(current_user, enrollment_id): # Add current_user parameter
+    """Updates an existing enrollment record. Requires authentication."""
+    # Only admins/managers can update enrollments
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update enrollments'}), 403
+
     enrollment = Enrollment.query.get(enrollment_id)
     if not enrollment:
         return jsonify({"message": "Enrollment not found"}), 404
@@ -995,6 +1283,7 @@ def update_enrollment_api(enrollment_id):
 
     if 'EnrollmentDate' in data:
         enrollment.EnrollmentDate = datetime.strptime(data['EnrollmentDate'], '%Y-%m-%d').date() if data['EnrollmentDate'] else None
+    # Typically, StudentID and CourseID are not updated for an existing enrollment.
 
     try:
         db.session.commit()
@@ -1005,8 +1294,13 @@ def update_enrollment_api(enrollment_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/enrollments_api/<string:enrollment_id>', methods=['DELETE'])
-def delete_enrollment_api(enrollment_id):
-    """Deletes an enrollment record."""
+@token_required # Protect this route
+def delete_enrollment_api(current_user, enrollment_id): # Add current_user parameter
+    """Deletes an enrollment record. Requires authentication."""
+    # Only admins/managers can delete enrollments
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can delete enrollments'}), 403
+
     enrollment = Enrollment.query.get(enrollment_id)
     if not enrollment:
         return jsonify({"message": "Enrollment not found"}), 404
@@ -1023,22 +1317,28 @@ def delete_enrollment_api(enrollment_id):
 
 # Course Fees Endpoints
 @enrollment_bp.route('/course_fees_api', methods=['GET'])
-def get_course_fees_api():
-    """Retrieves all course fees with related course details."""
+@token_required # Protect this route
+def get_course_fees_api(current_user): # Add current_user parameter
+    """Retrieves all course fees with related course details. Requires authentication."""
     fees = CourseFee.query.options(db.joinedload(CourseFee.course)).all()
     return jsonify([serialize_course_fee(f) for f in fees])
 
 @enrollment_bp.route('/course_fees_api/<int:fee_id>', methods=['GET'])
-def get_course_fee_api(fee_id):
-    """Retrieves a single course fee by its ID."""
+@token_required # Protect this route
+def get_course_fee_api(current_user, fee_id): # Add current_user parameter
+    """Retrieves a single course fee by its ID. Requires authentication."""
     fee = CourseFee.query.options(db.joinedload(CourseFee.course)).get(fee_id)
     if not fee:
         return jsonify({"message": "Course fee not found"}), 404
     return jsonify(serialize_course_fee(fee))
 
 @enrollment_bp.route('/course_fees_api', methods=['POST'])
-def add_course_fee_api():
-    """Adds a new course fee record."""
+@token_required # Protect this route
+def add_course_fee_api(current_user): # Add current_user parameter
+    """Adds a new course fee record. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can add course fees'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['amount', 'description', 'CourseID']):
         return jsonify({"message": "Missing course fee data (requires amount, description, CourseID)"}), 400
@@ -1062,8 +1362,12 @@ def add_course_fee_api():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/course_fees_api/<int:fee_id>', methods=['PUT'])
-def update_course_fee_api(fee_id):
-    """Updates an existing course fee record."""
+@token_required # Protect this route
+def update_course_fee_api(current_user, fee_id): # Add current_user parameter
+    """Updates an existing course fee record. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update course fees'}), 403
+
     fee = CourseFee.query.get(fee_id)
     if not fee:
         return jsonify({"message": "Course fee not found"}), 404
@@ -1091,8 +1395,12 @@ def update_course_fee_api(fee_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/course_fees_api/<int:fee_id>', methods=['DELETE'])
-def delete_course_fee_api(fee_id):
-    """Deletes a course fee record."""
+@token_required # Protect this route
+def delete_course_fee_api(current_user, fee_id): # Add current_user parameter
+    """Deletes a course fee record. Requires authentication."""
+    if current_user.role != 'admin':
+        return jsonify({'message': 'Unauthorized: Only administrators can delete course fees'}), 403
+
     fee = CourseFee.query.get(fee_id)
     if not fee:
         return jsonify({"message": "Course fee not found"}), 404
@@ -1111,18 +1419,28 @@ def delete_course_fee_api(fee_id):
 
 # Student Course Fees Endpoints
 @enrollment_bp.route('/student_course_fees_api', methods=['GET'])
-def get_student_course_fees_api():
-    """Retrieves all student course fee records with related student, course, and course fee details."""
-    student_fees = StudentCourseFee.query.options(
-        db.joinedload(StudentCourseFee.student),
-        db.joinedload(StudentCourseFee.course),
-        db.joinedload(StudentCourseFee.course_fee)
-    ).all()
+@token_required # Protect this route
+def get_student_course_fees_api(current_user): # Add current_user parameter
+    """Retrieves all student course fee records with related student, course, and course fee details. Requires authentication."""
+    if current_user.role == 'student':
+        # Students can only see their own assigned fees
+        student_fees = StudentCourseFee.query.options(
+            db.joinedload(StudentCourseFee.student),
+            db.joinedload(StudentCourseFee.course),
+            db.joinedload(StudentCourseFee.course_fee)
+        ).filter_by(StudentID=current_user.id).all()
+    else: # admin, sas_manager can see all
+        student_fees = StudentCourseFee.query.options(
+            db.joinedload(StudentCourseFee.student),
+            db.joinedload(StudentCourseFee.course),
+            db.joinedload(StudentCourseFee.course_fee)
+        ).all()
     return jsonify([serialize_student_course_fee(sf) for sf in student_fees])
 
 @enrollment_bp.route('/student_course_fees_api/<int:scf_id>', methods=['GET'])
-def get_student_course_fee_api(scf_id):
-    """Retrieves a single student course fee record by its ID."""
+@token_required # Protect this route
+def get_student_course_fee_api(current_user, scf_id): # Add current_user parameter
+    """Retrieves a single student course fee record by its ID. Requires authentication."""
     student_fee = StudentCourseFee.query.options(
         db.joinedload(StudentCourseFee.student),
         db.joinedload(StudentCourseFee.course),
@@ -1130,11 +1448,20 @@ def get_student_course_fee_api(scf_id):
     ).get(scf_id)
     if not student_fee:
         return jsonify({"message": "Student course fee not found"}), 404
+
+    # Students can only view their own fees
+    if current_user.role == 'student' and student_fee.StudentID != current_user.id:
+        return jsonify({'message': 'Unauthorized: You can only view your own student course fees'}), 403
+
     return jsonify(serialize_student_course_fee(student_fee))
 
 @enrollment_bp.route('/student_course_fees_api', methods=['POST'])
-def assign_student_course_fee_api():
-    """Assigns a course fee to a specific student for a specific course."""
+@token_required # Protect this route
+def assign_student_course_fee_api(current_user): # Add current_user parameter
+    """Assigns a course fee to a specific student for a specific course. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can assign student course fees'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['StudentID', 'CourseID', 'due_date']):
         return jsonify({"message": "Missing student course fee data (requires StudentID, CourseID, due_date)"}), 400
@@ -1179,8 +1506,12 @@ def assign_student_course_fee_api():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/student_course_fees_api/<int:scf_id>', methods=['PUT'])
-def update_student_course_fee_api(scf_id):
-    """Updates an existing student course fee record."""
+@token_required # Protect this route
+def update_student_course_fee_api(current_user, scf_id): # Add current_user parameter
+    """Updates an existing student course fee record. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update student course fees'}), 403
+
     student_fee = StudentCourseFee.query.get(scf_id)
     if not student_fee:
         return jsonify({"message": "Student course fee not found"}), 404
@@ -1205,8 +1536,12 @@ def update_student_course_fee_api(scf_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/student_course_fees_api/<int:scf_id>', methods=['DELETE'])
-def delete_student_course_fee_api(scf_id):
-    """Deletes a student course fee record."""
+@token_required # Protect this route
+def delete_student_course_fee_api(current_user, scf_id): # Add current_user parameter
+    """Deletes a student course fee record. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can delete student course fees'}), 403
+
     student_fee = StudentCourseFee.query.get(scf_id)
     if not student_fee:
         return jsonify({"message": "Student course fee not found"}), 404
@@ -1220,24 +1555,43 @@ def delete_student_course_fee_api(scf_id):
         logging.error(f"Error deleting student course fee {scf_id}: {e}")
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
+# enrollment_services/routes.py (continued from Part 6)
+
+# --- API Endpoints (JSON Responses) continued ---
+
 # Hold Endpoints
 @enrollment_bp.route('/holds', methods=['GET'])
-def get_holds():
-    """Retrieves all hold records with related student details."""
-    holds = Hold.query.options(db.joinedload(Hold.student)).all()
+@token_required # Protect this route
+def get_holds(current_user): # Add current_user parameter
+    """Retrieves all hold records with related student details. Requires authentication."""
+    if current_user.role == 'student':
+        # Students can only view their own holds
+        holds = Hold.query.options(db.joinedload(Hold.student)).filter_by(StudentID=current_user.id).all()
+    else: # admin, sas_manager
+        holds = Hold.query.options(db.joinedload(Hold.student)).all()
     return jsonify([serialize_hold(h) for h in holds])
 
 @enrollment_bp.route('/holds/<int:hold_id>', methods=['GET'])
-def get_hold(hold_id):
-    """Retrieves a single hold record by its ID."""
+@token_required # Protect this route
+def get_hold(current_user, hold_id): # Add current_user parameter
+    """Retrieves a single hold record by its ID. Requires authentication."""
     hold = Hold.query.options(db.joinedload(Hold.student)).get(hold_id)
     if not hold:
         return jsonify({"message": "Hold not found"}), 404
+
+    # Students can only view their own specific hold
+    if current_user.role == 'student' and hold.StudentID != current_user.id:
+        return jsonify({'message': 'Unauthorized: You can only view your own holds'}), 403
+
     return jsonify(serialize_hold(hold))
 
 @enrollment_bp.route('/holds', methods=['POST'])
-def add_hold():
-    """Adds a new hold record for a student."""
+@token_required # Protect this route
+def add_hold(current_user): # Add current_user parameter
+    """Adds a new hold record for a student. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can add holds'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['StudentID', 'reason']):
         return jsonify({"message": "Missing hold data (requires StudentID, reason)"}), 400
@@ -1263,8 +1617,12 @@ def add_hold():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/holds/<int:hold_id>', methods=['PUT'])
-def update_hold(hold_id):
-    """Updates an existing hold record."""
+@token_required # Protect this route
+def update_hold(current_user, hold_id): # Add current_user parameter
+    """Updates an existing hold record. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update holds'}), 403
+
     hold = Hold.query.get(hold_id)
     if not hold:
         return jsonify({"message": "Hold not found"}), 404
@@ -1291,8 +1649,12 @@ def update_hold(hold_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/holds/<int:hold_id>', methods=['DELETE'])
-def delete_hold(hold_id):
-    """Deletes a hold record."""
+@token_required # Protect this route
+def delete_hold(current_user, hold_id): # Add current_user parameter
+    """Deletes a hold record. Requires authentication."""
+    if current_user.role != 'admin':
+        return jsonify({'message': 'Unauthorized: Only administrators can delete holds'}), 403
+
     hold = Hold.query.get(hold_id)
     if not hold:
         return jsonify({"message": "Hold not found"}), 404
@@ -1308,22 +1670,37 @@ def delete_hold(hold_id):
 
 # Student Level Endpoints
 @enrollment_bp.route('/student_levels', methods=['GET'])
-def get_student_levels():
-    """Retrieves all student level records with related student details."""
-    student_levels = StudentLevel.query.options(db.joinedload(StudentLevel.student)).all()
+@token_required # Protect this route
+def get_student_levels(current_user): # Add current_user parameter
+    """Retrieves all student level records with related student details. Requires authentication."""
+    if current_user.role == 'student':
+        # Students can only view their own student levels
+        student_levels = StudentLevel.query.options(db.joinedload(StudentLevel.student)).filter_by(StudentID=current_user.id).all()
+    else: # admin, sas_manager
+        student_levels = StudentLevel.query.options(db.joinedload(StudentLevel.student)).all()
     return jsonify([serialize_student_level(sl) for sl in student_levels])
 
 @enrollment_bp.route('/student_levels/<string:student_level_id>', methods=['GET'])
-def get_student_level(student_level_id):
-    """Retrieves a single student level record by its ID."""
+@token_required # Protect this route
+def get_student_level(current_user, student_level_id): # Add current_user parameter
+    """Retrieves a single student level record by its ID. Requires authentication."""
     student_level = StudentLevel.query.options(db.joinedload(StudentLevel.student)).get(student_level_id)
     if not student_level:
         return jsonify({"message": "Student level not found"}), 404
+
+    # Students can only view their own specific student level
+    if current_user.role == 'student' and student_level.StudentID != current_user.id:
+        return jsonify({'message': 'Unauthorized: You can only view your own student levels'}), 403
+
     return jsonify(serialize_student_level(student_level))
 
 @enrollment_bp.route('/student_levels', methods=['POST'])
-def add_student_level():
-    """Adds a new student level record."""
+@token_required # Protect this route
+def add_student_level(current_user): # Add current_user parameter
+    """Adds a new student level record. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can add student levels'}), 403
+
     data = request.json
     if not data or not all(k in data for k in ['StudentLevelID', 'StudentID']):
         return jsonify({"message": "Missing student level data (requires StudentLevelID, StudentID)"}), 400
@@ -1351,8 +1728,12 @@ def add_student_level():
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/student_levels/<string:student_level_id>', methods=['PUT'])
-def update_student_level(student_level_id):
-    """Updates an existing student level record."""
+@token_required # Protect this route
+def update_student_level(current_user, student_level_id): # Add current_user parameter
+    """Updates an existing student level record. Requires authentication."""
+    if current_user.role not in ['admin', 'sas_manager']:
+        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update student levels'}), 403
+
     student_level = StudentLevel.query.get(student_level_id)
     if not student_level:
         return jsonify({"message": "Student level not found"}), 404
@@ -1380,8 +1761,12 @@ def update_student_level(student_level_id):
         return jsonify({"message": "Internal server error: " + str(e)}), 500
 
 @enrollment_bp.route('/student_levels/<string:student_level_id>', methods=['DELETE'])
-def delete_student_level(student_level_id):
-    """Deletes a student level record."""
+@token_required # Protect this route
+def delete_student_level(current_user, student_level_id): # Add current_user parameter
+    """Deletes a student level record. Requires authentication."""
+    if current_user.role != 'admin':
+        return jsonify({'message': 'Unauthorized: Only administrators can delete student levels'}), 403
+
     student_level = StudentLevel.query.get(student_level_id)
     if not student_level:
         return jsonify({"message": "Student level not found"}), 404
@@ -1394,3 +1779,5 @@ def delete_student_level(student_level_id):
         db.session.rollback()
         logging.error(f"Error deleting student level {student_level_id}: {e}")
         return jsonify({"message": "Internal server error: " + str(e)}), 500
+
+# --- End of routes.py ---

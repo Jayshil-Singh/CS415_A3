@@ -1,50 +1,37 @@
 # run_es.py
 import os
-from flask import Flask, redirect, url_for, session, flash
+from flask import Flask, redirect, url_for, session, flash, request, render_template
 from flask_cors import CORS
 from dotenv import load_dotenv
+from datetime import timedelta
 
 # Load environment variables from a .env file.
-# This is crucial for managing configurations like SECRET_KEY and PORT,
-# especially in different environments (development vs. production).
 load_dotenv()
 
 # Import the database initialization function and your blueprint.
-# These imports assume 'db.py' and 'routes.py' are directly within the 'enrollment_services' package.
 from enrollment_services.db import init_db
 from enrollment_services.routes import enrollment_bp
 
 def create_app():
     """
     Factory function to create and configure the Flask application.
-    This pattern is recommended for more complex applications as it allows
-    for different configurations (e.g., testing, development, production).
     """
-    # Initialize Flask app.
-    # `template_folder` is explicitly set to ensure Flask finds your HTML templates
-    # correctly, as they are nested inside 'enrollment_services/templates'.
     app = Flask(__name__, template_folder='enrollment_services/templates')
 
     # --- Application Configuration ---
 
     # Configure SECRET_KEY for session management.
-    # It's crucial for security that this key is kept secret and
-    # generated randomly. Using an environment variable is best practice.
-    # A default is provided for development convenience, but CHANGE THIS FOR PRODUCTION!
     app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'a_very_strong_and_secret_key_for_dev_do_not_use_in_prod_12345')
 
     # Configure database URI.
-    # Flask-SQLAlchemy will use this to connect to your SQLite database file.
-    # The database file 'enrollment.db' will be created in the root directory
-    # where you run 'run_es.py'.
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///enrollment.db"
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False # Suppresses a warning and saves memory
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # JWT Configuration
+    app.config['JWT_EXPIRATION_DELTA'] = timedelta(hours=1) # Tokens expire in 1 hour
+    app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', app.secret_key)
 
     # Enable CORS (Cross-Origin Resource Sharing).
-    # This is important if your frontend (e.g., a React/Angular app) is served
-    # from a different origin (domain:port) than your Flask backend.
-    # For local development, this typically allows your frontend (e.g., on port 3000)
-    # to make requests to your Flask app (e.g., on port 5004).
     CORS(app)
 
     # --- Database Initialization ---
@@ -53,36 +40,57 @@ def create_app():
 
     # --- Blueprint Registration ---
     # Register your 'enrollment_bp' blueprint.
-    # The `url_prefix` means all routes defined within 'enrollment_bp' (in routes.py)
-    # will be prefixed with '/enrollment_services'.
-    # For example:
-    # - `@enrollment_bp.route('/enroll')` will be accessible at `/enrollment_services/enroll`
-    # - `@enrollment_bp.route('/students')` will be accessible at `/enrollment_services/students`
+    # All routes defined within 'enrollment_bp' will be prefixed with '/enrollment_services'.
     app.register_blueprint(enrollment_bp, url_prefix='/enrollment_services')
 
+    # --- Login Page Route (Accessible BEFORE authentication) ---
+    @app.route('/login')
+    def login_page():
+        # Clear any existing JWT from Flask session
+        session.pop('jwt_token', None)
+        flash('Please log in to access the Enrollment Services.', 'info')
+        return render_template('login.html')
+
+    # --- Global Before Request Hook for Authentication ---
+    @app.before_request
+    def check_authentication():
+        # List of endpoints that are publicly accessible (do NOT require login)
+        public_endpoints = [
+            'login_page', # The function name for @app.route('/login')
+            'enrollment.login', # The blueprint endpoint for @enrollment_bp.route('/auth/login', methods=['POST'])
+            'static' # Allows access to Flask's static file serving (CSS, JS, images)
+            'enrollment.set_session_token'
+        ]
+
+        # If the requested endpoint is explicitly public, allow access
+        if request.endpoint in public_endpoints:
+            return
+
+        # For all other routes (which are considered protected), check for JWT in session
+        if 'jwt_token' not in session:
+            flash("You need to log in to access this page.", "error")
+            return redirect(url_for('login_page'))
+
+        # If a token exists in session, allow the request to proceed.
+        # The `@token_required` decorator on specific API endpoints will then
+        # handle actual JWT validation and provide `current_user` context.
+
     # --- Root Route Redirection ---
-    # This route handles requests to the base URL of your application (e.g., http://localhost:5004/).
-    # It redirects users to the dashboard page within your blueprint.
+    # Handles requests to the base URL (e.g., http://localhost:5004/).
     @app.route('/')
     def root_home():
-        # Redirect to the dashboard route defined in the 'enrollment' blueprint.
-        # url_for needs the blueprint name ('enrollment') followed by the route function name ('dashboard').
-        return redirect(url_for('enrollment.dashboard'))
+        # If the user has a JWT in their Flask session (meaning they've logged in)
+        if 'jwt_token' in session:
+            # They are authenticated, redirect to the dashboard within the blueprint
+            return redirect(url_for('enrollment.dashboard'))
+        else:
+            # Not authenticated, redirect to the dedicated login page
+            return redirect(url_for('login_page'))
 
     return app
 
 # --- Main Application Execution Block ---
-# This block ensures that the Flask app is created and run only when this script
-# is executed directly (not when imported as a module).
 if __name__ == '__main__':
     app = create_app()
-
-    # Get the port from environment variables, defaulting to 5004.
-    # This makes your application more flexible for deployment.
     port = int(os.environ.get("PORT", 5004))
-
-    # Run the Flask development server.
-    # `host='0.0.0.0'` makes the server accessible externally (useful in Docker/VMs).
-    # `debug=True` enables debug mode, providing detailed error messages and
-    # automatic reloader on code changes. Set to False for production.
     app.run(host='0.0.0.0', port=port, debug=True)
