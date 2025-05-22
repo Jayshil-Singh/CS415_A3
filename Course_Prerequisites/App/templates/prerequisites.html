@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>USP - Course Prerequisites</title>
+    <link rel="stylesheet" href="{{ url_for('prereq_bp.static', filename='css/prerequisites.css') }}">
+    <style>
+        * {
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+            background-color: #003366;
+            color: #ffffff;
+        }
+            background-color: #2c2c2c;
+        }
+        .footer-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 10px 20px;
+            background-color: teal;
+            color: white;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .footer-logo img {
+            height: 50px;
+        }
+        .toggle-btn {
+            float: right;
+            margin-top: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            background-color: #003366;
+            color: white;
+            border: none;
+        }
+    </style>
+    <script>
+        function searchCourses() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const sections = document.querySelectorAll("details");
+            sections.forEach(section => {
+                let match = false;
+                const rows = section.querySelectorAll("tbody tr");
+                rows.forEach(row => {
+                    const course = row.textContent.toLowerCase();
+                    if (course.includes(input)) {
+                        row.style.display = "";
+                        match = true;
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+                section.open = match;
+            });
+        }
+
+        function exportToPDF() {
+            window.print();
+        }
+
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('prereq_bp.static', filename='images/header.png') }}" alt="USP Header" style="width: 100%;">
+    </header>
+    <nav>
+        <h2>Courses / Prerequisites</h2>
+    </nav>
+    <main>
+        <p>Below are the Software Engineering courses grouped by level.</p>
+        <div style="margin: 20px 0;">
+            <input id="searchInput" type="text" placeholder="Search course..." onkeyup="searchCourses()" style="padding: 6px; width: 200px;">
+            <button onclick="exportToPDF()" style="padding: 6px;">Export to PDF</button>
+        </div>
+
+        <details open>
+            <summary>100 Level Courses</summary>
+            <table>
+                <tr><th>Course Code</th><th>Course Title</th><th>Prerequisites</th></tr>
+                <tr><td>CS111</td><td>Intro to Computing</td><td>50% in Year 13 Math</td></tr>
+                <tr><td>CS140</td><td>Intro to SE</td><td>None</td></tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>200 Level Courses</summary>
+            <table>
+                <tr><th>Course Code</th><th>Course Title</th><th>Prerequisites</th></tr>
+                <tr><td>CS112</td><td>Data Structures</td><td>CS111</td></tr>
+                <tr><td>CS211</td><td>Computer Organisation</td><td>CS111</td></tr>
+                <tr><td>CS214</td><td>Design & Algorithms</td><td>CS112</td></tr>
+                <tr><td>CS230</td><td>Requirements Engineering</td><td>CS111, CS140</td></tr>
+                <tr><td>CS241</td><td>Software Implementation</td><td>CS112, CS230</td></tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>300 Level Courses</summary>
+            <table>
+                <tr><th>Course Code</th><th>Course Title</th><th>Prerequisites</th></tr>
+                <tr><td>CS310</td><td>Computer Networks</td><td>CS211</td></tr>
+                <tr><td>CS311</td><td>Operating Systems</td><td>CS211</td></tr>
+                <tr><td>CS341</td><td>Verification & Validation</td><td>CS241</td></tr>
+            </table>
+        </details>
+
+        <details>
+            <summary>400 Level Courses</summary>
+            <table>
+                <tr><th>Course Code</th><th>Course Title</th><th>Prerequisites</th></tr>
+                <tr><td>CS412</td><td>Artificial Intelligence</td><td>75% of 300-level CS</td></tr>
+                <tr><td>CS415</td><td>Advanced Software Engineering</td><td>75% of 300-level CS</td></tr>
+            </table>
+        </details>
+    </main>
+    <footer>
+        <div class="footer-wrapper">
+            <div class="footer-logo">
+                <img src="{{ url_for('prereq_bp.static', filename='images/usp_logo.png') }}" alt="USP Logo">
+                <div>
+                    <p>The University of the South Pacific<br>Laucala Campus, Suva, Fiji</p>
+                </div>
+            </div>
+            <small>&copy; 1968 – 2025. All Rights Reserved. | Tel: +679 323 1000</small>
+        </div>
+    </footer>
+</body>
+</html>
