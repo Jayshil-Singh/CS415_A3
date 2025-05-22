@@ -26,31 +26,25 @@ class User(db.Model):
 
 class Program(db.Model):
     __tablename__ = 'Program'
-    # Based on ERD, ProgramID and SubProgramID together form the primary key
+    # REVISED: ProgramID is now the ONLY primary key for Program
     ProgramID = db.Column(db.String(50), primary_key=True)
-    SubProgramID = db.Column(db.String(50), primary_key=True) # Part of composite primary key
+    # REMOVED: SubProgramID as part of Program's composite primary key
+
     ProgramName = db.Column(db.String(255), nullable=False)
 
-    # Note: If Program.SubProgramID is also a FK to SubPrograms.SubProgramID,
-    # AND it's part of a composite PK, this model is overly complex for a simple 1-M relationship.
-    # The ambiguity primarily comes from the `ProgramID` in SubProgram.
-
-    # Relationships: Explicitly tell SQLAlchemy which foreign key to use for this relationship.
+    # Relationships:
     # This relationship assumes Program has many SubPrograms, linked by SubProgram.ProgramID.
-    # The 'foreign_keys' argument ensures SQLAlchemy uses the correct column for the join.
-    subprograms = db.relationship(
+    # The 'backref' ensures the reverse relationship is available from SubProgram.
+    subprograms_associated = db.relationship(
         'SubProgram',
-        back_populates='program',
-        # This tells SQLAlchemy to look for a foreign key in 'SubProgram' that references 'Program'
-        # based on 'Program.ProgramID' and 'Program.SubProgramID' if that's the composite FK.
-        # Given the SubProgram.ProgramID FK, we specify it as the linking column.
-        foreign_keys='SubProgram.ProgramID',
+        backref='program', # Renamed backref to avoid potential conflict if Program had a direct 'subprograms' attribute before
+        foreign_keys='SubProgram.ProgramID', # This explicitly refers to the ProgramID column in the SubProgram table
         lazy=True
     )
 
     def __repr__(self):
-        # Changed repr to reflect composite PK if applicable, or just ProgramID
-        return f"<Program {self.ProgramName} (ID: {self.ProgramID}, SubID: {self.SubProgramID})>"
+        # Changed repr to reflect ProgramID as the sole PK
+        return f"<Program {self.ProgramName} (ID: {self.ProgramID})>"
 
 
 class SubProgram(db.Model):
@@ -59,14 +53,12 @@ class SubProgram(db.Model):
     SubProgramName = db.Column(db.String(255), nullable=False)
     SubProgramType = db.Column(db.String(100))
     # This is the foreign key linking back to the Program table's ProgramID
-    ProgramID = db.Column(db.String(50), db.ForeignKey('Program.ProgramID'), nullable=False)
+    ProgramID = db.Column(db.String(50), db.ForeignKey('Program.ProgramID'), nullable=False) # This is correct and requires a non-null value
 
     # Relationships: Explicitly tell SQLAlchemy which foreign key to use.
-    program = db.relationship(
-        'Program',
-        back_populates='subprograms',
-        foreign_keys='SubProgram.ProgramID' # This explicitly refers to the ProgramID column in THIS table (SubProgram)
-    )
+    # The 'program' relationship will now be handled by the 'subprograms_associated' backref on Program.
+    # No direct 'program' relationship needed here if using backref.
+    # program = db.relationship('Program', back_populates='subprograms', foreign_keys='SubProgram.ProgramID') # REMOVED/ADJUSTED
     courses = db.relationship('Course', back_populates='subprogram', lazy=True)
 
     def __repr__(self):
@@ -149,7 +141,8 @@ class StudentLevel(db.Model):
 
 class Hold(db.Model):
     __tablename__ = 'Holds'
-    HoldID = db.Column(db.Integer, primary_key=True)
+    # Changed HoldID to String as Firebase keys are strings
+    HoldID = db.Column(db.String(50), primary_key=True)
     reason = db.Column(db.String(255))
     holdDate = db.Column(db.Date, default=datetime.utcnow)
     liftDate = db.Column(db.Date, nullable=True)
@@ -179,7 +172,8 @@ class Enrollment(db.Model):
 
 class CourseFee(db.Model):
     __tablename__ = 'Course_Fees'
-    FeeID = db.Column(db.Integer, primary_key=True)
+    # Changed FeeID to String to align with generated IDs like FEE00001
+    FeeID = db.Column(db.String(50), primary_key=True)
     amount = db.Column(db.Double, nullable=False)
     description = db.Column(db.String(255))
     CourseID = db.Column(db.String(50), db.ForeignKey('Course.CourseID'), nullable=False)
@@ -193,13 +187,15 @@ class CourseFee(db.Model):
 
 class StudentCourseFee(db.Model):
     __tablename__ = 'Student_Course_Fees'
-    StudentCourseFeeID = db.Column(db.Integer, primary_key=True)
+    # Changed StudentCourseFeeID to String to align with generated IDs like SCF00001
+    StudentCourseFeeID = db.Column(db.String(50), primary_key=True)
     due_date = db.Column(db.Date)
     paid_date = db.Column(db.Date, nullable=True)
     status = db.Column(db.String(50), default='Outstanding')
     StudentID = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
     CourseID = db.Column(db.String(50), db.ForeignKey('Course.CourseID'), nullable=False)
-    FeeID = db.Column(db.Integer, db.ForeignKey('Course_Fees.FeeID'), nullable=True)
+    # Changed FeeID to String to match CourseFee.FeeID
+    FeeID = db.Column(db.String(50), db.ForeignKey('Course_Fees.FeeID'), nullable=True)
 
     # Relationships
     student = db.relationship('Student', back_populates='student_course_fees')
