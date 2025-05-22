@@ -1,8 +1,11 @@
 Flask==3.0.2
 Flask-SQLAlchemy==3.1.1
-Flask-Cors==4.0.0
+Flask-CORS==4.0.0
 python-dotenv==1.0.1
+PyJWT==2.8.0
+pandas==2.2.1
+openpyxl==3.1.2
 requests==2.31.0
 Werkzeug==3.0.1
-PyJWT==2.8.0
-Pillow==10.2.0  # For image handling
+gunicorn==21.2.0
+pyodbc==5.0.1

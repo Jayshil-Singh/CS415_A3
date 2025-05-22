@@ -1,0 +1,158 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        .error-code {
+            font-size: 72px;
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            font-size: 24px;
+            color: #343a40;
+            margin-bottom: 30px;
+        }
+        .error-description {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        .btn-home {
+            padding: 10px 30px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <div class="error-message">Page Not Found</div>
+        <div class="error-description">
+            The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+        </div>
+        <a href="/" class="btn btn-primary btn-home">Go to Homepage</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0; /* Remove default body margin */
+            overflow: hidden; /* Hide scrollbars if video is slightly larger */
+            background-color: #000; /* Fallback background color */
+            height: 100vh; /* Ensure body takes full viewport height */
+            display: flex; /* For centering the error container */
+            align-items: center; /* For centering the error container */
+            justify-content: center; /* For centering the error container */
+        }
+
+        .fullscreen-video-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Place it behind other content */
+        }
+
+        .fullscreen-video-wrap iframe {
+            width: 100vw; /* Viewport Width */
+            height: 56.25vw; /* 16:9 Aspect Ratio (9 / 16 * 100) */
+            min-height: 100vh; /* Viewport Height */
+            min-width: 177.77vh; /* 16:9 Aspect Ratio (16 / 9 * 100) */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none; /* Allows clicks to go through to elements behind if needed, but generally for background video, this is fine */
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.85); /* Semi-transparent white for readability */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 90%;
+            position: relative; /* To allow z-index to work correctly */
+            z-index: 1; /* To appear above the video */
+        }
+
+        .error-code {
+            font-size: 72px;
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            font-size: 24px;
+            color: #343a40;
+            margin-bottom: 30px;
+        }
+
+        .error-description {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .btn-home {
+            padding: 10px 30px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="fullscreen-video-wrap">
+        <iframe 
+            src="<iframe width="315" height="560" src="https://www.youtube.com/embed/4uzB9fkfLbg" title="I AM A PARTY PARTY night song Chinese song trending Instagram 2025 #2025 #trending #shorts #viral #7" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>"
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerpolicy="strict-origin-when-cross-origin" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <div class="error-message">Page Not Found</div>
+        <div class="error-description">
+            The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+        </div>
+        <a href="/" class="btn btn-primary btn-home">Go to Homepage</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

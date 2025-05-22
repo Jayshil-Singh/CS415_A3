@@ -2,6 +2,7 @@ from flask import jsonify, render_template, current_app, request
 import traceback
 from functools import wraps
 from .logger import log_error
+from werkzeug.exceptions import HTTPException
 
 class CustomError(Exception):
     """Base class for custom exceptions"""
@@ -43,78 +44,51 @@ class ServiceUnavailableError(CustomError):
         super().__init__(message, status_code=503, payload=payload)
 
 def handle_error(error):
-    """Global error handler for all custom exceptions"""
-    response = error.to_dict()
-    response['status_code'] = error.status_code
+    """Handle custom errors"""
+    if isinstance(error, HTTPException):
+        response = {
+            'error': error.name,
+            'message': error.description,
+            'status_code': error.code
+        }
+    else:
+        response = {
+            'error': 'Internal Server Error',
+            'message': str(error),
+            'status_code': 500
+        }
     
-    # Log the error with context
-    log_error(error, {
-        'request_path': request.path,
-        'request_method': request.method,
-        'request_args': dict(request.args),
-        'request_headers': dict(request.headers),
-        'request_body': request.get_json() if request.is_json else None
-    })
+    log_error(error)
     
-    # Return JSON response for API requests
     if request.is_json:
-        return jsonify(response), error.status_code
-    
-    # Return HTML response for browser requests
-    return render_template('error.html', 
-                         error=error.message,
-                         status_code=error.status_code), error.status_code
+        return jsonify(response), response['status_code']
+    return render_template('error.html', error=response), response['status_code']
 
 def handle_500_error(error):
-    """Handler for unexpected errors"""
-    if current_app.debug:
-        error_message = str(error)
-        error_traceback = traceback.format_exc()
-    else:
-        error_message = "An unexpected error occurred"
-        error_traceback = None
-    
-    # Log the error with context
-    log_error(error, {
-        'request_path': request.path,
-        'request_method': request.method,
-        'request_args': dict(request.args),
-        'request_headers': dict(request.headers),
-        'request_body': request.get_json() if request.is_json else None,
-        'traceback': error_traceback
-    })
-    
+    """Handle 500 errors"""
+    log_error(error)
     if request.is_json:
         return jsonify({
-            'status': 'error',
-            'message': error_message,
+            'error': 'Internal Server Error',
+            'message': 'An unexpected error occurred',
             'status_code': 500
         }), 500
-    
-    return render_template('error.html',
-                         error=error_message,
-                         status_code=500), 500
+    return render_template('error.html', error={
+        'error': 'Internal Server Error',
+        'message': 'An unexpected error occurred',
+        'status_code': 500
+    }), 500
 
 def handle_404_error(error):
-    """Handler for 404 errors"""
-    # Log the error with context
-    log_error(error, {
-        'request_path': request.path,
-        'request_method': request.method,
-        'request_args': dict(request.args),
-        'request_headers': dict(request.headers)
-    })
-    
+    """Handle 404 errors"""
+    log_error(error)
     if request.is_json:
         return jsonify({
-            'status': 'error',
-            'message': 'Resource not found',
+            'error': 'Not Found',
+            'message': 'The requested resource was not found',
             'status_code': 404
         }), 404
-    
-    return render_template('error.html',
-                         error="The requested resource was not found",
-                         status_code=404), 404
+    return render_template('404.html'), 404
 
 def error_handler(f):
     """Decorator for handling exceptions in route handlers"""
