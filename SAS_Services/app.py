@@ -252,9 +252,47 @@ def sas_staff_register_student():
 
 @app.route('/sas-staff/edit-student')
 def sas_staff_edit_student():
-    if session.get('user_type') != 'staff': abort(403)
-    # You might want to pass student data here if this page loads a specific student by ID from URL
-    return render_template('SASStaff/editST.html')
+    if session.get('user_type') != 'staff':
+        abort(403)
+
+    # TODO: Fetch actual student data from your XML or database
+    # This data should be a list of dictionaries/objects
+    # Each item needs: id, first_name, last_name, (middle_name optional), campus
+    students_overview_data = [
+        { 'id': 'S12345678', 'first_name': 'John', 'middle_name': 'Michael', 'last_name': 'Doe', 'campus': 'Laucala' },
+        { 'id': 'S87654321', 'first_name': 'Jane', 'middle_name': 'Elizabeth', 'last_name': 'Smith', 'campus': 'Laucala' },
+        { 'id': 'S11223344', 'first_name': 'Peter', 'middle_name': 'James', 'last_name': 'Jones', 'campus': 'Solomon Islands' }
+    ]
+    # In a real app, you would also handle loading state or if students_overview_data is empty
+    return render_template('SASStaff/editST.html', students=students_overview_data)
+
+@app.route('/sas-staff/display-student/<student_id>')
+def sas_staff_display_student(student_id):
+    if session.get('user_type') != 'staff':
+        abort(403)
+
+    # TODO: Fetch all details for the specific student_id from your XML or database
+    # This should return a single dictionary/object with all fields for that student
+    # For example:
+    student_details = None # Initialize
+    all_students_raw_data = [ # This is just for example, you'd have a proper fetch function
+         {'id': 'S12345678', 'first_name': 'John', 'middle_name': 'Michael', 'last_name': 'Doe', 'address': '123 Suva Point Rd, Suva', 'contact': '679-1234567', 'date_of_birth': '1999-08-21', 'gender': 'Male', 'citizenship': 'Fijian', 'subprogram': 'Software Engineering', 'program': 'Bachelor of Science', 'student_level': 'Undergraduate', 'campus': 'Laucala'},
+         {'id': 'S87654321', 'first_name': 'Jane', 'middle_name': 'Elizabeth', 'last_name': 'Smith', 'address': '456 Marine Drive, Nasese', 'contact': '679-7654321', 'date_of_birth': '2000-03-10', 'gender': 'Female', 'citizenship': 'Regional', 'subprogram': 'Data Analytics', 'program': 'Bachelor of Commerce', 'student_level': 'Undergraduate', 'campus': 'Laucala'},
+         {'id': 'S11223344', 'first_name': 'Peter', 'middle_name': 'James', 'last_name': 'Jones', 'address': '789 Laucala Bay Rd, Suva', 'contact': '679-1112222', 'date_of_birth': '1998-12-01', 'gender': 'Male', 'citizenship': 'Solomon Islander', 'subprogram': 'Information Systems', 'program': 'Bachelor of Science', 'student_level': 'Undergraduate', 'campus': 'Solomon Islands'}
+    ]
+    for s_data in all_students_raw_data:
+        if s_data['id'] == student_id:
+            student_details = s_data
+            break
+
+    if not student_details:
+        # Optional: flash a message or handle more gracefully
+        app.logger.warning(f"Student with ID {student_id} not found.")
+        # You could redirect back to the list with an error or render displayST.html with a "not found" message
+        # return redirect(url_for('sas_staff_edit_student')) # Example redirect
+
+    # The student_details object will be passed to displayST.html
+    return render_template('SASStaff/displayST.html', student=student_details)
 
 @app.route('/sas-staff/grade-rechecks')
 def sas_staff_grade_rechecks():

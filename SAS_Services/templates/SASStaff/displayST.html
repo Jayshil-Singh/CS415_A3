@@ -1,0 +1,100 @@
+{# templates/SASStaff/displayST.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>Student Details | {{ student.first_name | default('Student') }} {{ student.last_name | default('Record') }} | SAS Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/displayST.css') }}"> {# Create this new CSS file #}
+    <style>
+        .detail-section { margin-bottom: 20px; }
+        .detail-section h3 { margin-bottom: 10px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .detail-item { margin-bottom: 10px; }
+        .detail-item strong { display: block; color: #555; margin-bottom: 3px; }
+        .action-buttons-footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; text-align: right; }
+    </style>
+{% endblock %}
+
+{% block header %}
+    {{ super() }}
+{% endblock %}
+
+{% block body_class %}display-student-details-page{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="page-title-container">
+        {# Assuming 'student' object is passed from Flask with all details #}
+        <h1>
+            Student: {{ student.first_name | default('') }} {{ student.middle_name | default('') }} {{ student.last_name | default('Details') }}
+            <small class="text-muted">(ID: {{ student.id | default('N/A') }})</small>
+        </h1>
+    </div>
+
+    {% if student %}
+    <div class="student-details-content">
+        <div class="detail-section personal-details">
+            <h3>Personal Details</h3>
+            <div class="detail-grid">
+                <div class="detail-item"><strong>First Name:</strong> <span>{{ student.first_name | default('N/A') }}</span></div>
+                <div class="detail-item"><strong>Middle Name:</strong> <span>{{ student.middle_name | default('N/A') }}</span></div>
+                <div class="detail-item"><strong>Last Name:</strong> <span>{{ student.last_name | default('N/A') }}</span></div>
+                <div class="detail-item"><strong>Date of Birth:</strong> <span>{{ student.date_of_birth | default('N/A') }}</span></div>
+                <div class="detail-item"><strong>Gender:</strong> <span>{{ student.gender | default('N/A') }}</span></div>
+                <div class="detail-item"><strong>Citizenship:</strong> <span>{{ student.citizenship | default('N/A') }}</span></div>
+            </div>
+        </div>
+
+        <div class="detail-section contact-details">
+            <h3>Contact Information</h3>
+            <div class="detail-grid">
+                <div class="detail-item"><strong>Address:</strong> <span>{{ student.address | default('N/A') }}</span></div>
+                <div class="detail-item"><strong>Contact Number:</strong> <span>{{ student.contact | default('N/A') }}</span></div>
+                {# Add Email if available #}
+            </div>
+        </div>
+
+        <div class="detail-section academic-details">
+            <h3>Academic Details</h3>
+            <div class="detail-grid">
+                <div class="detail-item"><strong>Student Level:</strong> <span>{{ student.student_level | default('N/A') }}</span></div>
+                <div class="detail-item"><strong>Program:</strong> <span>{{ student.program | default('N/A') }}</span></div>
+                <div class="detail-item"><strong>Subprogram:</strong> <span>{{ student.subprogram | default('N/A') }}</span></div>
+                <div class="detail-item"><strong>Campus:</strong> <span>{{ student.campus | default('N/A') }}</span></div>
+                {# Add Enrollment Date, Status, etc., if available #}
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons-footer">
+        <button id="edit-student-details-btn" class="action-button dialog-button btn btn-secondary" data-id="{{ student.id }}">
+            <span class="material-icons">edit</span> Edit Student
+        </button>
+        <button id="disable-student-btn" class="action-button dialog-button btn btn-danger" data-id="{{ student.id }}">
+            <span class="material-icons">no_accounts</span> Disable Student
+        </button>
+    </div>
+
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        Student details could not be found for the provided ID.
+    </div>
+    <a href="{{ url_for('sas_staff_edit_student') }}" class="btn btn-link">Back to Student Records</a>
+    {% endif %}
+
+    {# Modals for Edit/Disable confirmation can be added here later #}
+    {# For example, the Edit Student Modal from editST.html could be adapted and placed here #}
+
+</div> {# End .container #}
+{% endblock %}
+
+{% block footer %}
+    {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {# Create and link displayST.js for handling Edit/Disable button clicks, modals, etc. #}
+    <script src="{{ url_for('static', filename='js/SASStaff/displayST.js') }}"></script>
+{% endblock %}
