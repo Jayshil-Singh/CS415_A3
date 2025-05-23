@@ -676,3 +676,251 @@
 2025-05-22 21:54:44,153 - main_app_packages - INFO - {"timestamp": "2025-05-22T09:54:44.153934", "level": "INFO", "message": "Request: GET /auth/login", "module": "logger", "function": "log_request", "line": 112, "request_id": "a72c8137-9604-4892-a5e9-a32df64925b0", "method": "GET", "path": "/auth/login", "remote_addr": "127.0.0.1", "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36", "headers": {"Host": "127.0.0.1:5000", "Connection": "keep-alive", "Upgrade-Insecure-Requests": "1", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", "Sec-Fetch-Site": "same-origin", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-User": "?1", "Sec-Fetch-Dest": "document", "Sec-Ch-Ua": "\"Chromium\";v=\"136\", \"Google Chrome\";v=\"136\", \"Not.A/Brand\";v=\"99\"", "Sec-Ch-Ua-Mobile": "?0", "Sec-Ch-Ua-Platform": "\"Windows\"", "Referer": "http://127.0.0.1:5000/profile/s12345678", "Accept-Encoding": "gzip, deflate, br, zstd", "Accept-Language": "en-US,en;q=0.9"}}
 2025-05-22 21:54:44,153 - main_app_packages - INFO - {"timestamp": "2025-05-22T09:54:44.153934", "level": "INFO", "message": "Request: GET /auth/login", "module": "logger", "function": "log_request", "line": 112, "request_id": "a72c8137-9604-4892-a5e9-a32df64925b0", "method": "GET", "path": "/auth/login", "remote_addr": "127.0.0.1", "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36", "headers": {"Host": "127.0.0.1:5000", "Connection": "keep-alive", "Upgrade-Insecure-Requests": "1", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", "Sec-Fetch-Site": "same-origin", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-User": "?1", "Sec-Fetch-Dest": "document", "Sec-Ch-Ua": "\"Chromium\";v=\"136\", \"Google Chrome\";v=\"136\", \"Not.A/Brand\";v=\"99\"", "Sec-Ch-Ua-Mobile": "?0", "Sec-Ch-Ua-Platform": "\"Windows\"", "Referer": "http://127.0.0.1:5000/profile/s12345678", "Accept-Encoding": "gzip, deflate, br, zstd", "Accept-Language": "en-US,en;q=0.9"}}
 2025-05-22 21:54:44,168 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 21:54:44] "[32mGET /auth/login HTTP/1.1[0m" 302 -
+2025-05-22 22:22:28,190 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-22 22:22:28,192 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-22 22:22:28,220 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-22 22:22:29,802 - werkzeug - WARNING -  * Debugger is active!
+2025-05-22 22:22:29,810 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-22 22:22:52,280 - main_app_packages - INFO - {"timestamp": "2025-05-22T10:22:52.280741", "level": "INFO", "message": "Request: GET /", "module": "logger", "function": "log_request", "line": 112, "request_id": "41dcccd8-35c3-47ef-aa69-50fc9aa81aa0", "method": "GET", "path": "/", "remote_addr": "127.0.0.1", "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0", "headers": {"Host": "127.0.0.1:5000", "Connection": "keep-alive", "Sec-Ch-Ua": "\"Chromium\";v=\"136\", \"Microsoft Edge\";v=\"136\", \"Not.A/Brand\";v=\"99\"", "Sec-Ch-Ua-Mobile": "?0", "Sec-Ch-Ua-Platform": "\"Windows\"", "Upgrade-Insecure-Requests": "1", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", "Sec-Fetch-Site": "none", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-User": "?1", "Sec-Fetch-Dest": "document", "Accept-Encoding": "gzip, deflate, br, zstd", "Accept-Language": "en-US,en;q=0.9"}}
+2025-05-22 22:22:52,280 - main_app_packages - INFO - {"timestamp": "2025-05-22T10:22:52.280741", "level": "INFO", "message": "Request: GET /", "module": "logger", "function": "log_request", "line": 112, "request_id": "41dcccd8-35c3-47ef-aa69-50fc9aa81aa0", "method": "GET", "path": "/", "remote_addr": "127.0.0.1", "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0", "headers": {"Host": "127.0.0.1:5000", "Connection": "keep-alive", "Sec-Ch-Ua": "\"Chromium\";v=\"136\", \"Microsoft Edge\";v=\"136\", \"Not.A/Brand\";v=\"99\"", "Sec-Ch-Ua-Mobile": "?0", "Sec-Ch-Ua-Platform": "\"Windows\"", "Upgrade-Insecure-Requests": "1", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", "Sec-Fetch-Site": "none", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-User": "?1", "Sec-Fetch-Dest": "document", "Accept-Encoding": "gzip, deflate, br, zstd", "Accept-Language": "en-US,en;q=0.9"}}
+2025-05-22 22:22:52,284 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 22:22:52] "[32mGET / HTTP/1.1[0m" 302 -
+2025-05-22 22:22:52,309 - main_app_packages - INFO - {"timestamp": "2025-05-22T10:22:52.308614", "level": "INFO", "message": "Request: GET /auth/login", "module": "logger", "function": "log_request", "line": 112, "request_id": "67697084-dc8c-4c9f-a1c1-98b471993edc", "method": "GET", "path": "/auth/login", "remote_addr": "127.0.0.1", "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0", "headers": {"Host": "127.0.0.1:5000", "Connection": "keep-alive", "Upgrade-Insecure-Requests": "1", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", "Sec-Fetch-Site": "none", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-User": "?1", "Sec-Fetch-Dest": "document", "Sec-Ch-Ua": "\"Chromium\";v=\"136\", \"Microsoft Edge\";v=\"136\", \"Not.A/Brand\";v=\"99\"", "Sec-Ch-Ua-Mobile": "?0", "Sec-Ch-Ua-Platform": "\"Windows\"", "Accept-Encoding": "gzip, deflate, br, zstd", "Accept-Language": "en-US,en;q=0.9"}}
+2025-05-22 22:22:52,309 - main_app_packages - INFO - {"timestamp": "2025-05-22T10:22:52.308614", "level": "INFO", "message": "Request: GET /auth/login", "module": "logger", "function": "log_request", "line": 112, "request_id": "67697084-dc8c-4c9f-a1c1-98b471993edc", "method": "GET", "path": "/auth/login", "remote_addr": "127.0.0.1", "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0", "headers": {"Host": "127.0.0.1:5000", "Connection": "keep-alive", "Upgrade-Insecure-Requests": "1", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", "Sec-Fetch-Site": "none", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-User": "?1", "Sec-Fetch-Dest": "document", "Sec-Ch-Ua": "\"Chromium\";v=\"136\", \"Microsoft Edge\";v=\"136\", \"Not.A/Brand\";v=\"99\"", "Sec-Ch-Ua-Mobile": "?0", "Sec-Ch-Ua-Platform": "\"Windows\"", "Accept-Encoding": "gzip, deflate, br, zstd", "Accept-Language": "en-US,en;q=0.9"}}
+2025-05-22 22:22:52,312 - werkzeug - INFO - 127.0.0.1 - - [22/May/2025 22:22:52] "[32mGET /auth/login HTTP/1.1[0m" 302 -
+2025-05-22 22:34:55,988 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\run_main.py', reloading
+2025-05-22 22:34:56,511 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-22 22:34:57,785 - werkzeug - WARNING -  * Debugger is active!
+2025-05-22 22:34:57,791 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-22 23:51:26,606 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\init_db.py', reloading
+2025-05-22 23:51:26,609 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\__init__.py', reloading
+2025-05-22 23:51:26,610 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\error_handlers.py', reloading
+2025-05-22 23:51:26,612 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\run_main_app.py', reloading
+2025-05-22 23:51:26,754 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\API_KEY_GEN.py', reloading
+2025-05-22 23:51:26,759 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\audit.py', reloading
+2025-05-22 23:51:26,760 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\audit_excel.py', reloading
+2025-05-22 23:51:26,761 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\auth.py', reloading
+2025-05-22 23:51:26,762 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\config.py', reloading
+2025-05-22 23:51:26,763 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\logger.py', reloading
+2025-05-22 23:51:26,763 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\main.py', reloading
+2025-05-22 23:51:26,764 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\routes.py', reloading
+2025-05-22 23:51:26,764 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\routes\\__init__.py', reloading
+2025-05-22 23:51:26,765 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\routes\\audit_routes.py', reloading
+2025-05-22 23:51:26,765 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\routes\\main_routes.py', reloading
+2025-05-22 23:51:26,766 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\services\\user_service.py', reloading
+2025-05-22 23:51:27,462 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-22 23:51:28,716 - werkzeug - WARNING -  * Debugger is active!
+2025-05-22 23:51:28,723 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 18:02:12,419 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-23 18:02:12,420 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-23 18:02:12,444 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 18:02:13,912 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 18:02:13,933 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 18:22:30,881 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\routes\\main_routes.py', reloading
+2025-05-23 18:22:32,218 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 18:22:34,400 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 18:22:34,409 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 20:31:55,950 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-23 20:31:55,952 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-23 20:31:55,982 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 20:31:57,448 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 20:31:57,456 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 20:35:52,360 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\http\\client.py', reloading
+2025-05-23 20:35:53,281 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 20:35:55,306 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 20:35:55,315 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 20:39:39,908 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\enum.py', reloading
+2025-05-23 20:39:40,231 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 20:39:41,976 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 20:39:41,985 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:11:09,468 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\context.py', reloading
+2025-05-23 21:11:09,506 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\engine\\base.py', reloading
+2025-05-23 21:11:09,543 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\engine\\default.py', reloading
+2025-05-23 21:11:10,621 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:11:12,267 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:11:12,273 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:40:44,732 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask\\templating.py', reloading
+2025-05-23 21:40:44,757 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\jinja2\\__init__.py', reloading
+2025-05-23 21:40:44,789 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\jinja2\\environment.py', reloading
+2025-05-23 21:40:45,755 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:40:47,321 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:40:47,330 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:44:17,128 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\cacheprovider.py', reloading
+2025-05-23 21:44:17,295 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\fixtures.py', reloading
+2025-05-23 21:44:18,003 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:44:19,670 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:44:19,677 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:44:22,384 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\werkzeug\\exceptions.py', reloading
+2025-05-23 21:44:22,916 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:44:24,713 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:44:24,722 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:44:38,810 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\_pytest\\config\\__init__.py', reloading
+2025-05-23 21:44:39,990 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:44:41,597 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:44:41,609 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:49:34,115 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask\\ctx.py', reloading
+2025-05-23 21:49:34,561 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:49:36,141 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:49:36,150 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:50:44,176 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\query.py', reloading
+2025-05-23 21:50:44,180 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\session.py', reloading
+2025-05-23 21:50:44,191 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\elements.py', reloading
+2025-05-23 21:50:44,523 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:50:46,018 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:50:46,027 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:52:25,961 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\API_KEY_GEN.py', reloading
+2025-05-23 21:52:25,981 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\init_db.py', reloading
+2025-05-23 21:52:26,008 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\__init__.py', reloading
+2025-05-23 21:52:26,037 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\app.py', reloading
+2025-05-23 21:52:26,063 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\audit.py', reloading
+2025-05-23 21:52:26,086 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\audit_excel.py', reloading
+2025-05-23 21:52:26,111 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\auth.py', reloading
+2025-05-23 21:52:26,136 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\config.py', reloading
+2025-05-23 21:52:26,159 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\error_handlers.py', reloading
+2025-05-23 21:52:26,178 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\logger.py', reloading
+2025-05-23 21:52:26,196 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\main.py', reloading
+2025-05-23 21:52:26,215 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\models.py', reloading
+2025-05-23 21:52:26,235 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\routes.py', reloading
+2025-05-23 21:52:26,252 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\web_routes.py', reloading
+2025-05-23 21:52:26,268 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\routes\\__init__.py', reloading
+2025-05-23 21:52:26,286 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\routes\\audit_routes.py', reloading
+2025-05-23 21:52:26,453 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:52:28,296 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:52:28,303 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:52:28,377 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\schema.py', reloading
+2025-05-23 21:52:28,402 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\roles.py', reloading
+2025-05-23 21:52:28,428 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\visitors.py', reloading
+2025-05-23 21:52:28,466 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\selectable.py', reloading
+2025-05-23 21:52:28,497 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\typing.py', reloading
+2025-05-23 21:52:28,520 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\_typing.py', reloading
+2025-05-23 21:52:28,521 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\cache_key.py', reloading
+2025-05-23 21:52:28,522 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\traversals.py', reloading
+2025-05-23 21:52:28,544 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\event\\registry.py', reloading
+2025-05-23 21:52:28,567 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\_collections.py', reloading
+2025-05-23 21:52:28,597 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\deprecations.py', reloading
+2025-05-23 21:52:28,602 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\langhelpers.py', reloading
+2025-05-23 21:52:28,628 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\_py_collections.py', reloading
+2025-05-23 21:52:28,651 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\annotation.py', reloading
+2025-05-23 21:52:28,655 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\lambdas.py', reloading
+2025-05-23 21:52:28,690 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\mapper.py', reloading
+2025-05-23 21:52:28,716 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\base.py', reloading
+2025-05-23 21:52:28,744 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\decl_api.py', reloading
+2025-05-23 21:52:28,769 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\interfaces.py', reloading
+2025-05-23 21:52:28,772 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\relationships.py', reloading
+2025-05-23 21:52:28,774 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\scoping.py', reloading
+2025-05-23 21:52:28,801 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\state.py', reloading
+2025-05-23 21:52:28,822 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\_typing.py', reloading
+2025-05-23 21:52:28,834 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\util.py', reloading
+2025-05-23 21:52:28,845 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\log.py', reloading
+2025-05-23 21:52:28,874 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\operators.py', reloading
+2025-05-23 21:52:28,942 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\xml\\etree\\ElementTree.py', reloading
+2025-05-23 21:52:28,966 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\types.py', reloading
+2025-05-23 21:52:28,999 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\functools.py', reloading
+2025-05-23 21:52:29,018 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\datetime.py', reloading
+2025-05-23 21:52:29,055 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\_pydatetime.py', reloading
+2025-05-23 21:52:29,113 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\random.py', reloading
+2025-05-23 21:52:29,180 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\string.py', reloading
+2025-05-23 21:52:29,208 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\engine\\row.py', reloading
+2025-05-23 21:52:29,235 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\engine\\_py_row.py', reloading
+2025-05-23 21:52:29,270 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\http\\client.py', reloading
+2025-05-23 21:52:29,301 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\enum.py', reloading
+2025-05-23 21:52:29,550 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:52:31,135 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:52:31,143 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-23 21:53:16,862 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\state_changes.py', reloading
+2025-05-23 21:53:16,891 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\unitofwork.py', reloading
+2025-05-23 21:53:16,918 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\persistence.py', reloading
+2025-05-23 21:53:17,452 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-23 21:53:19,074 - werkzeug - WARNING -  * Debugger is active!
+2025-05-23 21:53:19,081 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-24 00:44:30,112 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-24 00:44:30,113 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-24 00:44:30,133 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-24 00:44:31,260 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 00:44:31,266 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-24 01:14:03,209 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\enum.py', reloading
+2025-05-24 01:14:03,620 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-24 01:14:04,906 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 01:14:04,913 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-24 01:17:38,208 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask\\ctx.py', reloading
+2025-05-24 01:17:38,510 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-24 01:17:39,773 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 01:17:39,780 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-24 01:17:39,869 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\engine\\result.py', reloading
+2025-05-24 01:17:39,943 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\engine\\row.py', reloading
+2025-05-24 01:17:39,982 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\engine\\_py_row.py', reloading
+2025-05-24 01:17:40,947 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-24 01:17:42,243 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 01:17:42,250 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-24 01:38:08,620 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask\\__init__.py', reloading
+2025-05-24 01:38:08,628 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask_sqlalchemy\\__init__.py', reloading
+2025-05-24 01:38:08,629 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask_sqlalchemy\\extension.py', reloading
+2025-05-24 01:38:08,631 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\__init__.py', reloading
+2025-05-24 01:38:08,632 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\event\\__init__.py', reloading
+2025-05-24 01:38:08,633 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\__init__.py', reloading
+2025-05-24 01:38:08,634 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask_sqlalchemy\\model.py', reloading
+2025-05-24 01:38:08,635 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask_sqlalchemy\\query.py', reloading
+2025-05-24 01:38:08,636 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask_sqlalchemy\\session.py', reloading
+2025-05-24 01:38:08,636 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask_sqlalchemy\\table.py', reloading
+2025-05-24 01:38:08,637 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask\\app.py', reloading
+2025-05-24 01:38:08,638 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask\\sansio\\app.py', reloading
+2025-05-24 01:38:08,639 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\flask\\sansio\\scaffold.py', reloading
+2025-05-24 01:38:08,640 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\__init__.py', reloading
+2025-05-24 01:38:08,641 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\inspection.py', reloading
+2025-05-24 01:38:08,642 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\schema.py', reloading
+2025-05-24 01:38:08,643 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\__init__.py', reloading
+2025-05-24 01:38:08,644 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\base.py', reloading
+2025-05-24 01:38:08,644 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\schema.py', reloading
+2025-05-24 01:38:08,648 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\roles.py', reloading
+2025-05-24 01:38:08,651 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\visitors.py', reloading
+2025-05-24 01:38:08,652 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\elements.py', reloading
+2025-05-24 01:38:08,655 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\selectable.py', reloading
+2025-05-24 01:38:08,659 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\typing.py', reloading
+2025-05-24 01:38:08,661 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\cache_key.py', reloading
+2025-05-24 01:38:08,669 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\traversals.py', reloading
+2025-05-24 01:38:08,670 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\event\\registry.py', reloading
+2025-05-24 01:38:08,672 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\_collections.py', reloading
+2025-05-24 01:38:08,674 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\langhelpers.py', reloading
+2025-05-24 01:38:08,678 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\util\\_py_collections.py', reloading
+2025-05-24 01:38:08,681 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\annotation.py', reloading
+2025-05-24 01:38:08,682 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\mapper.py', reloading
+2025-05-24 01:38:08,685 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\base.py', reloading
+2025-05-24 01:38:08,687 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\decl_api.py', reloading
+2025-05-24 01:38:08,689 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\interfaces.py', reloading
+2025-05-24 01:38:08,691 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\query.py', reloading
+2025-05-24 01:38:08,694 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\scoping.py', reloading
+2025-05-24 01:38:08,697 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\session.py', reloading
+2025-05-24 01:38:08,701 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\state.py', reloading
+2025-05-24 01:38:08,702 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\orm\\_typing.py', reloading
+2025-05-24 01:38:08,704 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\log.py', reloading
+2025-05-24 01:38:08,866 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\http\\client.py', reloading
+2025-05-24 01:38:09,286 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\API_KEY_GEN.py', reloading
+2025-05-24 01:38:09,316 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\init_db.py', reloading
+2025-05-24 01:38:09,316 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\run_main_app.py', reloading
+2025-05-24 01:38:09,339 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\__init__.py', reloading
+2025-05-24 01:38:09,373 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\Documents\\CS415\\CS415_A3\\main_app\\main_app_packages\\app.py', reloading
+2025-05-24 01:38:09,606 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-24 01:38:10,823 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 01:38:10,831 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-24 01:38:10,865 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\xml\\etree\\ElementTree.py', reloading
+2025-05-24 01:38:10,886 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\types.py', reloading
+2025-05-24 01:38:10,909 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\functools.py', reloading
+2025-05-24 01:38:10,924 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\datetime.py', reloading
+2025-05-24 01:38:10,946 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\_pydatetime.py', reloading
+2025-05-24 01:38:10,969 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\random.py', reloading
+2025-05-24 01:38:10,991 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\string.py', reloading
+2025-05-24 01:38:12,005 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-24 01:38:13,491 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 01:38:13,502 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-24 02:17:08,021 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\enum.py', reloading
+2025-05-24 02:17:08,678 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-24 02:17:10,063 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 02:17:10,071 - werkzeug - INFO -  * Debugger PIN: 128-974-157
+2025-05-24 02:18:40,177 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\expression.py', reloading
+2025-05-24 02:18:40,208 - werkzeug - INFO -  * Detected change in 'C:\\Users\\yashp\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\sqlalchemy\\sql\\_elements_constructors.py', reloading
+2025-05-24 02:18:40,463 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-05-24 02:18:41,803 - werkzeug - WARNING -  * Debugger is active!
+2025-05-24 02:18:41,810 - werkzeug - INFO -  * Debugger PIN: 128-974-157

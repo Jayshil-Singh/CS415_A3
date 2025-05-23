@@ -25,6 +25,24 @@
     {% endblock %}
 
     <main class="page-content-wrapper {% block main_class %}{% endblock %}">
+        
+        {# --- START OF FLASHED MESSAGES SECTION --- #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashed-messages-container container"> {# Added .container for consistent padding/width #}
+                    {% for category, message in messages %}
+                        {# Use category for styling, default to 'info' if no category #}
+                        <div class="alert alert-{{ category if category else 'info' }}" role="alert">
+                            {{ message }}
+                            {# Optional: Add a close button if you want dismissable alerts #}
+                            {# <button type="button" class="close-alert" onclick="this.parentElement.style.display='none';" aria-label="Close">&times;</button> #}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {# --- END OF FLASHED MESSAGES SECTION --- #}
+
         {% block body %}
             {# Main page content from child templates goes here #}
         {% endblock %}

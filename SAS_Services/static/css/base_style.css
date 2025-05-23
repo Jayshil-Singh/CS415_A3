@@ -27,6 +27,76 @@ body {
     /* position: sticky, top, z-index are handled by .header itself if it needs to be sticky */
 }
 
+.flashed-messages-container {
+    /* Uses .container class for width/padding from your existing base_style.css if defined */
+    /* If .container isn't suitable, define width/margin here: */
+    /* width: 90%; */
+    /* max-width: 960px; */
+    /* margin: 20px auto; */
+    padding-top: 15px; /* Add some space if it's directly under the header */
+}
+
+.alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem; /* Or your theme's border-radius */
+    font-size: 0.95rem;
+    position: relative; /* For potential close button positioning */
+}
+
+/* Default category if none specified or if you use 'info' */
+.alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* For flash(message, 'success') */
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+/* For flash(message, 'error') or flash(message, 'danger') */
+.alert-error, 
+.alert-danger { 
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* For flash(message, 'warning') */
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+/* Styling for the optional close button */
+.alert .close-alert {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1;
+    color: inherit; /* Takes color from parent .alert-* */
+    opacity: 0.6;
+    cursor: pointer;
+    padding: 0;
+}
+
+.alert .close-alert:hover,
+.alert .close-alert:focus {
+    opacity: 0.9;
+    text-decoration: none;
+    outline: none;
+}
+
 /* Main Content Wrapper: Constrains width and centers content, allows vertical growth */
 .page-content-wrapper {
     width: 100%; /* Takes full width initially */

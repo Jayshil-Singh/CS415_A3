@@ -13,6 +13,13 @@
         .student-link-row:hover {
             background-color: #f0f0f0; /* Example hover effect */
         }
+        .table-wrapper table td a { /* Style for the link in the ID cell */
+            text-decoration: none;
+            color: #007bff; /* Example link color */
+        }
+        .table-wrapper table td a:hover {
+            text-decoration: underline;
+        }
     </style>
 {% endblock %}
 
@@ -29,78 +36,61 @@
             <h1 id="page-main-title">Student Records</h1>
         </div>
 
-        <div id="loading-indicator" class="loading-indicator" style="display: none;"> {# Initially hidden, JS can show it #}
+        {# Loading indicator will be handled by editST.js based on table content #}
+        <div id="loading-indicator" class="loading-indicator" style="display: none;">
             <div class="spinner"></div>
             <p>Loading student records...</p>
         </div>
 
+        {# No students message will be handled by editST.js based on table content #}
         <div id="no-students-message" class="no-students-message" style="display: none;">
-            <p>No students found. You can register new students via the dashboard.</p>
+            <p>No students found. You can <a href="{{ url_for('sas_staff_register_student') }}">register new students</a>.</p>
         </div>
 
-        <div id="student-table-container" class="student-table-container" style="display: none;">
+        <div id="student-table-container" class="student-table-container" style="display: block;"> {# Default to block, JS will hide if no data #}
             <div class="table-wrapper">
                 <table id="students-overview-table">
                     <thead>
                         <tr>
                             <th>Student ID</th>
                             <th>Full Name</th>
-                            <th>Campus</th>
+                            <th>Campus/Address</th> {# Changed header to reflect current data #}
                         </tr>
                     </thead>
                     <tbody id="students-table-body">
-                        {# 
-                           This section will be populated by Flask/Jinja2 or JavaScript.
-                           Below is an example of how it would look with Flask/Jinja2 and dummy data.
-                           Replace 'students' with the actual list of student objects passed from your Flask route.
-                           Each student object should have at least 'id', 'first_name', 'last_name', 'campus'.
-                        #}
-
-                        {# --- EXAMPLE WITH DUMMY DATA (REMOVE/REPLACE WITH FLASK LOOP) --- #}
-                        {% set students_dummy = [
-                            { 'id': 'S12345678', 'first_name': 'John', 'middle_name': 'Michael', 'last_name': 'Doe', 'campus': 'Laucala' },
-                            { 'id': 'S87654321', 'first_name': 'Jane', 'middle_name': 'Elizabeth', 'last_name': 'Smith', 'campus': 'Laucala' },
-                            { 'id': 'S11223344', 'first_name': 'Peter', 'middle_name': 'James', 'last_name': 'Jones', 'campus': 'Solomon Islands' }
-                        ] %}
-
-                        {% if students_dummy %}
-                            {% for student in students_dummy %}
-                            {# Option 1: Make the whole row clickable with JS (see editST.js example below) #}
-                            {# <tr class="student-link-row" data-href="{{ url_for('sas_staff_display_student', student_id=student.id) }}"> #}
-                            
-                            {# Option 2: Make a specific cell a link (simpler for pure HTML/Jinja) #}
+                        {# Loop through REAL student data passed from Flask #}
+                        {% if students and students|length > 0 %}
+                            {% for student_item in students %} {# Changed loop variable to avoid conflict if 'student' is used elsewhere #}
                              <tr>
                                 <td>
-                                    <a href="{{ url_for('sas_staff_display_student', student_id=student.id) }}">
-                                        {{ student.id }}
+                                    {# Link to the displayST.html page for this student #}
+                                    <a href="{{ url_for('sas_staff_display_student', student_id=student_item.id) }}">
+                                        {{ student_item.id }}
                                     </a>
                                 </td>
-                                <td>{{ student.first_name }} {{ student.middle_name if student.middle_name }} {{ student.last_name }}</td>
-                                <td>{{ student.campus }}</td>
+                                <td>{{ student_item.full_name }}</td>
+                                <td>{{ student_item.campus }}</td> {# This will display the Address for now #}
                             </tr>
                             {% endfor %}
                         {% else %}
+                            {# This row will be shown if the students list from Flask is empty or not provided #}
+                            {# The JS will likely hide the table container and show #no-students-message instead #}
                             <tr>
-                                <td colspan="3" style="text-align:center;">No student records to display.</td>
+                                <td colspan="3" style="text-align:center;">No student records found in the database.</td>
                             </tr>
                         {% endif %}
-                        {# --- END DUMMY DATA EXAMPLE --- #}
                     </tbody>
                 </table>
             </div>
         </div>
 
-        {# Snackbar for notifications (can remain if other actions on this page warrant it) #}
         <div id="snackbar" class="snackbar">Snackbar message will appear here.</div>
 
     </div> {# End .container #}
 {% endblock %}
 
-{% block footer %}
-    {{ super() }}
-{% endblock %}
-
 {% block scripts %}
     {{ super() }}
+    {# editST.js should primarily handle showing/hiding loading/no-students message based on table content #}
     <script src="{{ url_for('static', filename='js/SASStaff/editST.js') }}"></script>
 {% endblock %}

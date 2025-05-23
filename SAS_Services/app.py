@@ -1,35 +1,61 @@
+from http.client import HTTPException
 import os
 import xml.etree.ElementTree as ET
 from flask import (
     Flask, jsonify, request, send_from_directory, render_template,
     redirect, url_for, flash, abort, session
 )
-# from werkzeug.utils import secure_filename # Uncomment if you use it
+from werkzeug.security import generate_password_hash, check_password_hash # For passwords
 from werkzeug.exceptions import HTTPException
 from types import SimpleNamespace
 from dotenv import load_dotenv
 from functools import wraps
 import datetime
+import random
+import string
+
+# Import 'db' instance AND model classes from models.py
+from models import (
+    db, Student, Program, Student_Program, Student_Level, Campus, ProgramType,
+    SubProgram, # Make sure SubProgram is imported
+    GenderEnum, StudentLevelEnum, student_subprogram_association # Import association table if needed directly
+)
 
 # --- Load Environment Variables ---
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(APP_DIR)
-DOTENV_PATH = os.path.join(PROJECT_ROOT, '.env')
-load_dotenv(DOTENV_PATH)
+if os.path.exists(os.path.join(APP_DIR, '.env')):
+    DOTENV_PATH = os.path.join(APP_DIR, '.env')
+else:
+    PROJECT_ROOT = os.path.dirname(APP_DIR) # Assumes .env is one level up if not in APP_DIR
+    DOTENV_PATH = os.path.join(PROJECT_ROOT, '.env')
 
-app = Flask (
+if os.path.exists(DOTENV_PATH):
+    load_dotenv(DOTENV_PATH)
+else:
+    # Fallback if .env is truly not found, to prevent error on load_dotenv
+    print(f"Warning: .env file not found at expected locations: {DOTENV_PATH} or {os.path.join(APP_DIR, '.env')}")
+
+
+# Create Flask App
+app = Flask(
     __name__,
     template_folder="templates",
-    static_folder="static"
+    static_folder="static",
+    instance_relative_config=True
 )
 
 # --- Application Configuration ---
-app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY_SAS', 'sas_default_insecure_secret_key_CHANGE_THIS_V5') # Ensure this is strong and unique
+app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY_SAS', 'a_very_secure_default_key_!@#$_for_dev_only')
 app.config['DEBUG'] = os.environ.get('FLASK_DEBUG', 'True').lower() in ['true', '1', 't']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL_SAS', f"sqlite:///{os.path.join(app.instance_path, 'enrollment.db')}")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Initialize the imported 'db' object (from models.py) with the app
+db.init_app(app)
+
+# --- BASE_DIR and DATA_FOLDER ---
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_FOLDER = os.path.join(BASE_DIR, 'xml_data')
-
 
 # --- User Context Injection ---
 @app.context_processor
@@ -40,8 +66,6 @@ def inject_user_and_globals():
     user_info['current_year'] = datetime.datetime.now().year
     return user_info
 
-
-# --- Helper Functions ---
 def get_data_from_xml(filename, list_element_name, item_element_name,
                       value_attribute=None, sub_item_map=None):
     xml_file_path = os.path.join(DATA_FOLDER, filename)
@@ -142,7 +166,28 @@ def get_data_from_xml(filename, list_element_name, item_element_name,
     return data_list_for_flat if sub_item_map is None else data_dict_for_hierarchical
 
 
+def get_next_student_id():
+    last_student = Student.query.order_by(Student.StudentID.desc()).first()
+    if last_student and last_student.StudentID.startswith('S') and last_student.StudentID[1:].isdigit():
+        last_num = int(last_student.StudentID[1:])
+        next_num = last_num + 1
+        return f"S{next_num:08d}"
+    return "S00000000"
+
+def generate_random_password(length_min=7, length_max=9):
+    length = random.randint(length_min, length_max)
+    characters = string.ascii_letters + string.digits + string.punctuation
+    while True: # Ensure password meets complexity
+        password = ''.join(random.choice(characters) for i in range(length))
+        if (any(c.islower() for c in password) and
+            any(c.isupper() for c in password) and
+            any(c.isdigit() for c in password) and
+            any(c in string.punctuation for c in password)):
+            return password # Return only after complexity is met
+
+
 # --- SAS/Admin Routes ---
+# ... (your other routes: sas_login, sas_logout, admin, manager, staff_home) ...
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/sas-login', methods=['GET', 'POST'])
 def sas_login():
@@ -162,7 +207,7 @@ def sas_login():
         }
         if username_input in sas_user_credentials:
             redirect_route, user_type, correct_password = sas_user_credentials[username_input]
-            if password == correct_password:
+            if password == correct_password: # In real app, use check_password_hash
                 session['email'] = username_input
                 session['user_type'] = user_type
                 flash(f"Login successful as {user_type.title()}.", "success")
@@ -171,10 +216,10 @@ def sas_login():
                 flash("Invalid username or password.", "error")
         else:
             flash("Invalid username or password.", "error")
-        return render_template('login.html') 
+        return render_template('login.html', form_data=request.form) # Pass form_data back
     return render_template('login.html')
 
-@app.route("/sas-logout") 
+@app.route("/sas-logout")
 def sas_logout():
     session.pop('email', None)
     session.pop('user_type', None)
@@ -203,96 +248,363 @@ def sas_staff_home():
     navigation_links = {
         "navigateToRegister": url_for('sas_staff_register_student'),
         "navigateToEdit": url_for('sas_staff_edit_student'),
-        "navigateToAllSTGrades": url_for('sas_staff_all_student_enrollments'), # Ensure this endpoint exists
-        "navigateToGradeRecheck": url_for('sas_staff_grade_rechecks'),     # Ensure this endpoint exists
+        "navigateToAllSTGrades": url_for('sas_staff_all_student_enrollments'),
+        "navigateToGradeRecheck": url_for('sas_staff_grade_rechecks'),
     }
     return render_template(
         'SASStaff/homeStaff.html',
-        staff_name=staff_username, 
+        staff_name=staff_username,
         navigation_links=navigation_links,
-        show_nav_drawer_button=True 
+        show_nav_drawer_button=True
     )
 
-@app.route('/sas-staff/register-student')
+
+@app.route('/sas-staff/register-student', methods=['GET', 'POST'])
 def sas_staff_register_student():
     if session.get('user_type') != 'staff': abort(403)
-    
-    programs_list = get_data_from_xml(
-        filename='programs.xml',
-        list_element_name='programs', 
-        item_element_name='program',  
-        value_attribute='programName' 
-    )
-    all_subprogrammes_list = get_data_from_xml(
-        filename='subprogrammes.xml', 
-        list_element_name='subprograms', 
-        item_element_name='subprogram',
-        value_attribute='subprogramName' 
-    )
-    campuses_list = get_data_from_xml(
-        filename='campuses.xml', 
-        list_element_name='campuses',
-        item_element_name='campus',
-        value_attribute='campusName' 
-    )
 
-    app.logger.debug(f"Programs loaded for registerST.html: {programs_list}")
-    app.logger.debug(f"All subprogrammes loaded for registerST.html: {all_subprogrammes_list}")
-    app.logger.debug(f"Campuses loaded for registerST.html: {campuses_list}")
+    programs_for_dropdown_xml = get_data_from_xml(filename='programs.xml', list_element_name='programs', item_element_name='program', value_attribute='programName')
+    all_subprogrammes_list_xml = get_data_from_xml(filename='subprogrammes.xml', list_element_name='subprograms', item_element_name='subprogram', value_attribute='subprogramName')
+    campuses_from_xml = get_data_from_xml(filename='campuses.xml', list_element_name='campuses', item_element_name='campus', value_attribute='campusName')
+    # Program types are now from DB, but we can pass the names for consistency if JS expects it
+    program_type_names = [pt.ProgramTypeName for pt in ProgramType.query.all()]
 
+
+    if request.method == 'POST':
+        try:
+            # --- Form Data Retrieval ---
+            first_name = request.form.get('firstName')
+            middle_name = request.form.get('middleName') or None
+            last_name = request.form.get('lastName')
+            contact = request.form.get('contact')
+            dob_str = request.form.get('dateOfBirth')
+            gender_str = request.form.get('gender')
+            citizenship = request.form.get('citizenship')
+            address = request.form.get('address')
+            selected_program_name = request.form.get('program')
+            student_level_str = request.form.get('studentLevel')
+            selected_campus_name = request.form.get('campus')
+            selected_program_type_name = request.form.get('programType')
+            subprogram1_name = request.form.get('subprogram1') # New
+            subprogram2_name = request.form.get('subprogram2') # New
+
+            # --- Validation ---
+            # (Your existing validation for required fields, gender, student level)
+            # Add validation for subprograms based on rules if needed server-side too
+            # ...
+
+            date_of_birth = datetime.datetime.strptime(dob_str, '%Y-%m-%d').date()
+            gender = GenderEnum(gender_str)
+            student_level_enum_val = StudentLevelEnum(student_level_str)
+            
+            student_id = get_next_student_id()
+            raw_password = generate_random_password()
+            password_hash_val = generate_password_hash(raw_password)
+            email = f"s{student_id[1:]}@student.usp.ac.fj"
+
+            program_obj = Program.query.filter(db.func.lower(Program.ProgramName) == db.func.lower(selected_program_name)).first()
+            if not program_obj: raise ValueError(f"Program '{selected_program_name}' not found.")
+            
+            campus_obj = Campus.query.filter_by(CampusName=selected_campus_name).first()
+            if not campus_obj: raise ValueError(f"Campus '{selected_campus_name}' not found.")
+
+            program_type_obj = ProgramType.query.filter_by(ProgramTypeName=selected_program_type_name).first()
+            if not program_type_obj: raise ValueError(f"Program Type '{selected_program_type_name}' not found.")
+
+            # Create Student
+            new_student = Student(
+                StudentID=student_id, FirstName=first_name, MiddleName=middle_name, LastName=last_name,
+                Contact=contact, Email=email, DateOfBirth=date_of_birth, Gender=gender,
+                Citizenship=citizenship, Address=address, PasswordHash=password_hash_val,
+                CampusID=campus_obj.CampusID
+            )
+            db.session.add(new_student)
+
+            # Create Student_Program link
+            new_student_program = Student_Program(
+                StudentID=student_id, ProgramID=program_obj.ProgramID,
+                ProgramTypeID=program_type_obj.ProgramTypeID
+            )
+            db.session.add(new_student_program)
+
+            # Create Student_Level link
+            new_student_level = Student_Level(StudentID=student_id, StudentLevel=student_level_enum_val)
+            db.session.add(new_student_level)
+
+            # NEW: Handle Subprogram Enrollment
+            if student_level_enum_val == StudentLevelEnum.BACHELOR:
+                selected_subprograms_for_student = []
+                if selected_program_type_name == "Single Major" and subprogram1_name:
+                    sp1 = SubProgram.query.filter_by(SubProgramName=subprogram1_name).first()
+                    if sp1: selected_subprograms_for_student.append(sp1)
+                    else: app.logger.warning(f"Subprogram '{subprogram1_name}' not found for student {student_id}")
+                elif selected_program_type_name == "Double Major":
+                    if subprogram1_name:
+                        sp1 = SubProgram.query.filter_by(SubProgramName=subprogram1_name).first()
+                        if sp1: selected_subprograms_for_student.append(sp1)
+                        else: app.logger.warning(f"Subprogram '{subprogram1_name}' not found for student {student_id}")
+                    if subprogram2_name:
+                        sp2 = SubProgram.query.filter_by(SubProgramName=subprogram2_name).first()
+                        if sp2 and (not sp1 or sp1.SubProgramID != sp2.SubProgramID): # Avoid duplicate if same selected
+                             selected_subprograms_for_student.append(sp2)
+                        elif sp2 and sp1 and sp1.SubProgramID == sp2.SubProgramID:
+                             app.logger.warning(f"Subprogram 2 '{subprogram2_name}' is same as Subprogram 1 for student {student_id}")
+                        elif sp2 is None:
+                             app.logger.warning(f"Subprogram '{subprogram2_name}' not found for student {student_id}")
+                
+                for sub_prog_obj in selected_subprograms_for_student:
+                    new_student.enrolled_subprograms.append(sub_prog_obj)
+            
+            db.session.commit()
+            app.logger.info(f"Registered student {student_id}")
+            session['new_student_credentials'] = {'student_id': student_id, 'email': email, 'password': raw_password}
+            return redirect(url_for('sas_staff_register_student'))
+
+        except ValueError as ve:
+            db.session.rollback()
+            flash(f"Invalid data: {str(ve)}", "error")
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Registration error: {e}", exc_info=True)
+            flash("An unexpected error occurred during registration.", "error")
+        
+        return render_template('SASStaff/registerST.html',
+                               programs=programs_for_dropdown_xml,
+                               all_subprogrammes=all_subprogrammes_list_xml, # Pass XML list
+                               campuses=campuses_from_xml,
+                               all_program_types=program_type_names, # Pass DB list
+                               form_data=request.form,
+                               new_student_credentials=None)
+
+    new_student_credentials = session.pop('new_student_credentials', None)
     return render_template(
         'SASStaff/registerST.html',
-        programs=programs_list,
-        all_subprogrammes=all_subprogrammes_list,
-        campuses=campuses_list
-        # If you need a subprograms_map (e.g., program -> list of its subprograms), 
-        # you would call get_data_from_xml with a properly configured sub_item_map argument
-        # and pass that map to the template.
+        programs=programs_for_dropdown_xml,
+        all_subprogrammes=all_subprogrammes_list_xml, # For JS dropdown population
+        campuses=campuses_from_xml,
+        all_program_types=program_type_names, # For JS dropdown population
+        new_student_credentials=new_student_credentials,
+        form_data={}
     )
 
 @app.route('/sas-staff/edit-student')
 def sas_staff_edit_student():
     if session.get('user_type') != 'staff':
         abort(403)
+    students_overview_data = []
+    try:
+        all_students_from_db = Student.query.order_by(Student.StudentID).all()
+        for s_db in all_students_from_db:
+            full_name_parts = [s_db.FirstName]
+            if s_db.MiddleName:
+                full_name_parts.append(s_db.MiddleName)
+            full_name_parts.append(s_db.LastName)
+            full_name = " ".join(filter(None, full_name_parts))
+            
+            # For Campus, we will use Address as a placeholder for now
+            # TODO: Implement proper Campus data (e.g., add a Campus field to Student model or join)
+            campus_display = s_db.Address if s_db.Address else "N/A"
 
-    # TODO: Fetch actual student data from your XML or database
-    # This data should be a list of dictionaries/objects
-    # Each item needs: id, first_name, last_name, (middle_name optional), campus
-    students_overview_data = [
-        { 'id': 'S12345678', 'first_name': 'John', 'middle_name': 'Michael', 'last_name': 'Doe', 'campus': 'Laucala' },
-        { 'id': 'S87654321', 'first_name': 'Jane', 'middle_name': 'Elizabeth', 'last_name': 'Smith', 'campus': 'Laucala' },
-        { 'id': 'S11223344', 'first_name': 'Peter', 'middle_name': 'James', 'last_name': 'Jones', 'campus': 'Solomon Islands' }
-    ]
-    # In a real app, you would also handle loading state or if students_overview_data is empty
+            students_overview_data.append({
+                'id': s_db.StudentID,
+                'full_name': full_name,
+                'campus': campus_display # This is currently student's address
+            })
+    except Exception as e:
+        app.logger.error(f"Error fetching students for overview: {e}", exc_info=True)
+        flash("Could not load student records.", "error")
     return render_template('SASStaff/editST.html', students=students_overview_data)
 
 @app.route('/sas-staff/display-student/<student_id>')
 def sas_staff_display_student(student_id):
+    if session.get('user_type') != 'staff': abort(403)
+    
+    student_details_obj = db.session.get(Student, student_id)
+    if not student_details_obj:
+        flash(f"Student with ID {student_id} not found.", "error")
+        return redirect(url_for('sas_staff_edit_student'))
+
+    program_name = "N/A"
+    program_type_name = "N/A"
+    student_program_link = Student_Program.query.filter_by(StudentID=student_id).first()
+    if student_program_link:
+        if student_program_link.program: program_name = student_program_link.program.ProgramName
+        if student_program_link.program_type: program_type_name = student_program_link.program_type.ProgramTypeName
+            
+    student_level_value = "N/A"
+    student_level_link = Student_Level.query.filter_by(StudentID=student_id).first()
+    if student_level_link and student_level_link.StudentLevel: student_level_value = student_level_link.StudentLevel.value
+        
+    current_campus_name = student_details_obj.campus.CampusName if student_details_obj.campus else "N/A"
+
+    # Get current enrolled subprograms
+    enrolled_subprogram_names = [sp.SubProgramName for sp in student_details_obj.enrolled_subprograms]
+    current_subprogram1_name = enrolled_subprogram_names[0] if len(enrolled_subprogram_names) > 0 else ""
+    current_subprogram2_name = enrolled_subprogram_names[1] if len(enrolled_subprogram_names) > 1 else ""
+
+
+    # Data for edit mode dropdowns
+    all_program_names = [p.ProgramName for p in Program.query.order_by(Program.ProgramName).all()]
+    all_student_level_values = [level.value for level in StudentLevelEnum]
+    all_gender_values = [gender.value for gender in GenderEnum]
+    all_campus_names = [c.CampusName for c in Campus.query.order_by(Campus.CampusName).all()]
+    all_program_type_names = [pt.ProgramTypeName for pt in ProgramType.query.order_by(ProgramType.ProgramTypeName).all()]
+    all_subprogrammes_for_dropdown = [sp.SubProgramName for sp in SubProgram.query.order_by(SubProgram.SubProgramName).all()]
+
+
+    display_data = {
+        'id': student_details_obj.StudentID,
+        'first_name': student_details_obj.FirstName, 'middle_name': student_details_obj.MiddleName or '', 'last_name': student_details_obj.LastName,
+        'address': student_details_obj.Address, 'contact': student_details_obj.Contact,
+        'date_of_birth': student_details_obj.DateOfBirth.strftime('%Y-%m-%d') if student_details_obj.DateOfBirth else '',
+        'gender': student_details_obj.Gender.value if student_details_obj.Gender else '',
+        'citizenship': student_details_obj.Citizenship, 'program_name': program_name,
+        'student_level': student_level_value, 'email': student_details_obj.Email,
+        'campus_name': current_campus_name, 'program_type_name': program_type_name,
+        'subprogram1': current_subprogram1_name, # Pass current subprogram1 name
+        'subprogram2': current_subprogram2_name  # Pass current subprogram2 name
+    }
+    return render_template('SASStaff/displayST.html', 
+                           student=display_data,
+                           all_programs=all_program_names, all_student_levels=all_student_level_values,
+                           all_genders=all_gender_values, all_campuses=all_campus_names,
+                           all_program_types=all_program_type_names,
+                           all_subprogrammes=all_subprogrammes_for_dropdown)
+
+
+@app.route('/sas-staff/update-student/<student_id>', methods=['POST'])
+def sas_staff_update_student(student_id):
     if session.get('user_type') != 'staff':
-        abort(403)
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
 
-    # TODO: Fetch all details for the specific student_id from your XML or database
-    # This should return a single dictionary/object with all fields for that student
-    # For example:
-    student_details = None # Initialize
-    all_students_raw_data = [ # This is just for example, you'd have a proper fetch function
-         {'id': 'S12345678', 'first_name': 'John', 'middle_name': 'Michael', 'last_name': 'Doe', 'address': '123 Suva Point Rd, Suva', 'contact': '679-1234567', 'date_of_birth': '1999-08-21', 'gender': 'Male', 'citizenship': 'Fijian', 'subprogram': 'Software Engineering', 'program': 'Bachelor of Science', 'student_level': 'Undergraduate', 'campus': 'Laucala'},
-         {'id': 'S87654321', 'first_name': 'Jane', 'middle_name': 'Elizabeth', 'last_name': 'Smith', 'address': '456 Marine Drive, Nasese', 'contact': '679-7654321', 'date_of_birth': '2000-03-10', 'gender': 'Female', 'citizenship': 'Regional', 'subprogram': 'Data Analytics', 'program': 'Bachelor of Commerce', 'student_level': 'Undergraduate', 'campus': 'Laucala'},
-         {'id': 'S11223344', 'first_name': 'Peter', 'middle_name': 'James', 'last_name': 'Jones', 'address': '789 Laucala Bay Rd, Suva', 'contact': '679-1112222', 'date_of_birth': '1998-12-01', 'gender': 'Male', 'citizenship': 'Solomon Islander', 'subprogram': 'Information Systems', 'program': 'Bachelor of Science', 'student_level': 'Undergraduate', 'campus': 'Solomon Islands'}
-    ]
-    for s_data in all_students_raw_data:
-        if s_data['id'] == student_id:
-            student_details = s_data
-            break
+    student_to_update = db.session.get(Student, student_id)
+    if not student_to_update:
+        return jsonify({"success": False, "message": "Student not found"}), 404
 
-    if not student_details:
-        # Optional: flash a message or handle more gracefully
-        app.logger.warning(f"Student with ID {student_id} not found.")
-        # You could redirect back to the list with an error or render displayST.html with a "not found" message
-        # return redirect(url_for('sas_staff_edit_student')) # Example redirect
+    try:
+        data = request.form 
+        app.logger.debug(f"Updating student {student_id} with form data: {data}")
 
-    # The student_details object will be passed to displayST.html
-    return render_template('SASStaff/displayST.html', student=student_details)
+        # --- Server-side validation of academic rules ---
+        new_level_str = data.get('studentLevel')
+        new_program_type_name = data.get('programTypeName')
+        new_program_name = data.get('programName')
+        subprogram1_form_name = data.get('subprogram1')
+        subprogram2_form_name = data.get('subprogram2')
+
+        if not all([new_level_str, new_program_type_name, new_program_name]): # Basic check
+             return jsonify({"success": False, "message": "Student Level, Program Type, and Program are required."}), 400
+
+        new_level_enum = StudentLevelEnum(new_level_str) # Will raise ValueError if invalid
+
+        # Rule 1: If Program Type is Single/Double Major, Student Level must be Bachelor.
+        if (new_program_type_name == "Single Major" or new_program_type_name == "Double Major") and \
+           not new_level_str.lower().includes("bachelor"): # Check if 'bachelor' is part of the string
+            return jsonify({"success": False, "message": "Single/Double Major is only applicable for Bachelor level students."}), 400
+
+        # Rule 2: If Student Level is Cert, Dip, Master, PG Dip, Program Type must be Prescribed.
+        non_bachelor_prescribed_levels = ["Certificate", "Diploma", "Master", "Postgraduate Diploma"]
+        if new_level_str in non_bachelor_prescribed_levels and new_program_type_name != "Prescribed Program":
+            return jsonify({"success": False, "message": f"For {new_level_str}, Program Type must be 'Prescribed Program'."}), 400
+        
+        # Rule 3: Subprogram requirements for Bachelor level
+        if new_level_str.lower().includes("bachelor"):
+            if new_program_type_name == "Single Major" and not subprogram1_form_name:
+                return jsonify({"success": False, "message": "Subprogram 1 is required for Single Major at Bachelor level."}), 400
+            if new_program_type_name == "Double Major" and (not subprogram1_form_name or not subprogram2_form_name):
+                return jsonify({"success": False, "message": "Subprogram 1 and Subprogram 2 are required for Double Major at Bachelor level."}), 400
+            if new_program_type_name == "Double Major" and subprogram1_form_name == subprogram2_form_name and subprogram1_form_name:
+                 return jsonify({"success": False, "message": "Subprogram 1 and Subprogram 2 cannot be the same."}), 400
+        elif new_program_type_name != "Prescribed Program" and (subprogram1_form_name or subprogram2_form_name):
+            # If not bachelor and not prescribed, subprograms should not be set (or this rule needs refinement)
+            app.logger.warning(f"Subprograms provided for non-Bachelor/non-Prescribed type for student {student_id}")
+
+
+        # Rule 4: Program Name prefix validation
+        prog_name_lower = new_program_name.lower()
+        level_lower = new_level_str.lower()
+        prefix_ok = True
+        if level_lower == "certificate" and not prog_name_lower.startsWith("certificate in "): prefix_ok = False
+        elif level_lower == "diploma" and not prog_name_lower.startsWith("diploma in "): prefix_ok = False
+        elif level_lower.includes("bachelor") and not (prog_name_lower.startsWith("bachelor of ") or prog_name_lower.startsWith("bachelor in ")): prefix_ok = False
+        elif level_lower.includes("master") and not (prog_name_lower.startsWith("masters in ") or prog_name_lower.startsWith("master of ")): prefix_ok = False
+        elif level_lower == "postgraduate diploma" and not prog_name_lower.startsWith("postgraduate diploma in "): prefix_ok = False
+        
+        if not prefix_ok:
+            return jsonify({"success": False, "message": f"Program name '{new_program_name}' does not match the expected prefix for '{new_level_str}' level."}), 400
+        # --- End Server-side validation ---
+
+
+        # Update Student table fields
+        student_to_update.FirstName = data.get('firstName', student_to_update.FirstName)
+        student_to_update.MiddleName = data.get('middleName', student_to_update.MiddleName) or None
+        student_to_update.LastName = data.get('lastName', student_to_update.LastName)
+        student_to_update.Contact = data.get('contact', student_to_update.Contact)
+        student_to_update.Email = data.get('email', student_to_update.Email)
+        if data.get('dateOfBirth'): student_to_update.DateOfBirth = datetime.datetime.strptime(data.get('dateOfBirth'), '%Y-%m-%d').date()
+        if data.get('gender'): student_to_update.Gender = GenderEnum(data.get('gender'))
+        student_to_update.Citizenship = data.get('citizenship', student_to_update.Citizenship)
+        student_to_update.Address = data.get('address', student_to_update.Address)
+
+        selected_campus_name = data.get('campusName')
+        if selected_campus_name:
+            campus_obj = Campus.query.filter_by(CampusName=selected_campus_name).first()
+            if campus_obj: student_to_update.CampusID = campus_obj.CampusID
+            else: app.logger.warning(f"Campus '{selected_campus_name}' not found during update for {student_id}")
+        
+        student_program_link = Student_Program.query.filter_by(StudentID=student_id).first()
+        if not student_program_link: # Should not happen for an existing student with a program
+            app.logger.error(f"CRITICAL: Student_Program link missing for student {student_id} during update.")
+            # Potentially create it if absolutely necessary, but this indicates a data integrity issue.
+            # For now, we'll assume it exists or the update for program/type will be skipped.
+        
+        if student_program_link:
+            if new_program_name:
+                new_program_obj = Program.query.filter(db.func.lower(Program.ProgramName) == db.func.lower(new_program_name)).first()
+                if new_program_obj: student_program_link.ProgramID = new_program_obj.ProgramID
+                else: app.logger.warning(f"Program '{new_program_name}' not found during update for {student_id}")
+
+            if new_program_type_name:
+                new_program_type_obj = ProgramType.query.filter_by(ProgramTypeName=new_program_type_name).first()
+                if new_program_type_obj: student_program_link.ProgramTypeID = new_program_type_obj.ProgramTypeID
+                else: app.logger.warning(f"ProgramType '{new_program_type_name}' not found during update for {student_id}")
+
+        if new_student_level_str: # Already validated to be a valid enum string
+            student_level_link = Student_Level.query.filter_by(StudentID=student_id).first()
+            if student_level_link: student_level_link.StudentLevel = new_level_enum
+            else: db.session.add(Student_Level(StudentID=student_id, StudentLevel=new_level_enum))
+        
+        # Update Subprograms: Clear existing and add new ones based on form
+        student_to_update.enrolled_subprograms.clear() # Remove all current subprogram associations
+        
+        if new_level_str.lower().includes("bachelor"):
+            subprograms_to_add_names = []
+            if new_program_type_name == "Single Major" and subprogram1_form_name:
+                subprograms_to_add_names.append(subprogram1_form_name)
+            elif new_program_type_name == "Double Major":
+                if subprogram1_form_name: subprograms_to_add_names.append(subprogram1_form_name)
+                if subprogram2_form_name and subprogram2_form_name != subprogram1_form_name: # Avoid duplicate
+                    subprograms_to_add_names.append(subprogram2_form_name)
+            
+            for sp_name in subprograms_to_add_names:
+                sub_prog_obj = SubProgram.query.filter_by(SubProgramName=sp_name).first()
+                if sub_prog_obj:
+                    student_to_update.enrolled_subprograms.append(sub_prog_obj)
+                else:
+                    app.logger.warning(f"Subprogram '{sp_name}' selected in form not found in DB for student {student_id}")
+
+        db.session.commit()
+        app.logger.info(f"Student {student_id} updated successfully.")
+        return jsonify({"success": True, "message": "Student details updated successfully."})
+
+    except ValueError as ve: # For date/enum conversion errors during data.get or StudentLevelEnum()
+        db.session.rollback()
+        app.logger.error(f"ValueError updating student {student_id}: {ve}", exc_info=False)
+        return jsonify({"success": False, "message": f"Invalid data format: {str(ve)}"}), 400
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error updating student {student_id}: {e}", exc_info=True)
+        return jsonify({"success": False, "message": "An unexpected error occurred while updating."}), 500
 
 @app.route('/sas-staff/grade-rechecks')
 def sas_staff_grade_rechecks():
@@ -318,77 +630,61 @@ def sas_staff_all_student_enrollments():
 
 
 # --- Error Handlers ---
-def render_error_page(error, status_code):
-    error_template = f"errors/{status_code}.html"
-    specific_template_path = os.path.join(app.template_folder, error_template)
-    generic_template_path = os.path.join(app.template_folder, "errors/generic_http_error.html")
-
-    final_template_to_render = error_template
-    if not os.path.exists(specific_template_path):
-        if os.path.exists(generic_template_path):
-            final_template_to_render = "errors/generic_http_error.html"
-        else:
-            app.logger.critical(f"CRITICAL: Fallback error template 'errors/generic_http_error.html' AND specific '{error_template}' not found for status {status_code}. Original error: {error}", exc_info=True)
-            return f"Internal Server Error ({status_code}). Critical error: Error page template missing.", status_code
-    try:
-        return render_template(final_template_to_render, error=error), status_code
-    except Exception as e_render:
-        app.logger.critical(f"CRITICAL: Error rendering error page '{final_template_to_render}' for status {status_code}. Original error: {error}. Render error: {e_render}", exc_info=True)
-        # Avoid rendering another template here to prevent loops if base.html has issues
-        return f"Internal Server Error ({status_code}). An additional error occurred while trying to display the error page. Please check server logs.", status_code
-
+# ... (your existing error handlers: render_error_page, handle_403, etc.) ...
 @app.errorhandler(403)
 def handle_403(e):
     app.logger.warning(f"Forbidden (403) access attempt to {request.path}. User: {session.get('email')}, Type: {session.get('user_type')}. Error: {e}")
-    return render_error_page(e, 403)
+    # return render_error_page(e, 403) # Make sure render_error_page is defined or use simple response
+    return "Access Forbidden", 403
+
 
 @app.errorhandler(404)
-def handle_404(e): 
+def handle_404(e):
     app.logger.warning(f"Not Found (404) at path: {request.path}. Error: {e}")
-    return render_error_page(e, 404)
+    # return render_error_page(e, 404)
+    return "Page Not Found", 404
 
 @app.errorhandler(500)
 def handle_500(e):
+    db.session.rollback() # Rollback session on internal server errors
     app.logger.error(f"Internal Server Error (500) at path: {request.path}. Error: {e}", exc_info=True)
-    return render_error_page(e, 500)
+    # return render_error_page(e, 500)
+    return "Internal Server Error", 500
 
-@app.errorhandler(HTTPException) # Catches other HTTP errors
+@app.errorhandler(HTTPException)
 def handle_http_exception(e):
     status_code = e.code if hasattr(e, 'code') and e.code is not None else 500
-    # Avoid re-triggering specific handlers if they are already defined for this code
-    if status_code in [403, 404, 500] and app.error_handler_spec[None].get(status_code):
-         # If a specific handler (like @app.errorhandler(404)) exists, let it handle it.
-         # This check might need refinement based on Flask version or if using blueprints.
-         # For simplicity, we can let render_error_page handle the fallback.
-         pass # Or just call render_error_page directly
     app.logger.warning(f"HTTP Exception (code {status_code}) at path: {request.path}. Description: {e.description}. Error: {e}")
-    return render_error_page(e, status_code)
+    # return render_error_page(e, status_code)
+    return f"HTTP Error {status_code}: {e.name}", status_code
 
-@app.errorhandler(Exception) # Catch-all for non-HTTP exceptions
+@app.errorhandler(Exception)
 def handle_all_other_exceptions(e):
-    if isinstance(e, HTTPException): # Should have been caught by HTTPException or specific code handlers
-        return e # Let Werkzeug/Flask handle it further if it's already an HTTPException
+    if isinstance(e, HTTPException):
+        return e # Let specific HTTP handlers or default Werkzeug handler take over
+    db.session.rollback()
     app.logger.error(f"Unhandled Non-HTTP Exception at path: {request.path}. Error: {e}", exc_info=True)
-    return render_error_page(e, 500)
+    # return render_error_page(e, 500)
+    return "An unexpected error occurred", 500
 
 
 # --- Main Execution Block ---
 if __name__ == '__main__':
-    if not os.path.exists(DATA_FOLDER):
+    if not os.path.exists(app.instance_path):
         try:
-            os.makedirs(DATA_FOLDER, exist_ok=True)
-            app.logger.info(f"Created DATA_FOLDER at {DATA_FOLDER}")
-        except OSError as e:
-            app.logger.error(f"Could not create DATA_FOLDER: {e}")
+            os.makedirs(app.instance_path)
+            app.logger.info(f"Created instance folder at {app.instance_path}")
+        except OSError as e_mkdir:
+            app.logger.error(f"Could not create instance folder: {e_mkdir}")
 
     app.logger.info(f"Flask App '{app.name}' (SAS_Services) starting...")
     if app.config['SECRET_KEY'] == 'sas_default_insecure_secret_key_CHANGE_THIS_V5':
         app.logger.warning("SECURITY WARNING: Flask SECRET_KEY is using the INSECURE default value.")
     app.logger.info(f"Debug mode: {app.debug}")
-    app.logger.info(f"Template folder: {os.path.join(BASE_DIR, app.template_folder)}")
-    app.logger.info(f"Static folder: {os.path.join(BASE_DIR, app.static_folder)}")
+    app.logger.info(f"Template folder: {app.template_folder}") # Corrected to use app attribute
+    app.logger.info(f"Static folder: {app.static_folder}")   # Corrected
     app.logger.info(f"Data folder (for XMLs): {DATA_FOLDER}")
+    app.logger.info(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
     
-    sas_service_port = int(os.getenv("SAS_SERVICE_PORT", 5003))
-    app.logger.info(f"Attempting to run on host 0.0.0.0 and port {sas_service_port}")
+    sas_service_port = int(os.getenv("SAS_SERVICE_PORT", 5006))
     app.run(host='0.0.0.0', port=sas_service_port)
