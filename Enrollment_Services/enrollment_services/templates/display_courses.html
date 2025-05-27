@@ -72,6 +72,7 @@
             padding: 0.625rem;
             margin: 0.625rem 0;
             border-radius: 0.25rem;
+            display: none; /* Hidden by default, shown by JS */
         }
 
         .flash.error {
@@ -176,13 +177,17 @@
 <body>
     <div class="enrollment-container">
         <h2>Your Enrolled Courses for Semester 2, 2025</h2>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
+        
+        <div id="flash-messages-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash {{ category }}" style="display: block;">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+
 
         {% if enrolled_courses %}
         <table class="course-table">
@@ -199,7 +204,7 @@
                 <tr>
                     <td>{{ course.code }}</td>
                     <td>{{ course.title }}</td>
-                    <td>Semester 2, 2025</td>
+                    <td>{{ course.semester }}</td>
                     <td><a href="#" class="drop-button" data-course-code="{{ course.code }}"
                             data-course-title="{{ course.title }}">Drop Course</a></td>
                 </tr>
@@ -234,8 +239,22 @@
         const modalCourseTitle = document.getElementById('modal-course-title');
         const confirmDropButton = document.getElementById('confirmDrop');
         const cancelDropButton = document.getElementById('cancelDrop');
+        const flashMessagesContainer = document.getElementById('flash-messages-container');
+
         let courseCodeToDrop = null;
         let rowToRemove = null;
+
+        function showFlashMessage(message, category) {
+            const flashDiv = document.createElement('div');
+            flashDiv.classList.add('flash', category);
+            flashDiv.textContent = message;
+            flashMessagesContainer.appendChild(flashDiv);
+            flashDiv.style.display = 'block'; // Make it visible
+            setTimeout(() => {
+                flashDiv.style.display = 'none';
+                flashDiv.remove();
+            }, 5000); // Hide after 5 seconds
+        }
 
         dropButtons.forEach(button => {
             button.addEventListener('click', function (event) {
@@ -255,27 +274,47 @@
             rowToRemove = null;
         });
 
-        confirmDropButton.addEventListener('click', function () {
+        confirmDropButton.addEventListener('click', async function () {
             if (courseCodeToDrop && rowToRemove) {
-                // In a real application, make an AJAX request to your server here
-                console.log(`Dropping course: ${courseCodeToDrop}`);
-                // In a real application, make an AJAX request to your server here to drop the course
-                // On success from the server, you would then remove the row from the table:
-                rowToRemove.remove();
-                modal.style.display = "none";
-                // Optionally display a success message
-                if (document.querySelector('.course-table tbody').children.length === 0) {
-                    const table = document.querySelector('.course-table');
-                    if (table) {
-                        table.remove();
+                try {
+                    const response = await fetch(`/enrollment_services/drop_course/${courseCodeToDrop}`, {
+                        method: 'GET', // Or 'POST' if you prefer, but GET is simpler for this action
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Include authorization token if your API expects it
+                            'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` 
+                        }
+                    });
+
+                    if (response.ok) {
+                        rowToRemove.remove();
+                        modal.style.display = "none";
+                        showFlashMessage(`Course ${courseCodeToDrop} dropped successfully.`, 'success');
+
+                        // Check if the table is empty after dropping
+                        if (document.querySelector('.course-table tbody').children.length === 0) {
+                            const table = document.querySelector('.course-table');
+                            if (table) {
+                                table.remove();
+                            }
+                            const noCoursesMessage = document.createElement('p');
+                            noCoursesMessage.classList.add('no-courses');
+                            noCoursesMessage.textContent = 'No courses selected.';
+                            document.querySelector('.enrollment-container').appendChild(noCoursesMessage);
+                        }
+                    } else {
+                        const errorData = await response.json();
+                        showFlashMessage(errorData.message || 'Failed to drop course.', 'error');
+                        modal.style.display = "none";
                     }
-                    const noCoursesMessage = document.createElement('p');
-                    noCoursesMessage.classList.add('no-courses');
-                    noCoursesMessage.textContent = 'No courses selected.';
-                    document.querySelector('.enrollment-container').appendChild(noCoursesMessage);
+                } catch (error) {
+                    console.error('Error dropping course:', error);
+                    showFlashMessage('An error occurred while dropping the course.', 'error');
+                    modal.style.display = "none";
+                } finally {
+                    courseCodeToDrop = null;
+                    rowToRemove = null;
                 }
-                courseCodeToDrop = null;
-                rowToRemove = null;
             }
         });
 

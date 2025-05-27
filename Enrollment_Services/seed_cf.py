@@ -1,5 +1,3 @@
-# enrollment_services/seed_course_fees.py
-
 import json
 import os
 import random # Import the random module
@@ -9,15 +7,16 @@ from enrollment_services.model import Course, CourseFee
 
 def create_app_for_seeding():
     """
-    Creates a minimal Flask app context for database operations.
+    Creates a minimal Flask app context for database operations,
+    targeting the database within enrollment_services/instance.
     """
     app = Flask(__name__)
     
-    # Determine base directory (CS415_A3)
+    # Determine the current directory of this script (enrollment_services)
     current_script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root_dir = os.path.dirname(current_script_dir) # Go up from 'enrollment_services' to 'CS415_A3'
-
-    db_instance_dir = os.path.join(project_root_dir, 'instance')
+    
+    # The 'instance' directory is now expected to be a direct child of 'enrollment_services'
+    db_instance_dir = os.path.join(current_script_dir, 'instance')
     db_path = os.path.join(db_instance_dir, 'enrollment.db')
     
     os.makedirs(db_instance_dir, exist_ok=True) # Ensure the 'instance' directory exists
@@ -90,10 +89,11 @@ if __name__ == '__main__':
     app = create_app_for_seeding()
     with app.app_context():
         # Define the path to your main data.json file
-        json_file_name = 'data.json' # Assuming data.json is at the project root
+        json_file_name = 'data.json' # Assuming data.json is still at the project root
         
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root_dir = os.path.dirname(current_script_dir) # Go up from 'enrollment_services' to 'CS415_A3'
+        # Go up from 'enrollment_services' to 'CS415_A3' to find data.json
+        project_root_dir = os.path.dirname(current_script_dir) 
         json_file_path = os.path.join(project_root_dir, json_file_name)
         
         print(f"Attempting to load JSON from: {json_file_path}")

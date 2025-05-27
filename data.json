@@ -23429,6 +23429,22 @@
       "studentLevel": "Undergraduate",
       "subprogram": "Computing Science"
     },
+    "S5613338": {
+      "address": "N",
+      "campus": "Laucala",
+      "citizenship": "Fijian",
+      "contact": "679-66666666",
+      "dateOfBirth": "2004-05-02",
+      "firstName": "Ayon",
+      "gender": "Male",
+      "id": "S11223344",
+      "lastName": "Naii",
+      "middleName": "Khay",
+      "password": "psw6969",
+      "program": "Bachelors in Software Engineering",
+      "studentLevel": "Undergraduate",
+      "subprogram": "Computing Science"
+    },
     "STU5613332": {
       "address": "46 Ragg Avenue, Suva",
       "campus": "Laucala",

@@ -283,7 +283,8 @@
                         <div class="space-y-4">
                             {% for course in courses %}
                             <div
-                                class="p-4 border rounded-lg hover:shadow-md transition-shadow {% if not course.prereq_met %}course-disabled{% endif %}">
+                                class="p-4 border rounded-lg hover:shadow-md transition-shadow 
+                                {% if not course.prereq_met or course.already_enrolled %}course-disabled{% endif %}">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <h4 class="font-semibold text-lg text-gray-800">{{ course.code }}: {{ course.title
@@ -292,7 +293,7 @@
                                     </div>
                                     <input type="checkbox" name="courses" value="{{ course.code }}"
                                         class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 course-checkbox"
-                                        {% if not course.prereq_met %}disabled{% endif %}>
+                                        {% if not course.prereq_met or course.already_enrolled %}disabled{% endif %}>
                                 </div>
                                 <p class="text-xs mt-1">
                                     Prerequisites:
@@ -308,6 +309,9 @@
                                     None
                                     {% endif %}
                                 </p>
+                                {% if course.already_enrolled %}
+                                    <p class="text-xs mt-1 text-blue-600">Already Enrolled</p>
+                                {% endif %}
                             </div>
                             {% endfor %}
                         </div>
@@ -370,26 +374,32 @@
         const confirmEnrollButton = document.getElementById('confirmEnroll');
         const maxCourses = 4;
 
+        function updateSelectedCount() {
+            const checkedCount = document.querySelectorAll('.course-checkbox:checked').length;
+            selectedCountSpan.textContent = checkedCount;
+
+            if (checkedCount > 0 && checkedCount <= maxCourses) {
+                enrollButton.disabled = false;
+                enrollButton.classList.remove('disabled:opacity-50');
+            } else {
+                enrollButton.disabled = true;
+                enrollButton.classList.add('disabled:opacity-50');
+            }
+        }
+
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', () => {
                 const checkedCount = document.querySelectorAll('.course-checkbox:checked').length;
-                selectedCountSpan.textContent = checkedCount;
-
-                if (checkedCount > 0 && checkedCount <= maxCourses) {
-                    enrollButton.disabled = false;
-                    enrollButton.classList.remove('disabled:opacity-50');
-                } else {
-                    enrollButton.disabled = true;
-                    enrollButton.classList.add('disabled:opacity-50');
-                }
-
                 if (checkedCount > maxCourses) {
                     alert(`You can select a maximum of ${maxCourses} courses.`);
                     checkbox.checked = false; // Revert the last check
-                    selectedCountSpan.textContent = document.querySelectorAll('.course-checkbox:checked').length; // Update count again
                 }
+                updateSelectedCount(); // Update count and button state
             });
         });
+
+        // Initialize count and button state on page load
+        updateSelectedCount();
 
         // Show enrollment confirmation modal
         enrollButton.addEventListener('click', (event) => {
@@ -408,8 +418,7 @@
             document.getElementById('enrollment-form').submit(); // Submit the form
         });
 
-
-        // Simulate loading (for demonstration - you'd replace this with actual AJAX calls)
+        // The semester selection loading simulation is commented out as it's not needed with direct DB interaction
         // document.getElementById('semester').addEventListener('change', () => {
         //     document.getElementById('course-list-container').classList.add('hidden');
         //     document.getElementById('loading-courses').classList.remove('hidden');
