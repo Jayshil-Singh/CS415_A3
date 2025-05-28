@@ -601,11 +601,11 @@ def fees(current_user): # Add current_user parameter
             student_details['name'] = current_user.username
             student_details['id'] = current_user.id
             
-        # You might generate invoice number, date, and status dynamically here
-        invoice_details['number'] = f"INV-{datetime.now().year}-{current_user.id}"
+        # Generate a random invoice number
+        invoice_details['number'] = f"INV-{uuid.uuid4().hex[:8].upper()}"  # Generate a random 8-character hex string
         invoice_details['date'] = datetime.now().strftime('%B %d, %Y')
         # This part ('Semester 2, 2025') is still hardcoded as your schema doesn't link enrollment to specific semester easily
-        invoice_details['semester'] = 'Semester 2, 2025' 
+        invoice_details['semester'] = 'Semester 2, 2025'
         # Determine payment status (e.g., check StudentCourseFee status)
         student_fees_records = StudentCourseFee.query.filter_by(StudentID=current_user.id, status='Outstanding').first()
         if student_fees_records:
@@ -665,7 +665,8 @@ def download_invoice_pdf(current_user): # Add current_user parameter
             student_details['name'] = current_user.username
             student_details['id'] = current_user.id
 
-        invoice_details['number'] = f"INV-{datetime.now().year}-{current_user.id}"
+        # Generate a random invoice number
+        invoice_details['number'] = f"INV-{uuid.uuid4().hex[:8].upper()}"
         invoice_details['date'] = datetime.now().strftime('%B %d, %Y')
         invoice_details['semester'] = 'Semester 2, 2025' # Still hardcoded
         student_fees_records = StudentCourseFee.query.filter_by(StudentID=current_user.id, status='Outstanding').first()
@@ -678,7 +679,7 @@ def download_invoice_pdf(current_user): # Add current_user parameter
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter)
         elements = []
-        styles = getSampleStyleSheet()
+        styles = getSampleStyleSheet() # Corrected typo here
 
         # Build PDF content
         elements.append(Paragraph("Invoice", styles['h1']))
@@ -836,7 +837,6 @@ def update_enrollment_api(current_user, enrollment_id): # Add current_user param
 @token_required # Protect this route
 def delete_enrollment_api(current_user, enrollment_id): # Add current_user parameter
     """Deletes an enrollment record. Requires authentication."""
-    # Only admins/managers can delete enrollments
     if current_user.role not in ['admin', 'sas_manager']:
         return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can delete enrollments'}), 403
 
