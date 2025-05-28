@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session
 # from flask_login import login_user, logout_user, current_user
 # from .models import User # Assuming you have a User model
 # from . import db # Assuming you have db from __init__.py
+from functools import wraps
+import jwt
+import os
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -23,5 +26,43 @@ def logout():
     # logout_user()
     flash('You have been logged out.', 'info')
     return redirect(url_for('main_bp.index'))
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to access this page.', 'warning')
+            return redirect(url_for('auth.login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to access this page.', 'warning')
+            return redirect(url_for('auth.login', next=request.url))
+        if session.get('role') != 'admin':
+            flash('You do not have permission to access this page.', 'error')
+            return redirect(url_for('main.index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def verify_token(token):
+    """Verify JWT token"""
+    try:
+        secret_key = os.environ.get('JWT_SECRET_KEY', 'your-secret-key')
+        payload = jwt.decode(token, secret_key, algorithms=['HS256'])
+        return payload
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
+
+def create_token(user_data):
+    """Create JWT token"""
+    secret_key = os.environ.get('JWT_SECRET_KEY', 'your-secret-key')
+    token = jwt.encode(user_data, secret_key, algorithm='HS256')
+    return token
 
 # Remember to register this blueprint in __init__.py if you use it.

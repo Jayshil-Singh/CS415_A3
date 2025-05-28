@@ -13,6 +13,7 @@ from functools import wraps
 import datetime
 import random
 import string
+import sqlite3
 
 # Import 'db' instance AND model classes from models.py
 from models import (
@@ -185,9 +186,48 @@ def generate_random_password(length_min=7, length_max=9):
             any(c in string.punctuation for c in password)):
             return password # Return only after complexity is met
 
+def register_student_in_service_db(student_data):
+    """Helper function to register student in StudentService database"""
+    target_db = os.path.join('StudentService', 'instance', 'studentservice.db')
+    connection = None
+    try:
+        connection = sqlite3.connect(target_db)
+        cursor = connection.cursor()
+        
+        # Insert into Student table
+        cursor.execute("""
+            INSERT INTO Student (
+                StudentID, FirstName, MiddleName, LastName,
+                Contact, Email, DateOfBirth, Gender,
+                Citizenship, Address, PasswordHash, CampusID
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            student_data['StudentID'],
+            student_data['FirstName'],
+            student_data['MiddleName'],
+            student_data['LastName'],
+            student_data['Contact'],
+            student_data['Email'],
+            student_data['DateOfBirth'],
+            student_data['Gender'].value,
+            student_data['Citizenship'],
+            student_data['Address'],
+            student_data['PasswordHash'],
+            student_data['CampusID']
+        ))
+        
+        connection.commit()
+        return True
+    except Exception as e:
+        if connection:
+            connection.rollback()
+        app.logger.error(f"Error registering student in StudentService DB: {e}", exc_info=True)
+        raise
+    finally:
+        if connection:
+            connection.close()
 
 # --- SAS/Admin Routes ---
-# ... (your other routes: sas_login, sas_logout, admin, manager, staff_home) ...
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/sas-login', methods=['GET', 'POST'])
 def sas_login():
@@ -266,9 +306,7 @@ def sas_staff_register_student():
     programs_for_dropdown_xml = get_data_from_xml(filename='programs.xml', list_element_name='programs', item_element_name='program', value_attribute='programName')
     all_subprogrammes_list_xml = get_data_from_xml(filename='subprogrammes.xml', list_element_name='subprograms', item_element_name='subprogram', value_attribute='subprogramName')
     campuses_from_xml = get_data_from_xml(filename='campuses.xml', list_element_name='campuses', item_element_name='campus', value_attribute='campusName')
-    # Program types are now from DB, but we can pass the names for consistency if JS expects it
     program_type_names = [pt.ProgramTypeName for pt in ProgramType.query.all()]
-
 
     if request.method == 'POST':
         try:
@@ -285,13 +323,8 @@ def sas_staff_register_student():
             student_level_str = request.form.get('studentLevel')
             selected_campus_name = request.form.get('campus')
             selected_program_type_name = request.form.get('programType')
-            subprogram1_name = request.form.get('subprogram1') # New
-            subprogram2_name = request.form.get('subprogram2') # New
-
-            # --- Validation ---
-            # (Your existing validation for required fields, gender, student level)
-            # Add validation for subprograms based on rules if needed server-side too
-            # ...
+            subprogram1_name = request.form.get('subprogram1')
+            subprogram2_name = request.form.get('subprogram2')
 
             date_of_birth = datetime.datetime.strptime(dob_str, '%Y-%m-%d').date()
             gender = GenderEnum(gender_str)
@@ -311,18 +344,30 @@ def sas_staff_register_student():
             program_type_obj = ProgramType.query.filter_by(ProgramTypeName=selected_program_type_name).first()
             if not program_type_obj: raise ValueError(f"Program Type '{selected_program_type_name}' not found.")
 
-            # Create Student
-            new_student = Student(
-                StudentID=student_id, FirstName=first_name, MiddleName=middle_name, LastName=last_name,
-                Contact=contact, Email=email, DateOfBirth=date_of_birth, Gender=gender,
-                Citizenship=citizenship, Address=address, PasswordHash=password_hash_val,
-                CampusID=campus_obj.CampusID
-            )
+            # Create Student object for both databases
+            student_data = {
+                'StudentID': student_id,
+                'FirstName': first_name,
+                'MiddleName': middle_name,
+                'LastName': last_name,
+                'Contact': contact,
+                'Email': email,
+                'DateOfBirth': date_of_birth,
+                'Gender': gender,
+                'Citizenship': citizenship,
+                'Address': address,
+                'PasswordHash': password_hash_val,
+                'CampusID': campus_obj.CampusID
+            }
+
+            # Create Student in main database
+            new_student = Student(**student_data)
             db.session.add(new_student)
 
             # Create Student_Program link
             new_student_program = Student_Program(
-                StudentID=student_id, ProgramID=program_obj.ProgramID,
+                StudentID=student_id,
+                ProgramID=program_obj.ProgramID,
                 ProgramTypeID=program_type_obj.ProgramTypeID
             )
             db.session.add(new_student_program)
@@ -331,32 +376,31 @@ def sas_staff_register_student():
             new_student_level = Student_Level(StudentID=student_id, StudentLevel=student_level_enum_val)
             db.session.add(new_student_level)
 
-            # NEW: Handle Subprogram Enrollment
+            # Handle Subprogram Enrollment
             if student_level_enum_val == StudentLevelEnum.BACHELOR:
                 selected_subprograms_for_student = []
                 if selected_program_type_name == "Single Major" and subprogram1_name:
                     sp1 = SubProgram.query.filter_by(SubProgramName=subprogram1_name).first()
                     if sp1: selected_subprograms_for_student.append(sp1)
-                    else: app.logger.warning(f"Subprogram '{subprogram1_name}' not found for student {student_id}")
                 elif selected_program_type_name == "Double Major":
                     if subprogram1_name:
                         sp1 = SubProgram.query.filter_by(SubProgramName=subprogram1_name).first()
                         if sp1: selected_subprograms_for_student.append(sp1)
-                        else: app.logger.warning(f"Subprogram '{subprogram1_name}' not found for student {student_id}")
                     if subprogram2_name:
                         sp2 = SubProgram.query.filter_by(SubProgramName=subprogram2_name).first()
-                        if sp2 and (not sp1 or sp1.SubProgramID != sp2.SubProgramID): # Avoid duplicate if same selected
-                             selected_subprograms_for_student.append(sp2)
-                        elif sp2 and sp1 and sp1.SubProgramID == sp2.SubProgramID:
-                             app.logger.warning(f"Subprogram 2 '{subprogram2_name}' is same as Subprogram 1 for student {student_id}")
-                        elif sp2 is None:
-                             app.logger.warning(f"Subprogram '{subprogram2_name}' not found for student {student_id}")
+                        if sp2 and (not sp1 or sp1.SubProgramID != sp2.SubProgramID):
+                            selected_subprograms_for_student.append(sp2)
                 
                 for sub_prog_obj in selected_subprograms_for_student:
                     new_student.enrolled_subprograms.append(sub_prog_obj)
+
+            # Register in StudentService database
+            register_student_in_service_db(student_data)
             
+            # Commit changes to main database
             db.session.commit()
-            app.logger.info(f"Registered student {student_id}")
+            
+            app.logger.info(f"Registered student {student_id} in both databases")
             session['new_student_credentials'] = {'student_id': student_id, 'email': email, 'password': raw_password}
             return redirect(url_for('sas_staff_register_student'))
 
@@ -369,20 +413,20 @@ def sas_staff_register_student():
             flash("An unexpected error occurred during registration.", "error")
         
         return render_template('SASStaff/registerST.html',
-                               programs=programs_for_dropdown_xml,
-                               all_subprogrammes=all_subprogrammes_list_xml, # Pass XML list
-                               campuses=campuses_from_xml,
-                               all_program_types=program_type_names, # Pass DB list
-                               form_data=request.form,
-                               new_student_credentials=None)
+                            programs=programs_for_dropdown_xml,
+                            all_subprogrammes=all_subprogrammes_list_xml,
+                            campuses=campuses_from_xml,
+                            all_program_types=program_type_names,
+                            form_data=request.form,
+                            new_student_credentials=None)
 
     new_student_credentials = session.pop('new_student_credentials', None)
     return render_template(
         'SASStaff/registerST.html',
         programs=programs_for_dropdown_xml,
-        all_subprogrammes=all_subprogrammes_list_xml, # For JS dropdown population
+        all_subprogrammes=all_subprogrammes_list_xml,
         campuses=campuses_from_xml,
-        all_program_types=program_type_names, # For JS dropdown population
+        all_program_types=program_type_names,
         new_student_credentials=new_student_credentials,
         form_data={}
     )

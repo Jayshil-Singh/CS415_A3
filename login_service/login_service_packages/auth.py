@@ -64,6 +64,12 @@ def validate_student_email(email):
     pattern = r'^s\d{8}@student\.usp\.ac\.fj$'
     return bool(re.match(pattern, email))
 
+def extract_student_id_from_email(email):
+    """Extract student ID from email (e.g., 's12345678@student.usp.ac.fj' -> 'S12345678')"""
+    if validate_student_email(email):
+        return 'S' + email[1:9]  # Convert 's12345678' to 'S12345678'
+    return None
+
 @auth_bp.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -79,6 +85,16 @@ def login():
         # Validate student email format
         if not validate_student_email(data['email']):
             return jsonify({'message': 'Invalid student email format. Must be s[8 digits]@student.usp.ac.fj'}), 400
+
+        # Extract student ID from email
+        student_id = extract_student_id_from_email(data['email'])
+        if not student_id:
+            return jsonify({'message': 'Invalid student email format'}), 400
+
+        # Verify student exists in both databases
+        exists, message = User.verify_student_exists(student_id, data['email'])
+        if not exists:
+            return jsonify({'message': message}), 401
         
         user = User.query.filter_by(email=data['email']).first()
     else:
