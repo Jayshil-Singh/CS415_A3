@@ -1,0 +1,66 @@
+/*─────────────────────────────────────────────────────────
+  1) Make main a flex column with at least 70vh height
+─────────────────────────────────────────────────────────*/
+main.courses-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 75vh;        /* as you requested */
+  align-items: center;     /* center card horizontally */
+  background-color: #F6F0FB;
+  padding: 0.3rem;
+}
+
+/*─────────────────────────────────────────────────────────
+  2) Card container flexes to fill the remaining space
+─────────────────────────────────────────────────────────*/
+.courses-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;                 /* grow to fill main */
+  width: 100%;
+  max-width: 1040px;       /* cap the width */
+  background: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/*─────────────────────────────────────────────────────────
+  3) Header bar inside the card
+─────────────────────────────────────────────────────────*/
+.card-header {
+  background-color: #082D57;
+  color: #FFFFFF;
+  padding: 0.75rem 1rem;
+  font-size: 1.125rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+/*─────────────────────────────────────────────────────────
+  4) Card body stretches under header
+─────────────────────────────────────────────────────────*/
+.card-body {
+  flex: 1;                 /* fill the rest of the card */
+  padding: 1.5rem 1rem;
+  overflow: auto;          /* scroll if content overflows */
+}
+
+/*─────────────────────────────────────────────────────────
+  5) Paragraph styling
+─────────────────────────────────────────────────────────*/
+.card-body p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #333333;
+}
+
+/*─────────────────────────────────────────────────────────
+  6) Reset default margins
+─────────────────────────────────────────────────────────*/
+html, body {
+  margin: 0;
+  padding: 0;
+  height: auto;
+}

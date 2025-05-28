@@ -3,7 +3,7 @@
 # ---- CONFIG ----
 $repoUrl = "https://github.com/Jayshil-Singh/CS415_A3.git"
 $tempDir = "$env:TEMP\cs415-report-temp"
-$excelFilePath = "C:\Users\avichal avneel nath\Documents\Semester 7\CS415\A3\CS415_A3\PR&IR.xlsx"
+$excelFilePath = "C:\Users\SHIVYA KUMAR\Desktop\new415\CS415_A3\PR&IR.xlsx"
 $excelFileName = "PR&IR.xlsx"
 # ----------------
 
@@ -23,9 +23,9 @@ Set-Location $tempDir
 
 # Step 5: Git add, commit, and push just the Excel file
 git add "$excelFileName"
-git commit -m "Updated progress report for May 22 for Avichal"
+git commit -m "Add/update progress report for 22/05/2025 Thur by Shivya"
 git push origin main
 
 # Step 6: Done, optional cleanup message
-Write-Host "`n✅ Report pushed to 'main' successfully from avichal-dev without affecting current branch."
-#.\push-excel-report.ps1 
+Write-Host "`n✅ Report pushed to 'main' successfully from shivya-dev without affecting current branch."
+#.\push-excel-report.ps1

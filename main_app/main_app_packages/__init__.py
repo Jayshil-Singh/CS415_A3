@@ -4,14 +4,14 @@ from flask_cors import CORS
 from .config import Config
 # from flask_login import LoginManager # Example if using Flask-Login
 from .models import db
+from .routes import main_bp
 from .error_handlers import (
     handle_error, handle_500_error, handle_404_error,
     CustomError, AuthenticationError, AuthorizationError,
     ResourceNotFoundError, ValidationError, ServiceUnavailableError
 )
 from .logger import setup_logger, request_logger
-from .auth import auth_bp
-from .main import main_bp
+from .audit import AuditLogger
 
 # db = SQLAlchemy() # Example
 # login_manager = LoginManager() # Example
@@ -25,22 +25,22 @@ def create_app(config_class=Config):
 
     # Initialize extensions
     db.init_app(app)
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": app.config['CORS_ORIGINS']}})
     # login_manager.init_app(app)
 
     # Setup logging
     setup_logger(app)
     
-    # Configure the app
-    app.config['SECRET_KEY'] = 'your-secret-key'  # Change this in production
-    app.config['LOGIN_SERVICE_URL'] = 'http://127.0.0.1:5002'  # Login service running on port 5002
-    app.config['LOGIN_SERVICE_PORT'] = 5002  # Explicitly set login service port
-    app.config['PROFILE_SERVICE_URL'] = 'http://127.0.0.1:5003'  # Profile service running on port 5003
-    app.config['CALLBACK_URL'] = 'http://127.0.0.1:5000/auth/callback'  # Callback URL for login service
+    # Setup audit logging
+    audit_logger = AuditLogger(app)
 
     # Import and register blueprints
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+    from .routes import main_bp
+    from .auth import auth_bp
+    from .routes.audit_routes import audit_bp
     app.register_blueprint(main_bp)
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(audit_bp)
 
     # Initialize app
     config_class.init_app(app)

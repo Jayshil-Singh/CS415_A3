@@ -1,0 +1,265 @@
+{# templates/studentProfile.html #}
+{% extends "base.html" %}
+
+{% block head %}
+  <title>USP Student Profile</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/studentProfile.css') }}"
+  />
+  
+{% endblock %}
+
+{% block body %}
+  <nav class="horizontal-nav">
+    <a href="#" class="nav-button selected" onclick="selectSection(0)">Personal Details</a>
+    <a href="#" class="nav-button" onclick="selectSection(1)">Address</a>
+    <a href="#" class="nav-button" onclick="selectSection(2)">Email &amp; Phone</a>
+    <a href="#" class="nav-button" onclick="selectSection(3)">Emergency Contact</a>
+    <a href="#" class="nav-button" onclick="selectSection(4)">Passport &amp; Visa</a>
+  </nav>
+
+  <main>
+    <div class="card">
+      <div id="personal-details-section">
+        <h2 class="section-title">Personal Details</h2>
+        <div class="photo-upload-section">
+          {# Container to align avatar and upload info horizontally #}
+          <div class="photo-and-info-row">
+            <div class="avatar-display"> {# Avatar display container for the image #}
+              <img id="profile-avatar" src="{{ url_for('static', filename='images/icon.png') }}" alt="Profile Avatar">
+            </div>
+            <div class="upload-info-group"> {# This group contains all the text and buttons for upload #}
+              <p>Upload Passport Size Photo</p>
+              {# Hidden file input #}
+              <input type="file" id="file-upload-input" accept="image/jpeg, image/png" style="display: none;">
+              {# Moved button to its own line, directly under the text #}
+              <button class="upload-button" id="change-photo-btn">Change Profile Photo</button>
+              {# Moved file name display to its own line #}
+              <p id="file-name-display-container"><span id="file-name-display">No file chosen</span></p>
+              {# NEW: Remove Photo Button - initially hidden #}
+              <button class="remove-photo-button" id="remove-photo-btn" style="display: none;">Remove Photo</button>
+            </div>
+          </div>
+          <p class="error-text">
+            Please ensure that the photo you upload is your true resemblance and is of a passport size.
+            Only JPG/PNG files less than 5MB permitted.
+          </p>
+          {# MOVED: Save button is now under the error text #}
+          <button class="save-button">Save</button>
+        </div>
+
+
+        <div class="profile-view-card">
+            <h4 class="card-subheader">Personal Details</h4>
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Full Name</span>
+                    <span class="info-value">{{ profile_data.first_name or '' }} {{ profile_data.middle_name or '' }} {{ profile_data.last_name or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Date of Birth</span>
+                    <span class="info-value">{{ profile_data.dob or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Gender</span>
+                    <span class="info-value">{{ profile_data.gender or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Citizenship</span>
+                    <span class="info-value">{{ profile_data.citizenship or 'Not Provided' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-view-card">
+            <h4 class="card-subheader">Academic Details</h4>
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Student Level</span>
+                    <span class="info-value">{{ profile_data.student_level or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Registered Campus</span>
+                    <span class="info-value">{{ profile_data.student_campus or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Program</span>
+                    <span class="info-value">{{ profile_data.program or 'Not Provided' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-view-card verification-notice-card">
+            <h4 class="card-subheader notice-header">Please Verify Your Information</h4>
+            <p>If any of the information displayed in your profile is incorrect, please contact the Student Administrative Services Office at your earliest convenience. You may need to provide appropriate documentary evidence for corrections.</p>
+            <p>Email: <a href="mailto:sas@university.example.com">sas@university.example.com</a> (Replace with actual email)</p>
+            <p>Phone: +123-456-7890 (Replace with actual phone)</p>
+        </div>
+  
+      </div>
+
+      <div id="address-section" style="display: none;">
+        <h2 class="section-title">Address</h2>
+        {# START: PASTED FIELD SECTIONS from Jayshil's template for Mailing Address #}
+        <div class="profile-view-card">
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Street Address</span>
+                    <span class="info-value">{{ profile_data.address.street or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">City / Town</span>
+                    <span class="info-value">{{ profile_data.address.city or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">State / Province / Division</span>
+                    <span class="info-value">{{ profile_data.address.state or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Country</span>
+                    <span class="info-value">{{ profile_data.address.country or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Postal Code / Zip Code</span>
+                    <span class="info-value">{{ profile_data.address.postal_code or 'Not Provided' }}</span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <p class="form-text text-muted small">
+                    To update your address, please visit the Student Administrative Services office or contact them directly.
+                </p>
+            </div>
+        </div>
+
+      </div>
+
+      <div id="email-phone-section" style="display: none;">
+        <h2 class="section-title">Email &amp; Phone</h2>
+        {# START: PASTED FIELD SECTIONS from Jayshil's template for Contact Information #}
+        <div class="profile-view-card">
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">University Email Address</span>
+                    <span class="info-value">{{ profile_data.email or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Primary Phone Number</span>
+                    <span class="info-value">{{ profile_data.phone or 'Not Provided' }}</span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <p class="form-text text-muted small">
+                    Your university email is your official contact method. To update your phone number, please visit the Student Administrative Services office.
+                </p>
+            </div>
+        </div>
+        {# END: PASTED FIELD SECTIONS for Contact Information #}
+      </div>
+
+      <div id="emergency-contact-section" style="display: none;">
+        <h2 class="section-title">Emergency Contact</h2>
+        {# Keeping your original structure here as Jayshil's snippet did not include this specifically #}
+        {% for label, value in [
+            ('First Name','N/A'),
+            ('Middle Name','N/A'),
+            ('Last Name','N/A'),
+            ('Relationship','N/A'),
+            ('Contact Phone','N/A')
+          ]
+        %}
+          <div class="label-value-row">
+            <div class="label">{{ label }}</div>
+            <div class="value-container">{{ value }}</div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div id="passport-visa-section" style="display: none;">
+        <h2 class="section-title">Passport &amp; Visa</h2>
+        {# START: PASTED FIELD SECTIONS from Jayshil's template for Passport & Visa Information #}
+        <div class="profile-view-card">
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Passport Number</span>
+                    <span class="info-value">{{ profile_data.passport_visa.passport_number or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Visa Status / Type</span>
+                    <span class="info-value">{{ profile_data.passport_visa.visa_status or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Visa Expiration Date</span>
+                    <span class="info-value">{{ profile_data.passport_visa.expiry_date or 'Not Provided' }}</span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <p class="form-text text-muted small">
+                    Ensure your passport and visa information is always up to date. For any changes or to submit new documents, please contact the International Student Support office or Student Administrative Services.
+                </p>
+            </div>
+        </div>
+        {# END: PASTED FIELD SECTIONS for Passport & Visa Information #}
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function selectSection(index) {
+      const sections = [
+        'personal-details-section',
+        'address-section',
+        'email-phone-section',
+        'emergency-contact-section',
+        'passport-visa-section'
+      ];
+      const navButtons = document.querySelectorAll('.nav-button');
+
+      sections.forEach((id, i) => {
+        document.getElementById(id).style.display = (i === index) ? 'block' : 'none';
+        navButtons[i].classList.toggle('selected', i === index);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const changePhotoBtn = document.getElementById('change-photo-btn');
+        const removePhotoBtn = document.getElementById('remove-photo-btn');
+        const fileUploadInput = document.getElementById('file-upload-input');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const profileAvatar = document.getElementById('profile-avatar');
+
+        removePhotoBtn.style.display = 'none';
+
+        function triggerFileInput() {
+            fileUploadInput.click();
+        }
+
+        changePhotoBtn.addEventListener('click', triggerFileInput);
+
+        fileUploadInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                fileNameDisplay.textContent = this.files[0].name;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileAvatar.src = e.target.result;
+                };
+                reader.readAsDataURL(this.files[0]);
+
+                removePhotoBtn.style.display = 'block';
+            } else {
+                fileNameDisplay.textContent = 'No file chosen';
+                profileAvatar.src = "{{ url_for('static', filename='images/icon.png') }}";
+                removePhotoBtn.style.display = 'none';
+            }
+        });
+
+        removePhotoBtn.addEventListener('click', function() {
+            fileUploadInput.value = '';
+            fileNameDisplay.textContent = 'No file chosen';
+            profileAvatar.src = "{{ url_for('static', filename='images/icon.png') }}";
+            removePhotoBtn.style.display = 'none';
+        });
+    });
+  </script>
+{% endblock %}

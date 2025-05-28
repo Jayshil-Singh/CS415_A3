@@ -5,9 +5,7 @@ import json
 from datetime import datetime
 from functools import wraps
 import traceback
-from flask import request, current_app, g, has_request_context
-import uuid
-import time
+from flask import request, current_app, g
 
 class StructuredLogFormatter(logging.Formatter):
     """Custom formatter for structured JSON logging"""
@@ -43,130 +41,118 @@ class StructuredLogFormatter(logging.Formatter):
 def setup_logger(app):
     """Configure logging for the application"""
     # Create logs directory if it doesn't exist
-    log_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')
+    log_dir = os.path.join(app.root_path, 'logs')
     os.makedirs(log_dir, exist_ok=True)
     
-    # Configure file handler
-    file_handler = logging.FileHandler(os.path.join(log_dir, 'app.log'))
-    file_handler.setLevel(logging.INFO)
-    
-    # Configure console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    
-    # Create formatter
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    # Configure file handlers
+    error_handler = logging.handlers.RotatingFileHandler(
+        filename=os.path.join(log_dir, 'error.log'),
+        maxBytes=10*1024*1024,  # 10MB
+        backupCount=5
     )
-    file_handler.setFormatter(formatter)
-    console_handler.setFormatter(formatter)
+    error_handler.setLevel(logging.ERROR)
+    error_handler.setFormatter(StructuredLogFormatter())
     
-    # Configure root logger
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO)
-    root_logger.addHandler(file_handler)
-    root_logger.addHandler(console_handler)
+    access_handler = logging.handlers.RotatingFileHandler(
+        filename=os.path.join(log_dir, 'access.log'),
+        maxBytes=10*1024*1024,  # 10MB
+        backupCount=5
+    )
+    access_handler.setLevel(logging.INFO)
+    access_handler.setFormatter(StructuredLogFormatter())
     
-    # Configure Flask logger
+    # Configure console handler for development
+    if app.debug:
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.DEBUG)
+        console_handler.setFormatter(StructuredLogFormatter())
+        app.logger.addHandler(console_handler)
+    
+    # Add handlers to app logger
+    app.logger.addHandler(error_handler)
+    app.logger.addHandler(access_handler)
     app.logger.setLevel(logging.INFO)
-    app.logger.addHandler(file_handler)
-    app.logger.addHandler(console_handler)
 
-def log_request(logger_func):
-    """Log request details"""
-    if not has_request_context():
-        return
-        
-    request_id = str(uuid.uuid4())
-    g.request_id = request_id
+def log_error(error, context=None):
+    """Log an error with additional context"""
+    extra = {
+        'error_type': error.__class__.__name__,
+        'error_message': str(error),
+        'context': context or {}
+    }
     
-    log_data = {
-        'timestamp': datetime.utcnow().isoformat(),
-        'level': 'INFO',
-        'message': f'Request: {request.method} {request.path}',
-        'module': 'logger',
-        'function': 'log_request',
-        'line': 112,
-        'request_id': request_id,
+    if hasattr(error, 'status_code'):
+        extra['status_code'] = error.status_code
+        
+    if hasattr(error, 'payload'):
+        extra['payload'] = error.payload
+        
+    current_app.logger.error(
+        f"Error occurred: {str(error)}",
+        exc_info=True,
+        extra=extra
+    )
+
+def log_request():
+    """Log request information"""
+    extra = {
         'method': request.method,
         'path': request.path,
         'remote_addr': request.remote_addr,
         'user_agent': request.user_agent.string,
-        'headers': dict(request.headers)
+        'referrer': request.referrer,
+        'query_params': dict(request.args),
+        'request_id': g.request_id
     }
     
-    logger_func(json.dumps(log_data))
+    # Log request body for non-GET requests
+    if request.method != 'GET' and request.is_json:
+        extra['request_body'] = request.get_json()
+    
+    current_app.logger.info(
+        f"Request: {request.method} {request.path}",
+        extra=extra
+    )
 
 def log_response(response):
-    """Log response details"""
-    if not has_request_context():
-        return
-        
-    request_id = getattr(g, 'request_id', None)
-    if not request_id:
-        return
-        
-    log_data = {
-        'timestamp': datetime.utcnow().isoformat(),
-        'level': 'INFO',
-        'message': f'Response: {response.status_code}',
-        'module': 'logger',
-        'function': 'log_response',
-        'line': 120,
-        'request_id': request_id,
+    """Log response information"""
+    extra = {
         'status_code': response.status_code,
-        'headers': dict(response.headers)
+        'request_id': g.request_id
     }
     
-    logging.info(json.dumps(log_data))
-
-def log_error(error):
-    """Log error details"""
-    if not has_request_context():
-        return
-        
-    request_id = getattr(g, 'request_id', None)
-    if not request_id:
-        return
-        
-    log_data = {
-        'timestamp': datetime.utcnow().isoformat(),
-        'level': 'ERROR',
-        'message': f'Error occurred: {str(error)}',
-        'module': 'logger',
-        'function': 'log_error',
-        'line': 90,
-        'request_id': request_id,
-        'exception': {
-            'type': type(error).__name__,
-            'message': str(error),
-            'traceback': error.__traceback__.tb_frame.f_code.co_filename
-        }
-    }
+    # Log response body for error responses
+    if response.status_code >= 400 and response.is_json:
+        extra['response_body'] = response.get_json()
     
-    logging.error(json.dumps(log_data))
+    current_app.logger.info(
+        f"Response: {response.status_code}",
+        extra=extra
+    )
 
-def request_logger(logger_func):
-    """Decorator to log request and response"""
-    def decorator(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            # Log request
-            log_request(logger_func)
-            
-            try:
-                # Execute the route function
-                response = f(*args, **kwargs)
-                
-                # Log response
-                if response is not None:
-                    log_response(response)
-                    
-                return response
-            except Exception as e:
-                # Log error
-                log_error(e)
-                raise
-                
-        return decorated_function
-    return decorator 
+def request_logger(f):
+    """Decorator to log request and response information"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Generate request ID
+        g.request_id = os.urandom(8).hex()
+        
+        # Log request
+        log_request()
+        
+        try:
+            response = f(*args, **kwargs)
+            # Log response
+            log_response(response)
+            return response
+        except Exception as e:
+            # Log error
+            log_error(e, {
+                'request_id': g.request_id,
+                'endpoint': request.endpoint,
+                'args': args,
+                'kwargs': kwargs
+            })
+            raise
+    
+    return decorated_function 

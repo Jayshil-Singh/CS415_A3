@@ -22,8 +22,8 @@ class Config:
     PROFILE_SERVICE_URL = os.environ.get('PROFILE_SERVICE_URL') or 'http://127.0.0.1:5001'
     LOGIN_SERVICE_URL = os.environ.get('LOGIN_SERVICE_URL') or 'http://127.0.0.1:5002'
     
-    # Database settings - Using SQLite for development
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app.db')
+    # Database settings
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///app.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # File upload settings

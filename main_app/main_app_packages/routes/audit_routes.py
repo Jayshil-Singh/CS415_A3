@@ -1,5 +1,5 @@
 from flask import Blueprint, send_file, jsonify, current_app
-from ..auth import admin_required, login_required
+from ..auth import login_required, admin_required
 import os
 
 audit_bp = Blueprint('audit', __name__, url_prefix='/audit')

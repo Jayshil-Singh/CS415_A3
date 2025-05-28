@@ -1,0 +1,93 @@
+{# templates/homepage.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>USP Student Services</title>
+  <!-- page-specific stylesheet -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/homepage_style.css') }}"
+  />
+
+  <style>
+    /* page-specific tweaks */
+    #header-container,
+    #footer-container {
+      width: 100%;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+
+  <main>
+    <section class="hero-section">
+      <img
+        src="{{ url_for('static', filename='images/homepage.png') }}"
+        alt="Student in Library"
+        class="hero-image"
+      />
+      <div class="hero-overlay">
+        <div class="hero-content">
+          <h1>Welcome to USP Student Services</h1>
+          <p>
+            Your one-stop hub for enrollment, course management,
+            and academic success.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="features-grid-container">
+      <div class="features-grid">
+        <div class="feature-tile" onclick="navigateTo('/profile')">
+          <span class="material-icons-outlined feature-icon">
+            person
+          </span>
+          <div class="feature-label">My Profile</div>
+        </div>
+
+        <div class="feature-tile" onclick="navigateTo('/myEnrollment')">
+          <span class="material-icons-outlined feature-icon">
+            how_to_reg
+          </span>
+          <div class="feature-label">My Enrollment</div>
+        </div>
+
+        <div class="feature-tile" onclick="navigateTo('/courses')">
+          <span class="material-icons-outlined feature-icon">
+            menu_book
+          </span>
+          <div class="feature-label">Courses</div>
+        </div>
+
+        <div class="feature-tile" onclick="navigateTo('/finance')">
+          <span class="material-icons-outlined feature-icon">
+            attach_money
+          </span>
+          <div class="feature-label">Finance</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function loadHeaderAndFooter() {
+      try {
+        const [hdr, ftr] = await Promise.all([
+          fetch('{{ url_for("static", filename="templates/header.html") }}'),
+          fetch('{{ url_for("static", filename="templates/footer.html") }}')
+        ]);
+        document.getElementById('header-container').innerHTML = await hdr.text();
+        document.getElementById('footer-container').innerHTML = await ftr.text();
+      } catch (err) {
+        console.error('Error loading header/footer:', err);
+      }
+    }
+    window.addEventListener('DOMContentLoaded', loadHeaderAndFooter);
+
+    function navigateTo(path) {
+      window.location.href = path;
+    }
+  </script>
+{% endblock %}
