@@ -1,10 +1,9 @@
-# StudentService/app/Core/model.py
+# app/Core/model.py
 
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# single shared db handle
 db = SQLAlchemy()
 
 class User(db.Model):
@@ -33,3 +32,16 @@ class LoginAttempt(db.Model):
     success    = db.Column(db.Boolean, default=False)
 
     user = db.relationship('User', backref='login_attempts')
+
+class UserPhoto(db.Model):
+    __tablename__ = 'user_photos'
+    id          = db.Column(db.Integer, primary_key=True)
+    user_id     = db.Column(db.String(20),
+                             db.ForeignKey('users.id', ondelete='CASCADE'),
+                             nullable=False)
+    filename    = db.Column(db.String(256), nullable=False)
+    mime_type   = db.Column(db.String(64), nullable=False)
+    data        = db.Column(db.LargeBinary, nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('photos', lazy='dynamic'))

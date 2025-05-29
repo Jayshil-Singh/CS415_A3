@@ -7,7 +7,6 @@
     rel="stylesheet"
     href="{{ url_for('static', filename='css/studentProfile.css') }}"
   />
-  
 {% endblock %}
 
 {% block body %}
@@ -21,34 +20,87 @@
 
   <main>
     <div class="card">
+
       <div id="personal-details-section">
         <h2 class="section-title">Personal Details</h2>
-        <div class="photo-upload-section">
-          {# Container to align avatar and upload info horizontally #}
-          <div class="photo-and-info-row">
-            <div class="avatar-display"> {# Avatar display container for the image #}
-              <img id="profile-avatar" src="{{ url_for('static', filename='images/icon.png') }}" alt="Profile Avatar">
-            </div>
-            <div class="upload-info-group"> {# This group contains all the text and buttons for upload #}
-              <p>Upload Passport Size Photo</p>
-              {# Hidden file input #}
-              <input type="file" id="file-upload-input" accept="image/jpeg, image/png" style="display: none;">
-              {# Moved button to its own line, directly under the text #}
-              <button class="upload-button" id="change-photo-btn">Change Profile Photo</button>
-              {# Moved file name display to its own line #}
-              <p id="file-name-display-container"><span id="file-name-display">No file chosen</span></p>
-              {# NEW: Remove Photo Button - initially hidden #}
-              <button class="remove-photo-button" id="remove-photo-btn" style="display: none;">Remove Photo</button>
-            </div>
-          </div>
-          <p class="error-text">
-            Please ensure that the photo you upload is your true resemblance and is of a passport size.
-            Only JPG/PNG files less than 5MB permitted.
-          </p>
-          {# MOVED: Save button is now under the error text #}
-          <button class="save-button">Save</button>
-        </div>
 
+        <form method="post" enctype="multipart/form-data" id="profile-photo-form"> {# Add an ID to the form #}
+          <div class="photo-upload-section">
+            <div class="photo-and-info-row">
+              <div class="avatar-display">
+                {% if profile_data.profile_pic_id %}
+                  <img
+                    id="profile-avatar"
+                    src="{{ url_for('serve_photo', photo_id=profile_data.profile_pic_id) }}"
+                    alt="Profile Avatar"
+                  />
+                {% else %}
+                  <img
+                    id="profile-avatar"
+                    src="{{ url_for('static', filename='images/icon.png') }}"
+                    alt="Default Avatar"
+                  />
+                {% endif %}
+              </div>
+              <div class="upload-info-group">
+                <p>Upload Passport Size Photo</p>
+                <input
+                  type="file"
+                  name="photo"
+                  accept="image/jpeg, image/png"
+                  id="file-upload-input"
+                  style="display: none;"
+                />
+                <button type="button" class="upload-button" id="change-photo-btn">
+                  Change Profile Photo
+                </button>
+                <p id="file-name-display-container">
+                  <span id="file-name-display">No file chosen</span>
+                </p>
+                {# preview-only remove button, hidden by default via JS #}
+                <button
+                  type="button"
+                  class="remove-photo-button"
+                  id="preview-remove-photo-btn"
+                  style="display: none;"
+                >
+                  Remove Photo
+                </button>
+              </div>
+            </div>
+            <p class="error-text">
+              Please ensure that the photo you upload is your true resemblance and is of a passport size.
+              Only JPG/PNG files less than 5MB permitted.
+            </p>
+
+            {# --- BUTTON ROW: Save + server-side Remove --- #}
+            <div style="margin-top:16px; display:flex; gap:10px;">
+              <button
+                type="submit"
+                name="action"
+                value="save"
+                class="save-button"
+              >
+                Save
+              </button>
+
+              {% if profile_data.profile_pic_id %}
+                <button
+                  type="button" {# Change type to button to prevent immediate submission #}
+                  name="action"
+                  value="remove"
+                  class="remove-photo-button"
+                  id="server-remove-photo-btn" {# Add an ID for the server-side remove button #}
+                  style="display:inline-block; margin-left:0;"
+                >
+                  Remove Photo
+                </button>
+              {% endif %}
+            </div>
+            {# --------------------------- #}
+
+          </div>
+        </form>
 
         <div class="profile-view-card">
             <h4 class="card-subheader">Personal Details</h4>
@@ -204,6 +256,18 @@
     </div>
   </main>
 
+  {# Custom Confirmation Modal #}
+  <div id="confirmation-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h3 class="modal-title">Confirm Photo Removal</h3>
+      <p>Are you sure you want to remove your profile photo?</p>
+      <div class="modal-buttons">
+        <button id="confirm-remove-btn" class="modal-button confirm">Yes, Remove</button>
+        <button id="cancel-remove-btn" class="modal-button cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     function selectSection(index) {
       const sections = [
@@ -214,7 +278,6 @@
         'passport-visa-section'
       ];
       const navButtons = document.querySelectorAll('.nav-button');
-
       sections.forEach((id, i) => {
         document.getElementById(id).style.display = (i === index) ? 'block' : 'none';
         navButtons[i].classList.toggle('selected', i === index);
@@ -222,44 +285,78 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const changePhotoBtn = document.getElementById('change-photo-btn');
-        const removePhotoBtn = document.getElementById('remove-photo-btn');
-        const fileUploadInput = document.getElementById('file-upload-input');
-        const fileNameDisplay = document.getElementById('file-name-display');
-        const profileAvatar = document.getElementById('profile-avatar');
+      const changeBtn = document.getElementById('change-photo-btn'),
+            previewRemoveBtn = document.getElementById('preview-remove-photo-btn'), // Updated ID
+            serverRemoveBtn = document.getElementById('server-remove-photo-btn'), // New ID for server-side button
+            inp = document.getElementById('file-upload-input'),
+            nameDisp = document.getElementById('file-name-display'),
+            avatar = document.getElementById('profile-avatar'),
+            photoForm = document.getElementById('profile-photo-form'); // Get the form
 
-        removePhotoBtn.style.display = 'none';
+      // Modal elements
+      const modal = document.getElementById('confirmation-modal'),
+            confirmBtn = document.getElementById('confirm-remove-btn'),
+            cancelBtn = document.getElementById('cancel-remove-btn');
 
-        function triggerFileInput() {
-            fileUploadInput.click();
-        }
+      // hide preview-only remove (already in CSS as well, but good to ensure)
+      if (previewRemoveBtn) previewRemoveBtn.style.display = 'none';
 
-        changePhotoBtn.addEventListener('click', triggerFileInput);
+      // open file picker
+      if (changeBtn) {
+        changeBtn.addEventListener('click', () => inp.click());
+      }
 
-        fileUploadInput.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                fileNameDisplay.textContent = this.files[0].name;
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profileAvatar.src = e.target.result;
-                };
-                reader.readAsDataURL(this.files[0]);
-
-                removePhotoBtn.style.display = 'block';
-            } else {
-                fileNameDisplay.textContent = 'No file chosen';
-                profileAvatar.src = "{{ url_for('static', filename='images/icon.png') }}";
-                removePhotoBtn.style.display = 'none';
-            }
+      // preview newly selected file
+      if (inp) {
+        inp.addEventListener('change', () => {
+          if (!inp.files[0]) return;
+          nameDisp.textContent = inp.files[0].name;
+          const reader = new FileReader();
+          reader.onload = e => avatar.src = e.target.result;
+          reader.readAsDataURL(inp.files[0]);
+          if (previewRemoveBtn) previewRemoveBtn.style.display = 'block';
         });
+      }
 
-        removePhotoBtn.addEventListener('click', function() {
-            fileUploadInput.value = '';
-            fileNameDisplay.textContent = 'No file chosen';
-            profileAvatar.src = "{{ url_for('static', filename='images/icon.png') }}";
-            removePhotoBtn.style.display = 'none';
+      // preview-only “remove”
+      if (previewRemoveBtn) {
+        previewRemoveBtn.addEventListener('click', () => {
+          // This "remove" is just for clearing the preview, no server interaction here
+          inp.value = '';
+          nameDisp.textContent = 'No file chosen';
+          avatar.src = "{{ url_for('static', filename='images/icon.png') }}";
+          previewRemoveBtn.style.display = 'none';
         });
+      }
+
+      // Handle server-side "Remove Photo" button click (shows custom modal)
+      if (serverRemoveBtn) {
+        serverRemoveBtn.addEventListener('click', (event) => {
+          event.preventDefault(); // Prevent default form submission
+          modal.style.display = 'flex'; // Show the modal
+        });
+      }
+
+      // Handle "Yes, Remove" click in the modal
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+          // Create a hidden input to signal the "remove" action
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'action';
+          hiddenInput.value = 'remove';
+          photoForm.appendChild(hiddenInput); // Add it to the form
+          photoForm.submit(); // Submit the form
+          modal.style.display = 'none'; // Hide modal
+        });
+      }
+
+      // Handle "Cancel" click in the modal
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          modal.style.display = 'none'; // Hide the modal
+        });
+      }
     });
   </script>
 {% endblock %}

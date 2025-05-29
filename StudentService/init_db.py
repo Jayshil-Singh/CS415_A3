@@ -1,15 +1,13 @@
-# StudentService/init_db.py
+# init_db.py
 
 from run_ss import app           # ← your Flask() instance from run_ss.py
 from app.Core.model import db, User
 
 def init_db():
-    """ Create tables and seed one test user if none exist. """
+    """Create tables (users, login_attempts, user_photos) and seed one test user."""
     with app.app_context():
-        # Create all tables (users, login_attempts, etc.)
         db.create_all()
 
-        # Seed a sample student user if the users table is empty
         if not User.query.first():
             u = User(
                 id='s12345678',

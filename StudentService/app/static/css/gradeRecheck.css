@@ -1,0 +1,174 @@
+/*─────────────────────────────────────────────────────────
+  gradeRecheck.css — match courses.css typography & layout
+─────────────────────────────────────────────────────────*/
+
+/* 0) Reset margins & set base font (same as courses) */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  font-family: sans-serif;              /* same as homepage */
+}
+
+/*─────────────────────────────────────────────────────────
+  1) Make main a flex column with at least 75vh height
+─────────────────────────────────────────────────────────*/
+main.grade-recheck-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 75vh;        /* same as courses */
+  align-items: center;
+  background-color: #F6F0FB;
+  padding: 0.3rem;
+}
+
+/*─────────────────────────────────────────────────────────
+  2) Card container flexes to fill the remaining space
+─────────────────────────────────────────────────────────*/
+.grade-recheck-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;                 /* grow to fill main */
+  width: 100%;
+  max-width: 1040px;       /* same cap as courses */
+  background: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/*─────────────────────────────────────────────────────────
+  3) Header bar inside the card (identical to courses)
+─────────────────────────────────────────────────────────*/
+.card-header {
+  background-color: #082D57;
+  color: #FFFFFF;
+  padding: 0.75rem 1rem;
+  font-size: 1.125rem;     /* same font-size */
+  font-weight: bold;
+  text-align: left;
+}
+
+/*─────────────────────────────────────────────────────────
+  4) Card body stretches under header
+─────────────────────────────────────────────────────────*/
+.card-body {
+  flex: 1;                 /* fill the rest of the card */
+  padding: 1.5rem 1rem;    /* same padding */
+  overflow: auto;
+}
+
+/*─────────────────────────────────────────────────────────
+  5) Layout panels side-by-side, stack on narrow screens
+─────────────────────────────────────────────────────────*/
+.sections-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 800px) {
+  .sections-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*─────────────────────────────────────────────────────────
+  6) Section headings use same colour & sizing
+─────────────────────────────────────────────────────────*/
+.form-section h2,
+.notifications-section h2 {
+  margin-top: 0;
+  font-size: 1.125rem;     /* match card-header size for consistency */
+  color: #083057;
+}
+
+/*─────────────────────────────────────────────────────────
+  7) Form controls (slightly adjusted, but same base font)
+─────────────────────────────────────────────────────────*/
+.form-section label {
+  display: block;
+  margin: 12px 0 6px;
+  font-weight: 600;
+  color: #083057;
+  font-size: 1rem;         /* match paragraph text size */
+}
+
+.form-section select,
+.form-section textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 1rem;         /* same as card-body p */
+}
+
+.btn-submit {
+  background-color: #083057;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;         /* same as paragraph font-size */
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-submit:hover {
+  background-color: #062C47;
+}
+
+/*─────────────────────────────────────────────────────────
+  8) Notifications list styling
+─────────────────────────────────────────────────────────*/
+.notification-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  background-color: #FFFFFF;
+  border-left: 4px solid #083057;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border-radius: 2px;
+}
+
+.notification-item.new {
+  background-color: #E3F2FD;
+}
+
+.notification-item .material-icons-outlined {
+  font-size: 36px;
+  color: #083057;
+  margin-right: 12px;
+}
+
+.notification-text {
+  flex: 1;
+  color: #083057;
+  font-size: 1rem;         /* same paragraph size */
+  line-height: 1.5;
+}
+
+.badge {
+  background-color: #083057;
+  color: white;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+.no-notifications {
+  text-align: center;
+  color: #083057;
+  padding: 12px;
+  background-color: #FFFFFF;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}

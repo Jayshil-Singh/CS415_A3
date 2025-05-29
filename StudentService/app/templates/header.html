@@ -21,11 +21,6 @@
     <span class="material-icons-outlined user-icon">person</span>
     <ul class="dropdown">
       <li class="dropdown-header">Hi, {{ current_user.username }}</li>
-      <li><a href="{{ url_for('student_profile') }}"><span class="material-icons-outlined mi">person</span> Profile</a></li>
-      <li><a href="{{ url_for('my_enrollment') }}"><span class="material-icons-outlined mi">how_to_reg</span> My Enrollment</a></li>
-      <li><a href="{{ url_for('courses') }}"><span class="material-icons-outlined mi">menu_book</span> Courses</a></li>
-      <li><a href="{{ url_for('finance') }}"><span class="material-icons-outlined mi">attach_money</span> Finance</a></li>
-      <li class="divider"></li>
       <li>
         <a id="logout-link" href="{{ url_for('logout') }}">
           <span class="material-icons-outlined mi">logout</span>

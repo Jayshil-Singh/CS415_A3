@@ -1,0 +1,86 @@
+/*─────────────────────────────────────────────────────────
+  holds&studentAccess.css — card fixed height without extra gap
+─────────────────────────────────────────────────────────*/
+
+/* 1) Reset & base font — NO display:flex here */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+/* 2) Main wrapper — center card horizontally, no flex:1 */
+main.holds-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #F6F0FB;
+  padding: 0.3rem;
+}
+
+/* 3) Card container — force a 70vh min-height */
+.holds-card {
+  width: 100%;
+  max-width: 1040px;
+  min-height: 75vh;            /* ← restore this */
+  background: #FFF;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  margin-bottom: 0;            /* no extra bottom gap */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 4) Card header */
+.card-header {
+  background-color: #082D57;
+  color: #FFF;
+  padding: 0.75rem 1rem;
+  font-size: 1.125rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+/* 5) Card body touches header and bottom */
+.card-body {
+  padding: 0;
+}
+
+/* 6) Hold section styling */
+.hold-section {
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
+  margin-bottom: 0;
+}
+.hold-section h2 {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  color: #083057;
+}
+
+/* 7) Hold status box */
+.hold-status {
+  display: flex;
+  align-items: flex-start;
+  background-color: #FFF3E0;
+  border-left: 4px solid #c62828;
+  padding: 16px;
+  gap: 16px;
+  border-radius: 2px;
+}
+.hold-icon {
+  font-size: 48px;
+  color: #c62828;
+}
+.hold-details { flex: 1; }
+.hold-details .status {
+  margin: 0 0 8px;
+  font-size: 1rem; font-weight: bold; color: #083057;
+}
+.hold-details .reason,
+.hold-details .unavailable-label {
+  margin: 4px 0; font-size: 1rem; color: #333;
+}
+.unavailable-list {
+  margin: 4px 0 0 20px; font-size: 1rem; color: #333;
+}

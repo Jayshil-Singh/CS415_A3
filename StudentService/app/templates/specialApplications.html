@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>Special Applications</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/specialApplications.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+<main class="special-page">
+  <div class="special-card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      Special Applications
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body">
+
+      <!-- 2.1 Graduation Application (single column) -->
+      <section class="grad-section">
+        <h2>Graduation Application</h2>
+        <form>
+          <div class="field">
+            <label>Program Overview</label>
+            <input
+              type="text"
+              value="Bachelor of Arts in Literature"
+              readonly
+            />
+          </div>
+          <div class="field checkbox-field">
+            <input
+              type="checkbox"
+              id="confirmGraduate"
+            />
+            <label for="confirmGraduate">
+              I confirm my intent to graduate
+            </label>
+          </div>
+          <button type="button" class="btn-submit">
+            Submit Graduation Application
+          </button>
+        </form>
+      </section>
+
+      <!-- 2.2 Compassionate / Aegrotat Pass (two columns) -->
+      <section class="compassionate-section">
+        <h2>Compassionate / Aegrotat Pass</h2>
+        <form>
+          <div class="two-col-grid">
+            <!-- left column: checkboxes + upload -->
+            <div class="left-col">
+              <div class="field checkbox-field">
+                <input type="checkbox" id="compassionate" />
+                <label for="compassionate">Compassionate Pass</label>
+              </div>
+              <div class="field checkbox-field">
+                <input type="checkbox" id="aegrotat" />
+                <label for="aegrotat">Aegrotat Pass</label>
+              </div>
+              <div class="field">
+                <label for="certificate">Upload Certificate</label>
+                <input
+                  type="file"
+                  id="certificate"
+                  name="certificate"
+                />
+              </div>
+            </div>
+            <!-- right column: reason -->
+            <div class="right-col">
+              <div class="field">
+                <label for="reasonPass">Reason</label>
+                <textarea
+                  id="reasonPass"
+                  name="reasonPass"
+                  rows="3"
+                  placeholder="Enter your reason"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-submit">
+            Submit Pass Application
+          </button>
+        </form>
+      </section>
+
+      <!-- 2.3 Re-sit Application (two columns) -->
+      <section class="resit-section">
+        <h2>Re-sit Application</h2>
+        <form>
+          <div class="two-col-grid">
+            <!-- left column: course selector -->
+            <div class="left-col">
+              <div class="field">
+                <label for="resitCourses">Select Course(s)</label>
+                <select
+                  id="resitCourses"
+                  name="resitCourses"
+                  multiple
+                >
+                  <option>CS101 — Intro to Programming</option>
+                  <option>MATH201 — Calculus II</option>
+                  <option>ENG150 — English Composition</option>
+                </select>
+              </div>
+            </div>
+            <!-- right column: justification -->
+            <div class="right-col">
+              <div class="field">
+                <label for="justification">Justification</label>
+                <textarea
+                  id="justification"
+                  name="justification"
+                  rows="4"
+                  placeholder="Explain why you need a re-sit"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-submit">
+            Submit Re-sit Application
+          </button>
+        </form>
+      </section>
+
+    </div>
+  </div>
+</main>
+{% endblock %}
