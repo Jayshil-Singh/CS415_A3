@@ -402,9 +402,19 @@ def enroll(current_user): # Add current_user parameter
 
         if request.method == 'POST':
             selected_codes = request.form.getlist('courses')
-            if len(selected_codes) > 4:
-                flash('You can select a maximum of 4 courses.', 'error')
+            
+            # --- New logic for unit counting ---
+            unit_count = 0.0
+            for code in selected_codes:
+                if code in ['UU100A', 'CS001']:
+                    unit_count += 0.5
+                else:
+                    unit_count += 1.0
+            
+            if unit_count > 4.0:
+                flash('You can select a maximum of 4 full units (UU100A and CS001 count as 0.5 units each).', 'error')
                 return redirect(url_for('enrollment.enroll'))
+            # --- End new logic ---
 
             unmet = []
             already_enrolled_in_selection = []
@@ -564,6 +574,9 @@ def drop_course(current_user, course_code): # Add current_user parameter
 def fees(current_user): # Add current_user parameter
     """Renders the fees overview page, showing calculated invoice details. Requires authentication."""
     try:
+        # Define the fixed general services fee
+        general_services_fee = 50.00  #
+
         # Fetch actual enrolled courses for the student
         enrolled_courses_db = Enrollment.query.filter_by(StudentID=current_user.id).options(
             joinedload(Enrollment.course).joinedload(Course.course_fees_records)
@@ -591,6 +604,9 @@ def fees(current_user): # Add current_user parameter
                     'title': course.CourseName,
                     'fee': 0.00 # Default to 0.00 if no fee record
                 })
+        
+        # Add the general services fee to the total amount
+        total_amount += general_services_fee
 
         # Update student_details and invoice_details dynamically
         student_data = Student.query.get(current_user.id)
@@ -619,7 +635,8 @@ def fees(current_user): # Add current_user parameter
             student=student_details,
             invoice=invoice_details,
             items=invoice_items,
-            total=total_amount
+            total=total_amount,
+            general_services_fee=general_services_fee  # Pass the general services fee to the template
         )
     except Exception as e:
         logging.error(f"Error in /fees: {e}")
@@ -630,6 +647,9 @@ def fees(current_user): # Add current_user parameter
 def download_invoice_pdf(current_user): # Add current_user parameter
     """Generates and provides a PDF download of the invoice. Requires authentication."""
     try:
+        # Define the fixed general services fee
+        general_services_fee = 50.00  #
+
         # Fetch actual enrolled courses for the student
         enrolled_courses_db = Enrollment.query.filter_by(StudentID=current_user.id).options(
             joinedload(Enrollment.course).joinedload(Course.course_fees_records)
@@ -656,6 +676,9 @@ def download_invoice_pdf(current_user): # Add current_user parameter
                     'title': course.CourseName,
                     'fee': 0.00 # Default to 0.00 if no fee record
                 })
+        
+        # Add the general services fee to the total amount
+        total_amount += general_services_fee
         
         student_data = Student.query.get(current_user.id)
         if student_data:
@@ -692,11 +715,14 @@ def download_invoice_pdf(current_user): # Add current_user parameter
         elements.append(Paragraph(f"Name: {student_details['name']}", styles['Normal']))
         elements.append(Paragraph(f"ID: {student_details['id']}", styles['Normal']))
 
-        # PDF Table data: Course Code, Course Title, Fee
-        data = [['Course Code', 'Course Title', 'Fee']]
+        # PDF Table data: Description, Fee
+        data = [['Description', 'Fee']]
         for item in invoice_items:
             fee_display = f"${item['fee']:.2f}" if isinstance(item['fee'], (int, float)) else str(item['fee'])
-            data.append([item['code'], item['title'], fee_display])
+            data.append([f"{item['title']} ({item['code']})", fee_display])
+        
+        # Add General Services Fee to the table
+        data.append(['General Services Fee', f"${general_services_fee:.2f}"])
 
         data.append(['', 'Total:', f"${total_amount:.2f}"]) # Adjust Total row
 
@@ -977,7 +1003,7 @@ def get_student_course_fees_api(current_user): # Add current_user parameter
             db.joinedload(StudentCourseFee.course),
             db.joinedload(StudentCourseFee.course_fee)
         ).filter_by(StudentID=current_user.id).all()
-    else: # admin, sas_manager can see all
+    else: # admin, sas_manager
         student_fees = StudentCourseFee.query.options(
             db.joinedload(StudentCourseFee.student),
             db.joinedload(StudentCourseFee.course),

@@ -206,17 +206,21 @@
         <table class="invoice-table">
             <thead>
                 <tr>
-                    <th>Course Code</th>
-                    <th>Course Title</th>
-                    <th>Fee</th> </tr>
+                    <th>Description</th>
+                    <th>Fee</th>
+                </tr>
             </thead>
             <tbody>
                 {% for item in items %}
                 <tr>
-                    <td>{{ item.code }}</td>
-                    <td>{{ item.title }}</td>
-                    <td>${{ '%.2f' % item.fee }}</td> </tr>
+                    <td>{{ item.title }} ({{ item.code }})</td>
+                    <td>${{ '%.2f' % item.fee }}</td>
+                </tr>
                 {% endfor %}
+                <tr>
+                    <td>General Services Fee</td>
+                    <td>${{ '%.2f' % general_services_fee }}</td>
+                </tr>
             </tbody>
         </table>
 
