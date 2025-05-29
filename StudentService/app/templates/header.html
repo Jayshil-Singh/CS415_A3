@@ -18,7 +18,12 @@
   
   <!-- User menu -->
   <div class="user-menu">
-    <span class="material-icons-outlined user-icon">person</span>
+    <!-- ▶ Use the actual profile picture here (falls back to icon.png in routes if none) -->
+    <img
+      src="{{ current_user.profile_photo_url }}"
+      alt="User Profile Photo"
+      class="user-avatar"
+    />
     <ul class="dropdown">
       <li class="dropdown-header">Hi, {{ current_user.username }}</li>
       <li>
@@ -44,20 +49,23 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // dropdown toggle
     const menu = document.querySelector('.user-menu');
-    const icon = menu.querySelector('.user-icon');
-    icon.addEventListener('click', e => {
+
+    // ▶ UPDATED: listen for clicks on the avatar image rather than a .user-icon span
+    const toggleBtn = menu.querySelector('.user-avatar');
+    toggleBtn.addEventListener('click', e => {
       e.stopPropagation();
       menu.classList.toggle('open');
     });
+
+    // clicking anywhere else closes the dropdown
     document.addEventListener('click', () => menu.classList.remove('open'));
 
-    // modal elements
-    const modal = document.getElementById('logout-modal');
-    const logoutLink = document.getElementById('logout-link');
-    const btnCancel = document.getElementById('cancel-logout');
-    const btnConfirm = document.getElementById('confirm-logout');
+    // Modal logic (unchanged)
+    const modal      = document.getElementById('logout-modal'),
+          logoutLink = document.getElementById('logout-link'),
+          btnCancel  = document.getElementById('cancel-logout'),
+          btnConfirm = document.getElementById('confirm-logout');
 
     logoutLink.addEventListener('click', (e) => {
       e.preventDefault();

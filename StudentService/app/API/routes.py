@@ -20,10 +20,32 @@ def register_routes(app):
     # ----------------------------------------------------------------
     @app.context_processor
     def inject_user():
+        # get first (demo) user
         user = User.query.first()
+
         if not user:
-            # no real user yet → show Guest
-            user = SimpleNamespace(id=None, username="Guest")
+            # no real user yet → show Guest + no photo
+            user = SimpleNamespace(
+                id=None,
+                username="Guest",
+                profile_photo_url=url_for('static', filename='images/icon.png')
+            )
+        else:
+            # fetch their most recent photo
+            latest = (
+                UserPhoto.query
+                .filter_by(user_id=user.id)
+                .order_by(UserPhoto.uploaded_at.desc())
+                .first()
+            )
+
+            if latest:
+                # build a URL pointing to our blob‐serving route
+                user.profile_photo_url = url_for("serve_photo", photo_id=latest.id)
+            else:
+                # no upload yet → fallback
+                user.profile_photo_url = url_for('static', filename='images/icon.png')
+
         return {"current_user": user}
 
     # ----------------------------------------------------------------
