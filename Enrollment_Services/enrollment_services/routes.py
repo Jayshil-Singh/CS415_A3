@@ -47,21 +47,21 @@ invoice_details = {
 PROGRAM_STRUCTURE = {
     'Year 1': {
         'Semester 1': [
-            {'code': 'CS111', 'title': 'Introduction to Programming', 'units': 1.0, 'prereq': None},
-            {'code': 'ST131', 'title': 'Statistics for Science', 'units': 1.0, 'prereq': None},
+            {'code': 'CS111', 'title': 'Introduction to C++ Programming', 'units': 1.0, 'prereq': None},
+            {'code': 'ST131', 'title': 'Introduction to Statistics', 'units': 1.0, 'prereq': None},
             {'code': 'UU114', 'title': 'English for Academic Purposes', 'units': 1.0, 'prereq': None},
-            {'code': 'MA111', 'title': 'Calculus I', 'units': 1.0, 'prereq': None},
+            {'code': 'MA111', 'title': 'Calculus and Linear Algebra', 'units': 1.0, 'prereq': None},
             {'code': 'UU100A', 'title': 'Communications and Information Literacy', 'units': 0.5, 'prereq': None},
             {'code': 'MG101', 'title': 'Introduction to Management', 'units': 1.0, 'prereq': None},
         ],
         'Semester 2': [
-            {'code': 'CS111', 'title': 'Introduction to Programming (Repeat)', 'units': 1.0, 'prereq': None},
+            {'code': 'CS111', 'title': 'Introduction to C++ Programming', 'units': 1.0, 'prereq': None},
             {'code': 'CS112', 'title': 'Data Structures and Algorithms', 'units': 1.0, 'prereq': 'CS111'},
             {'code': 'UU114', 'title': 'English for Academic Purposes (Repeat)', 'units': 1.0, 'prereq': None},
-            {'code': 'MG101', 'title': 'Introduction to Management (Repeat)', 'units': 1.0, 'prereq': None},
-            {'code': 'UU100A', 'title': 'Communications and Information Literacy (Repeat)', 'units': 0.5, 'prereq': None},
+            {'code': 'MG101', 'title': 'Introduction to Management', 'units': 1.0, 'prereq': None},
+            {'code': 'UU100A', 'title': 'Communications and Information Literacy', 'units': 0.5, 'prereq': None},
             {'code': 'MA161', 'title': 'Discrete Mathematics', 'units': 1.0, 'prereq': None},
-            {'code': 'CS140', 'title': 'Introduction to Web Development', 'units': 1.0, 'prereq': None},
+            {'code': 'CS140', 'title': 'Introduction to Software Engineering', 'units': 1.0, 'prereq': None},
         ]
     },
     'Year 2': {
