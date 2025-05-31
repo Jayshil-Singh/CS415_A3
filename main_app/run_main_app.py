@@ -1,5 +1,8 @@
-from main_app_packages import create_app # Ensure main_app_package is in PYTHONPATH or adjust import
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from main_app.main_app_packages import create_app
 
 app = create_app()
 

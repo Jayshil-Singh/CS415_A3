@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, jsonify
 # from flask_login import login_user, logout_user, current_user
 # from .models import User # Assuming you have a User model
 # from . import db # Assuming you have db from __init__.py
@@ -64,5 +64,28 @@ def create_token(user_data):
     secret_key = os.environ.get('JWT_SECRET_KEY', 'your-secret-key')
     token = jwt.encode(user_data, secret_key, algorithm='HS256')
     return token
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        
+        if not token:
+            return jsonify({'message': 'Token is missing'}), 401
+        
+        try:
+            if token.startswith('Bearer '):
+                token = token.split(' ')[1]
+            
+            secret_key = os.environ.get('JWT_SECRET_KEY', 'your-secret-key')
+            data = jwt.decode(token, secret_key, algorithms=['HS256'])
+            # You can add additional token validation here if needed
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Invalid token'}), 401
+            
+        return f(*args, **kwargs)
+    return decorated
 
 # Remember to register this blueprint in __init__.py if you use it.
