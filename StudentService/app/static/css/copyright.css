@@ -10,7 +10,7 @@ html, body {
 
 .content-wrapper {
   max-width: 1040px;
-  margin: 2rem auto;
+  margin: 0.5rem auto;
   padding-bottom: 0rem;    /* ensure footer sits below */
 }
 
@@ -25,7 +25,7 @@ main.info-page {
   /* force a minimum height so it’s always tall */
   min-height: 400px;
 
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 main.info-page h1 {

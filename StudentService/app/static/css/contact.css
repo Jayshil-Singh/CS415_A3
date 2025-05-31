@@ -15,7 +15,7 @@ html, body {
 /* 2) Content wrapper to center and constrain width */
 .content-wrapper {
   max-width: 1040px;
-  margin: 2rem auto;
+  margin: 0.5rem auto;
   padding: 0 1rem;
 }
 
@@ -25,7 +25,7 @@ main.info-page {
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   padding: 2.5rem 2rem;
-  margin-bottom: 2rem;    /* space before footer */
+  margin-bottom: 0.5rem;    /* space before footer */
 }
 
 /* 4) Page title */
