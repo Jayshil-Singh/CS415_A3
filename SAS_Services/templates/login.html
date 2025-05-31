@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
-  <title>USP Student Services – SAS Login</title> {# Changed title slightly #}
+  <title>USP Student Services – SAS Login</title>
 
   <link
     href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
@@ -13,10 +13,29 @@
     rel="stylesheet"
     href="{{ url_for('static', filename='css/login.css') }}"
   />
+
+  <style>
+    .login-help {
+      font-size: 0.85em;
+      color: #666;
+      margin: 10px 0;
+      text-align: left;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+    .login-help ul {
+      margin: 5px 0;
+      padding-left: 20px;
+    }
+    .login-help li {
+      margin: 3px 0;
+    }
+  </style>
 {% endblock %}
 
-{% block header %}{% endblock %} {# Remove default header block content from base.html if any #}
-{% block footer %}{% endblock %} {# Remove default footer block content from base.html if any #}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
 
 {% block body %}
   <div class="login-container">
@@ -27,10 +46,9 @@
           alt="USP Logo"
           class="usp-logo"
         />
-        <h1 class="welcome-text">SAS Portal</h1> {# Updated welcome text #}
+        <h1 class="welcome-text">SAS Portal</h1>
         <p class="login-continue-text">Login to continue</p>
 
-        {# Flash messages for login errors or success #}
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
@@ -39,16 +57,16 @@
           {% endif %}
         {% endwith %}
 
-        {# Corrected form action and input field name #}
+
         <form action="{{ url_for('sas_login') }}" method="post" class="login-form">
           <div class="input-group">
             <input
-              type="text" {# Changed from email to text #}
-              name="username_field" {# Changed from email to username_field #}
+              type="text"
+              name="identifier"
               class="input-field"
-              placeholder="SAS ID / Username" {# Updated placeholder #}
+              placeholder="Enter your ID or student email"
               required
-              aria-label="SAS ID or Username"
+              aria-label="ID or Email"
             />
           </div>
 
@@ -86,12 +104,10 @@
       const toggleBtn = document.getElementById('togglePassword');
       const icon = document.getElementById('toggleIcon');
 
-      if (pwdInput && toggleBtn && icon) { // Check if elements exist
+      if (pwdInput && toggleBtn && icon) {
         toggleBtn.addEventListener('click', () => {
           const isHidden = pwdInput.type === 'password';
-          // toggle the input type
           pwdInput.type = isHidden ? 'text' : 'password';
-          // swap the icon
           icon.textContent = isHidden ? 'visibility' : 'visibility_off';
         });
       }

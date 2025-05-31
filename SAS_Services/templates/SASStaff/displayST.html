@@ -67,6 +67,21 @@
                         <input type="text" id="edit-citizenship" name="citizenship" value="{{ student.citizenship }}" readonly required>
                         <span class="validation-error"></span>
                     </div>
+                    <div class="detail-item">
+                        <label for="edit-passport-number">Passport Number <span class="required">*</span></label>
+                        <input type="text" id="edit-passport-number" name="passportNumber" value="{{ student.passport_number }}" readonly required>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-visa-status">Visa Status</label>
+                        <input type="text" id="edit-visa-status" name="visaStatus" value="{{ student.visa_status if student.visa_status else 'N/A' }}" readonly placeholder="N/A if not applicable">
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-visa-expiry">Visa Expiry Date</label>
+                        <input type="date" id="edit-visa-expiry" name="visaExpiry" value="{{ student.visa_expiry }}" readonly>
+                        <span class="validation-error"></span>
+                    </div>
                 </div>
             </div>
 

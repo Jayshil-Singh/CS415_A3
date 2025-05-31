@@ -53,6 +53,56 @@ document.addEventListener('DOMContentLoaded', () => {
     let allSubprogrammesData = [];
     let campusesData = [];
 
+    // Store all programs for filtering
+    let allProgramsData = [];
+
+    // Function to filter programs based on student level
+    function filterProgramsByLevel(level) {
+        if (!level) return allProgramsData;
+
+        const levelLower = level.toLowerCase().trim();
+        let filteredPrograms = [];
+
+        if (levelLower.includes('certificate')) {
+            filteredPrograms = allProgramsData.filter(program => 
+                program.toLowerCase().startsWith('certificate'));
+        } else if (levelLower.includes('diploma')) {
+            filteredPrograms = allProgramsData.filter(program => 
+                program.toLowerCase().startsWith('diploma'));
+        } else if (levelLower.includes('bachelor') || levelLower.includes('degree')) {
+            filteredPrograms = allProgramsData.filter(program => 
+                program.toLowerCase().startsWith('bachelor'));
+        } else if (levelLower.includes('postgraduate')) {
+            filteredPrograms = allProgramsData.filter(program => 
+                program.toLowerCase().startsWith('postgraduate'));
+        } else if (levelLower.includes('master')) {
+            filteredPrograms = allProgramsData.filter(program => 
+                program.toLowerCase().startsWith('master'));
+        } else {
+            return allProgramsData;
+        }
+
+        return filteredPrograms;
+    }
+
+    // Function to update program dropdown based on student level
+    function updateProgramDropdown() {
+        const level = studentLevelInput ? studentLevelInput.value : '';
+        const filteredPrograms = filterProgramsByLevel(level);
+        populateSelect(programSelect, filteredPrograms, "Select Program");
+        
+        // Reset program type if program is changed
+        if (programTypeSelect) {
+            programTypeSelect.value = '';
+            updateSubprogramUI();
+        }
+    }
+
+    // Add input event listener to student level input for real-time filtering
+    if (studentLevelInput) {
+        studentLevelInput.addEventListener('input', updateProgramDropdown);
+    }
+
     // --- UI State Functions ---
     function showLoadingState() {
         if (loadingIndicator) loadingIndicator.style.display = 'block'; // Or 'flex'
@@ -150,9 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (programSelect && programTypeSelect) {
             const selectedProgramText = programSelect.options[programSelect.selectedIndex]?.text.toLowerCase() || "";
-            if (selectedProgramText.includes("certificate") || selectedProgramText.includes("diploma")) {
-                programTypeSelect.value = "Prescribed Program"; // Or "Single Major" if that's your logic
-                programTypeSelect.disabled = true;
+            if (selectedProgramText.startsWith("certificate") || selectedProgramText.startsWith("diploma")) {
+                programTypeSelect.value = "Prescribed Program";
+                // Remove disabled state - allow changes but default to Prescribed Program
+                programTypeSelect.disabled = false;
                 currentProgramType = programTypeSelect.value;
             } else {
                 programTypeSelect.disabled = false;
@@ -166,13 +217,13 @@ document.addEventListener('DOMContentLoaded', () => {
         [subprogram1Select, subprogram2Select].forEach(select => { if(select) select.required = false;});
         [subprogram1RequiredAsterisk, subprogram2RequiredAsterisk].forEach(asterisk => { if(asterisk) asterisk.style.display = 'none';});
 
-
         if (subprogram1Group && showSubprogram1) {
             subprogram1Group.style.display = 'block';
             if (subprogram1Select) subprogram1Select.required = true;
             if (subprogram1RequiredAsterisk) subprogram1RequiredAsterisk.style.display = 'inline';
         } else if (subprogram1Select) {
-             subprogram1Select.value = ""; validateField(subprogram1Select, false);
+            subprogram1Select.value = ""; 
+            validateField(subprogram1Select, false);
         }
 
         if (subprogram2Group && showSubprogram2) {
@@ -180,7 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (subprogram2Select) subprogram2Select.required = true;
             if (subprogram2RequiredAsterisk) subprogram2RequiredAsterisk.style.display = 'inline';
         } else if (subprogram2Select) {
-            subprogram2Select.value = ""; validateField(subprogram2Select, false);
+            subprogram2Select.value = "";
+            validateField(subprogram2Select, false);
         }
     }
 
@@ -356,13 +408,14 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const initialData = JSON.parse(initialDataScript.textContent);
                 console.log("JS: Initial data from Flask for dropdowns:", initialData);
-                programsData = initialData.programs || [];
+                allProgramsData = initialData.programs || []; // Store all programs
+                programsData = allProgramsData; // Keep the original reference
                 allSubprogrammesData = initialData.all_subprogrammes || [];
                 campusesData = initialData.campuses || [];
 
-                populateSelect(programSelect, programsData, "Select Program");
+                // Initial population of dropdowns
+                updateProgramDropdown(); // This will filter based on current student level
                 populateSelect(campusSelect, campusesData, "Select Campus");
-                // Program Type is static HTML, subprograms are conditional
                 populateSelect(subprogram1Select, allSubprogrammesData, "Select Subprogram 1");
                 populateSelect(subprogram2Select, allSubprogrammesData, "Select Subprogram 2");
                 

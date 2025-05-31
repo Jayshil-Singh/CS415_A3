@@ -120,8 +120,8 @@
         const data = await resp.json();
 
         if (resp.ok) {
-          // on success, redirect to home
-          window.location.href = '{{ url_for("home") }}';
+          // Redirect to the home page
+          window.location.href = data.redirect;
         } else {
           // show error banner
           msg.textContent = data.message || 'Invalid credentials, please verify and retry.';

@@ -76,7 +76,12 @@ class Student(db.Model):
     PasswordHash = db.Column(db.String(128), nullable=False)
     CampusID = db.Column(db.Integer, db.ForeignKey('Campus.CampusID'), nullable=True)
     
-    campus = db.relationship('Campus', backref=db.backref('students', lazy='select')) # Changed lazy loading strategy
+    # New passport and visa fields
+    PassportNumber = db.Column(db.String(20), nullable=True)
+    VisaStatus = db.Column(db.String(50), nullable=True)
+    VisaExpiryDate = db.Column(db.Date, nullable=True)
+    
+    campus = db.relationship('Campus', backref=db.backref('students', lazy='select'))
     student_programs = db.relationship('Student_Program', back_populates='student', cascade="all, delete-orphan")
     student_levels = db.relationship('Student_Level', back_populates='student', cascade="all, delete-orphan")
 

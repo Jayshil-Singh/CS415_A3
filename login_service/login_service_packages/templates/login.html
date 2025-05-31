@@ -59,17 +59,10 @@
         </div>
         
         <form id="loginForm">
-            <div class="role-selector">
-                <select class="form-select" id="role" name="role" required>
-                    <option value="student">Student</option>
-                    <option value="sas_manager">SAS Manager</option>
-                    <option value="admin">Administrator</option>
-                </select>
-            </div>
             
             <div class="form-floating" id="emailField">
                 <input type="email" class="form-control" id="email" name="email" 
-                       pattern="s\d{8}@student\.usp\.ac\.fj" 
+                       pattern="s\d{8}@student\.usp\.ac\.fj"
                        title="Must be in format: s[8 digits]@student.usp.ac.fj"
                        placeholder="Email" required>
                 <label for="email">Student Email</label>

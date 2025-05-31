@@ -10,8 +10,34 @@
     rel="stylesheet"
   />
 
-
   {% block head %}{% endblock %}
+
+  <script>
+    // Add authentication headers to all non-login requests
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('jwt_token');
+      if (token) {
+        // Add auth headers to all links that need authentication
+        document.querySelectorAll('a[href^="/profile"], a[href^="/myEnrollment"], a[href^="/courses"], a[href^="/finance"]').forEach(link => {
+          link.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const response = await fetch(this.href, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            if (response.ok) {
+              window.location.href = this.href;
+            } else if (response.status === 401) {
+              // Token expired or invalid, redirect to login
+              localStorage.removeItem('jwt_token');
+              window.location.href = '{{ url_for("auth.login") }}';
+            }
+          });
+        });
+      }
+    });
+  </script>
 </head>
 <body>
 

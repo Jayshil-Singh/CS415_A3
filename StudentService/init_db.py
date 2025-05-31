@@ -1,28 +1,39 @@
 # StudentService/init_db.py
 
-from run_ss import app           # ← your Flask() instance from run_ss.py
+from flask import Flask
+from app.API.config import Config
 from app.Core.model import db, User
+import os
 
 def init_db():
-    """ Create tables and seed one test user if none exist. """
-    with app.app_context():
-        # Create all tables (users, login_attempts, etc.)
-        db.create_all()
+    # Initialize Flask app
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-        # Seed a sample student user if the users table is empty
-        if not User.query.first():
-            u = User(
-                id='s12345678',
-                username='student1',
+    # Initialize database
+    db.init_app(app)
+
+    with app.app_context():
+        # Create all tables
+        db.create_all()
+        
+        # Check if we already have any users
+        if User.query.count() == 0:
+            # Create a test user
+            test_user = User(
+                id='S12345678',
+                username='test_student',
                 email='s12345678@student.usp.ac.fj',
                 role='student'
             )
-            u.set_password('student123')
-            db.session.add(u)
+            test_user.set_password('password123')
+            db.session.add(test_user)
             db.session.commit()
-            print("Seeded default student: s12345678 / student123")
+            print("Created test user:")
+            print(f"Email: {test_user.email}")
+            print(f"Password: password123")
         else:
-            print("Users already exist in the database.")
+            print("Database already contains users. Skipping test user creation.")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     init_db()

@@ -1,26 +1,57 @@
-from flask import Blueprint, request, jsonify, current_app, render_template
+from flask import Blueprint, request, jsonify, current_app, render_template, redirect, flash, session, url_for
 from datetime import datetime, timedelta
 from .models import db, User, LoginAttempt
 import jwt
 from functools import wraps
 import re
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import uuid
+from werkzeug.security import generate_password_hash, check_password_hash
 
 auth_bp = Blueprint('auth', __name__)
+
+# Initialize rate limiter
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
 
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return jsonify({'message': 'Authorization header is missing!'}), 401
+            
         try:
-            token = token.split(' ')[1]  # Remove 'Bearer ' prefix
-            data = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
-            current_user = User.query.get(data['user_id'])
+            # Verify "Bearer " prefix
+            if not auth_header.startswith('Bearer '):
+                return jsonify({'message': 'Invalid token format!'}), 401
+                
+            token = auth_header.split(' ')[1]
+            data = jwt.decode(
+                token, 
+                current_app.config['JWT_SECRET_KEY'], 
+                algorithms=['HS256'],
+                options={"require": ["exp", "iat", "sub", "jti"]}
+            )
+            
+            current_user = User.query.get(data['sub'])
             if not current_user:
-                return jsonify({'message': 'Invalid token!'}), 401
-        except:
+                return jsonify({'message': 'User not found!'}), 401
+                
+            if not current_user.is_active:
+                return jsonify({'message': 'User account is disabled!'}), 401
+                
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired!'}), 401
+        except jwt.InvalidTokenError:
             return jsonify({'message': 'Invalid token!'}), 401
+        except Exception as e:
+            current_app.logger.error(f"Token validation error: {str(e)}")
+            return jsonify({'message': 'Token validation failed!'}), 401
+            
         return f(current_user, *args, **kwargs)
     return decorated
 
@@ -28,126 +59,106 @@ def token_required(f):
 def login_page():
     return render_template('login.html')
 
-@auth_bp.route('/api/register', methods=['POST'])
-def register():
-    data = request.get_json()
-    
-    # Validate required fields
-    required_fields = ['id', 'username', 'email', 'password', 'role']
-    if not all(field in data for field in required_fields):
-        return jsonify({'message': 'Missing required fields'}), 400
-    
-    # Validate role
-    if data['role'] not in ['student', 'sas_manager', 'admin']:
-        return jsonify({'message': 'Invalid role'}), 400
-    
-    # Check if user already exists
-    if User.query.get(data['id']):
-        return jsonify({'message': 'User ID already exists'}), 400
-    
-    # Create new user
-    user = User(
-        id=data['id'],
-        username=data['username'],
-        email=data['email'],
-        role=data['role']
-    )
-    user.set_password(data['password'])
-    
-    db.session.add(user)
-    db.session.commit()
-    
-    return jsonify({'message': 'User registered successfully'}), 201
+def validate_student_id(student_id):
+    """Validate student ID format"""
+    pattern = r'^S\d{8}$'
+    return bool(re.match(pattern, student_id, re.IGNORECASE))
 
-def validate_student_email(email):
-    # USP student email format: s[8 digits]@student.usp.ac.fj
-    pattern = r'^s\d{8}@student\.usp\.ac\.fj$'
-    return bool(re.match(pattern, email))
+def is_brute_force_attempt(user_id, ip_address):
+    """Check for potential brute force attempts"""
+    time_window = datetime.utcnow() - timedelta(minutes=15)
+    failed_attempts = LoginAttempt.query.filter(
+        LoginAttempt.user_id == user_id,
+        LoginAttempt.ip_address == ip_address,
+        LoginAttempt.timestamp >= time_window,
+        LoginAttempt.success == False
+    ).count()
+    return failed_attempts >= 5
 
-def extract_student_id_from_email(email):
-    """Extract student ID from email (e.g., 's12345678@student.usp.ac.fj' -> 'S12345678')"""
-    if validate_student_email(email):
-        return 'S' + email[1:9]  # Convert 's12345678' to 'S12345678'
-    return None
-
-@auth_bp.route('/api/login', methods=['POST'])
+@auth_bp.route('/login', methods=['GET', 'POST'])
+@limiter.limit("5 per minute")
 def login():
-    data = request.get_json()
-    
-    if not data or not data.get('password'):
-        return jsonify({'message': 'Missing required fields'}), 400
-    
-    # Handle student login with email
-    if data.get('role') == 'student':
-        if not data.get('email'):
-            return jsonify({'message': 'Email is required for student login'}), 400
+    if request.method == 'POST':
+        identifier = request.form.get('identifier')
+        password = request.form.get('password')
         
-        # Validate student email format
-        if not validate_student_email(data['email']):
-            return jsonify({'message': 'Invalid student email format. Must be s[8 digits]@student.usp.ac.fj'}), 400
-
-        # Extract student ID from email
-        student_id = extract_student_id_from_email(data['email'])
-        if not student_id:
-            return jsonify({'message': 'Invalid student email format'}), 400
-
-        # Verify student exists in both databases
-        exists, message = User.verify_student_exists(student_id, data['email'])
-        if not exists:
-            return jsonify({'message': message}), 401
+        if not identifier or not password:
+            flash('Please provide both student ID and password', 'error')
+            return render_template('login.html')
         
-        user = User.query.filter_by(email=data['email']).first()
-    else:
-        # Handle other roles with username
-        if not data.get('username'):
-            return jsonify({'message': 'Username is required'}), 400
+        # Clean and validate student ID
+        student_id = identifier.upper()
+        if not validate_student_id(student_id):
+            flash('Invalid student ID format. Please use: SXXXXXXXX (where X is a digit)', 'error')
+            return render_template('login.html')
         
-        user = User.query.filter_by(username=data['username']).first()
-    
-    # Record login attempt
-    login_attempt = LoginAttempt(
-        user_id=user.id if user else None,
-        ip_address=request.remote_addr,
-        success=False
-    )
-    
-    if not user:
+        # Check for brute force attempts
+        if is_brute_force_attempt(student_id, request.remote_addr):
+            flash('Too many failed attempts. Please try again later.', 'error')
+            return render_template('login.html'), 429
+        
+        # Check database for student
+        user = User.query.get(student_id)
+        
+        # Record login attempt
+        login_attempt = LoginAttempt(
+            user_id=user.id if user else None,
+            ip_address=request.remote_addr,
+            success=False
+        )
+        
+        if not user:
+            db.session.add(login_attempt)
+            db.session.commit()
+            flash('Invalid credentials', 'error')  # Generic error message for security
+            return render_template('login.html')
+        
+        if not user.check_password(password):
+            db.session.add(login_attempt)
+            db.session.commit()
+            flash('Invalid credentials', 'error')  # Generic error message for security
+            return render_template('login.html')
+        
+        if not user.is_active:
+            db.session.add(login_attempt)
+            db.session.commit()
+            flash('Account is disabled', 'error')
+            return render_template('login.html')
+        
+        # Update last login and record successful attempt
+        user.last_login = datetime.utcnow()
+        login_attempt.success = True
         db.session.add(login_attempt)
         db.session.commit()
-        return jsonify({'message': 'User not found'}), 401
-    
-    if not user.check_password(data['password']):
-        db.session.add(login_attempt)
-        db.session.commit()
-        return jsonify({'message': 'Invalid password'}), 401
-    
-    if not user.is_active:
-        db.session.add(login_attempt)
-        db.session.commit()
-        return jsonify({'message': 'Account is disabled'}), 401
-    
-    # Update last login and record successful attempt
-    user.last_login = datetime.utcnow()
-    login_attempt.success = True
-    db.session.add(login_attempt)
-    db.session.commit()
-    
-    # Generate JWT token
-    token = jwt.encode({
-        'user_id': user.id,
-        'role': user.role,
-        'exp': datetime.utcnow() + timedelta(seconds=3600)
-    }, current_app.config['JWT_SECRET_KEY'], algorithm='HS256')
-    
-    return jsonify({
-        'token': token,
-        'user': {
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'role': user.role
+        
+        # Generate JWT token with additional security claims
+        token_data = {
+            'sub': user.id,  # subject (user ID)
+            'role': 'student',
+            'iat': datetime.utcnow(),  # issued at
+            'exp': datetime.utcnow() + timedelta(hours=1),  # expiration
+            'jti': str(uuid.uuid4()),  # unique token ID
         }
-    })
+        
+        token = jwt.encode(
+            token_data,
+            current_app.config['JWT_SECRET_KEY'],
+            algorithm='HS256'
+        )
+        
+        # Set secure session data
+        session.clear()  # Clear any existing session data
+        session['token'] = token
+        session['user_id'] = user.id
+        session['email'] = user.email
+        session['user_type'] = 'student'
+        session['_fresh'] = True
+        
+        # Get redirect URL from config
+        student_service_url = current_app.config['SERVICES']['STUDENT']
+        return redirect(student_service_url)
+        
+    return render_template('login.html')
 
 @auth_bp.route('/api/verify', methods=['GET'])
 @token_required
@@ -157,6 +168,13 @@ def verify_token(current_user):
             'id': current_user.id,
             'username': current_user.username,
             'email': current_user.email,
-            'role': current_user.role
+            'role': 'student',
+            'last_login': current_user.last_login.isoformat() if current_user.last_login else None
         }
-    }) 
+    })
+
+@auth_bp.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out successfully.', 'success')
+    return redirect(url_for('auth.login_page')) 

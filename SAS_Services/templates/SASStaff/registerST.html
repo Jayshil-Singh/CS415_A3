@@ -87,6 +87,23 @@
                                 <input type="text" id="citizenship" name="citizenship" value="{{ form_data.citizenship if form_data else '' }}" required aria-required="true">
                                 <span class="validation-error" role="alert"></span>
                             </div>
+                            <div class="form-group">
+                                <label for="passport-number">Passport Number <span class="required">*</span></label>
+                                <input type="text" id="passport-number" name="passportNumber" value="{{ form_data.passportNumber if form_data else '' }}" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="visa-status">Visa Status</label>
+                                <input type="text" id="visa-status" name="visaStatus" value="{{ form_data.visaStatus if form_data else 'N/A' }}" placeholder="N/A if not applicable">
+                                <span class="validation-error" role="alert"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="visa-expiry">Visa Expiry Date</label>
+                                <input type="date" id="visa-expiry" name="visaExpiry" value="{{ form_data.visaExpiry if form_data else '' }}">
+                                <span class="validation-error" role="alert"></span>
+                            </div>
                         </div>
                     </fieldset>
 
@@ -111,7 +128,21 @@
                         <div class="form-row">
                                 <div class="form-group">
                                     <label for="student-level">Student Level <span class="required">*</span></label>
-                                    <input type="text" id="student-level" name="studentLevel" value="{{ form_data.studentLevel if form_data else '' }}" placeholder="e.g., Bachelor, Certificate" required aria-required="true">
+                                    <input type="text" 
+                                           id="student-level" 
+                                           name="studentLevel" 
+                                           value="{{ form_data.studentLevel if form_data else '' }}" 
+                                           list="student-level-options"
+                                           placeholder="Type to search level..." 
+                                           required 
+                                           aria-required="true">
+                                    <datalist id="student-level-options">
+                                        <option value="Certificate">
+                                        <option value="Diploma">
+                                        <option value="Bachelor">
+                                        <option value="Postgraduate Diploma">
+                                        <option value="Masters">
+                                    </datalist>
                                     <span class="validation-error" role="alert"></span>
                                 </div>
                             <div class="form-group">

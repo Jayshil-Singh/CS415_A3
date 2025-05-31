@@ -33,3 +33,18 @@ class LoginAttempt(db.Model):
     success    = db.Column(db.Boolean, default=False)
 
     user = db.relationship('User', backref='login_attempts')
+
+class Student(db.Model):
+    __tablename__ = 'Student'
+    StudentID = db.Column(db.String(20), primary_key=True)
+    FirstName = db.Column(db.String(50), nullable=False)
+    MiddleName = db.Column(db.String(50))
+    LastName = db.Column(db.String(50), nullable=False)
+    Contact = db.Column(db.String(20))
+    Email = db.Column(db.String(120), unique=True, nullable=False)
+    Password = db.Column(db.String(100), nullable=False)
+    DateOfBirth = db.Column(db.Date)
+    Gender = db.Column(db.String(10))
+    Citizenship = db.Column(db.String(50))
+    Address = db.Column(db.String(200))
+    CampusID = db.Column(db.String(20))
