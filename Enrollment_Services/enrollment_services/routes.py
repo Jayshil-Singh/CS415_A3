@@ -605,7 +605,7 @@ def enroll(current_user):
         completed_grades = Grade.query.filter_by(student_id=current_user.id).all()
         for grade_record in completed_grades:
             if grade_record.letter_grade.upper() in ['A+', 'A', 'B+', 'B', 'C+', 'C', 'P', 'CR', 'AEG', 'CMP']:
-                all_met_courses_for_prereq_check.add(grade_record.course.CourseID.split('(')[0].strip()) # Use CourseID from model
+                all_met_courses_for_prereq_check.add(grade_record.course.CourseID.split('(')[0].strip())
         
         for course_code in currently_enrolled_course_codes:
             all_met_courses_for_prereq_check.add(course_code.split('(')[0].strip())
@@ -877,33 +877,35 @@ def display_courses(current_user):
         logging.warning(f"Display courses access denied for non-student user '{current_user.username}'.")
         return redirect(url_for('enrollment.dashboard'))
     try:
-        enrolled_courses = Enrollment.query.filter_by(StudentID=current_user.id).all() # Load without joinedload here to avoid circularity if Course model is generating dummy data
+        # Load enrollments and explicitly join with Course for course details
+        enrolled_courses_db = Enrollment.query.filter_by(StudentID=current_user.id).options(joinedload(Enrollment.course)).all()
         
         courses_for_template = []
-        all_program_courses = {}
-        for year_data in PROGRAM_STRUCTURE.values():
-            for semester_data in year_data.values():
-                for course_info in semester_data:
-                    all_program_courses[course_info['code']] = course_info
-
-        for enrollment in enrolled_courses:
-            course_code = enrollment.CourseID
-            course_info = all_program_courses.get(course_code)
-            if course_info:
+        
+        # Iterate through enrolled_courses_db to get details directly from the joined course object
+        for enrollment in enrolled_courses_db:
+            if enrollment.course: # Ensure the joined course object exists
                 courses_for_template.append({
-                    'code': enrollment.CourseID, # Use CourseID directly from enrollment if not loading Course obj
-                    'title': course_info['title'],
-                    'semester': course_info['semester'],
-                    'units': course_info['units']
+                    'code': enrollment.course.CourseID,
+                    'title': enrollment.course.CourseName,
+                    # FIX: Get semester from CourseAvailability if available, or default
+                    'semester': 'Unknown Semester', # Default value
+                    'units': getattr(enrollment.course, 'credit_hours', 1.0) # Default to 1.0 if not on Course model
                 })
-            else:
-                 # If course_info not found in PROGRAM_STRUCTURE, try to get from DB
-                 db_course = Course.query.get(course_code)
+                
+                # Try to find a CourseAvailability for the course and get its semester name
+                course_avail = CourseAvailability.query.filter_by(CourseID=enrollment.course.CourseID).first()
+                if course_avail and course_avail.semester:
+                    # Update the semester for the last added course_for_template entry
+                    courses_for_template[-1]['semester'] = course_avail.semester.SemesterName
+
+            else: # Fallback if course object is unexpectedly None (shouldn't happen with proper data integrity)
+                 logging.warning(f"Enrollment {enrollment.EnrollmentID} for student {current_user.id} refers to non-existent CourseID {enrollment.CourseID}.")
                  courses_for_template.append({
-                    'code': course_code,
-                    'title': db_course.CourseName if db_course else f"Unknown Course ({course_code})",
-                    'semester': 'Unknown Semester', # Cannot infer from PROGRAM_STRUCTURE
-                    'units': getattr(db_course, 'credit_hours', 1.0) # Assume 1.0 or get from DB if available
+                    'code': enrollment.CourseID,
+                    'title': f"Unknown Course ({enrollment.CourseID})",
+                    'semester': 'Unknown Semester',
+                    'units': 0.0 # Default to 0.0 if course info is completely missing
                 })
 
 
@@ -1061,7 +1063,9 @@ def download_invoice_pdf(current_user):
                 invoice_items.append({
                     'code': course_code,
                     'title': course_info['title'],
-                    'fee': subtotal
+                    'credits': course_info['units'],
+                    'fee_per_credit': course_fee_amount,
+                    'subtotal': subtotal
                 })
                 total_amount += subtotal
             else:
@@ -1214,7 +1218,6 @@ def download_invoice_pdf(current_user):
 
         logging.info(f"Generated and sent invoice PDF for student '{current_user.username}'.")
         return response
-
     except Exception as e:
         logging.exception(f"Error in /download_invoice_pdf for student {current_user.id}: {e}")
         flash(f"An error occurred while generating your PDF invoice: {str(e)}", "danger")
@@ -1234,34 +1237,68 @@ def generate_dummy_grades_for_student(student_id):
         logging.info(f"Student {student_id} already has grades. Skipping dummy grade generation.")
         return False
 
-    # Dummy courses (must exist in your Course table or PROGRAM_STRUCTURE)
-    # Ensure these course IDs actually exist in your database or are handled by mock Course creation.
-    dummy_courses = [
-        {'id': 'CS111', 'name': 'Introduction to C++ Programming', 'units': 1.0},
-        {'id': 'CS112', 'name': 'Data Structures and Algorithms', 'units': 1.0},
-        {'id': 'MA111', 'name': 'Calculus and Linear Algebra', 'units': 1.0},
-        {'id': 'UU100A', 'name': 'Communications & Info Lit', 'units': 0.5},
-        {'id': 'CS140', 'name': 'Intro to Software Engineering', 'units': 1.0},
-        {'id': 'ST131', 'name': 'Introduction to Statistics', 'units': 1.0}
-    ]
-
     grades_to_add = []
     grade_options_passing = ['A+', 'A', 'B+', 'B', 'C+', 'C']
-    grade_options_failing = ['D', 'E', 'F', 'R'] # Include 'R' (Repeat) as a failing/re-attempt grade
-    
-    # Ensure at least one failing grade if there are enough courses
-    has_failing_grade = False
+    grade_options_failing = ['D', 'E', 'F', 'R'] # D can sometimes be a failing grade or conditional pass
 
-    for i, course_info in enumerate(dummy_courses):
+    # Get all courses the student is enrolled in or has previously taken.
+    # Prioritize currently enrolled courses, then fall back to program structure if needed.
+    student_enrollments = Enrollment.query.filter_by(StudentID=student_id).all()
+    courses_for_grades_info = [] # Store dictionaries with 'id', 'name', 'units'
+    
+    # Add courses from current enrollments
+    for enrollment in student_enrollments:
+        # Fetch the Course object to get its details
+        course_obj = Course.query.get(enrollment.CourseID)
+        if course_obj:
+            courses_for_grades_info.append({
+                'id': course_obj.CourseID,
+                'name': course_obj.CourseName,
+                'units': getattr(course_obj, 'credit_hours', 1.0) # Use actual units or default
+            })
+    
+    # If student has no enrollments or very few, supplement with courses from program structure
+    # to ensure enough grades for testing purposes.
+    if len(courses_for_grades_info) < 5: # Arbitrary number to ensure a few grades exist
+        program_courses_flat = []
+        for year_data in PROGRAM_STRUCTURE.values():
+            for semester_data in year_data.values():
+                for course_info in semester_data:
+                    program_courses_flat.append(course_info)
+        
+        # Add some courses from program structure that aren't already in enrollments
+        existing_course_ids = {c['id'] for c in courses_for_grades_info}
+        # Ensure we don't try to sample more than available unique courses
+        num_to_add = min(5 - len(courses_for_grades_info), len(available_for_sampling := [ # Fixed name clash
+            c_info for c_info in program_courses_flat if c_info['code'] not in existing_course_ids
+        ]))
+        
+        for course_info in random.sample(available_for_sampling, num_to_add): # Fixed sampling from correct list
+            courses_for_grades_info.append({
+                'id': course_info['code'],
+                'name': course_info['title'],
+                'units': course_info['units']
+            })
+            existing_course_ids.add(course_info['code'])
+
+    if not courses_for_grades_info:
+        logging.info(f"No courses found for student {student_id} to generate dummy grades for.")
+        return False
+
+    has_failing_grade_generated = False
+    
+    for i, course_info in enumerate(courses_for_grades_info):
         course_id = course_info['id']
+        course_name = course_info['name']
+        course_units = course_info['units']
+
         # Ensure the course exists in the database. If not, create a placeholder.
         course_obj = Course.query.get(course_id)
         if not course_obj:
-            logging.info(f"Course {course_id} from dummy data not found in DB. Creating a mock Course object.")
-            course_obj = Course(CourseID=course_id, CourseName=course_info['name'], SubProgramID='GEN', PrerequisiteCourseID=None)
-            # Assuming 'credit_hours' is a field on Course model.
+            logging.info(f"Course {course_id} from generated data not found in DB. Creating a mock Course object.")
+            course_obj = Course(CourseID=course_id, CourseName=course_name, SubProgramID='GEN', PrerequisiteCourseID=None)
             if hasattr(course_obj, 'credit_hours'):
-                course_obj.credit_hours = course_info['units']
+                course_obj.credit_hours = course_units
             db.session.add(course_obj)
             try:
                 db.session.commit() # Commit mock course to allow linking
@@ -1269,26 +1306,29 @@ def generate_dummy_grades_for_student(student_id):
                 db.session.rollback() # Course already exists, ignore
                 course_obj = Course.query.get(course_id) # Re-fetch if it already exists
 
-        numerical_grade = random.randint(50, 95) # Default to passing range
-        letter_grade = random.choice(grade_options_passing)
+        numerical_grade = 0
+        letter_grade = ''
 
-        # Logic to ensure at least one failing grade and also include passed grades
-        if not has_failing_grade and i == 0: # Make the first course a guaranteed fail for recheck testing
-            numerical_grade = random.randint(0, 49)
+        # Logic to ensure at least one failing grade (prefer to make first few a fail)
+        # and also include passed grades
+        if not has_failing_grade_generated and (len(courses_for_grades_info) > 1 and i == 0): # Guarantee first is a fail if multiple courses
             letter_grade = random.choice(grade_options_failing)
-            has_failing_grade = True
-        elif not has_failing_grade and random.random() < 0.2: # 20% chance of a fail for other courses
-            numerical_grade = random.randint(0, 49)
+            numerical_grade = random.randint(0, 49) # Failing range
+            has_failing_grade_generated = True
+        elif not has_failing_grade_generated and random.random() < 0.3: # 30% chance of a fail for other courses
             letter_grade = random.choice(grade_options_failing)
-            has_failing_grade = True
-        
-        # Ensure numerical grade aligns with letter grade for realism (optional, but good practice)
+            numerical_grade = random.randint(0, 49) # Failing range
+            has_failing_grade_generated = True
+        else:
+            letter_grade = random.choice(grade_options_passing)
+            numerical_grade = random.randint(70, 95) # Passing range
+
+        # Adjust numerical grade to roughly match letter grade
         if letter_grade in ['A+', 'A']: numerical_grade = random.randint(90, 100)
         elif letter_grade in ['B+', 'B']: numerical_grade = random.randint(80, 89)
         elif letter_grade in ['C+', 'C']: numerical_grade = random.randint(70, 79)
-        elif letter_grade == 'D': numerical_grade = random.randint(50, 59) # D is usually a conditional pass/fail boundary
+        elif letter_grade == 'D': numerical_grade = random.randint(50, 69) # D is usually conditional pass/fail
         elif letter_grade in ['E', 'F', 'R']: numerical_grade = random.randint(0, 49)
-
 
         grades_to_add.append(
             Grade(
@@ -1296,13 +1336,14 @@ def generate_dummy_grades_for_student(student_id):
                 course_id=course_id,
                 letter_grade=letter_grade,
                 numerical_grade=numerical_grade,
-                year=2024 if i % 2 == 0 else 2025, # Alternate years
-                semester='Semester 1' if i % 2 == 0 else 'Semester 2' # Alternate semesters
+                year=random.choice([2023, 2024, 2025]), # Random year within recent range
+                semester=random.choice(['Semester 1', 'Semester 2'])
             )
         )
     
-    # Final check to ensure at least one failing grade if the random chance didn't hit
-    if not has_failing_grade and grades_to_add:
+    # Final check: If no failing grade was generated (e.g., due to random chance or too few courses),
+    # ensure one is forced to fulfill the requirement.
+    if not has_failing_grade_generated and grades_to_add:
         idx_to_fail = random.randint(0, len(grades_to_add) - 1)
         grades_to_add[idx_to_fail].letter_grade = random.choice(grade_options_failing)
         grades_to_add[idx_to_fail].numerical_grade = random.randint(0, 49)
@@ -1316,7 +1357,7 @@ def generate_dummy_grades_for_student(student_id):
         return True
     except IntegrityError:
         db.session.rollback()
-        logging.warning(f"Could not commit dummy grades for {student_id} due to integrity error (e.g., duplicate grade for course).")
+        logging.warning(f"Could not commit dummy grades for {student_id} due to integrity error (e.g., duplicate grade for course). This means some grades might already exist for these courses/semesters for this student. Review existing data.")
         return False
     except Exception as e:
         db.session.rollback()
@@ -1525,12 +1566,11 @@ def apply_special_application(current_user):
     current_course_id = ""
     current_reason = ""
 
-    # Populate course choices for pass/re-sit applications (same logic as before)
+    # Populate course choices for pass/re-sit applications
     current_and_past_courses = []
-    enrolled_courses = Enrollment.query.filter_by(StudentID=current_user.id).all() # No joinedload needed here to avoid conflict
+    enrolled_courses = Enrollment.query.filter_by(StudentID=current_user.id).all() # Fetch Enrollments
     for enrollment in enrolled_courses:
-        # Fetch course separately if needed, or rely on course ID if you don't need full object
-        db_course = Course.query.get(enrollment.CourseID)
+        db_course = Course.query.get(enrollment.CourseID) # Fetch Course separately
         if db_course:
             current_and_past_courses.append(db_course)
 
@@ -1593,7 +1633,8 @@ def apply_special_application(current_user):
 
                 flash('Your application has been successfully submitted!', 'success')
                 logging.info(f"Student '{current_user.username}' submitted special application {new_application.id} of type '{application_type}'.")
-                return redirect(url_for('enrollment.special_application_confirmation', application_id=new_application.id))
+                # Removed redirection to history, redirect to dashboard instead
+                return redirect(url_for('enrollment.dashboard'))
 
             except Exception as e:
                 db.session.rollback()
@@ -1601,7 +1642,6 @@ def apply_special_application(current_user):
                 flash(f'An unexpected error occurred while submitting your application. Please try again. Error: {e}', 'danger')
 
     # For GET request or re-rendering due to errors:
-    # FIX: Corrected template name from 'apply_sepcial_application.html' to 'apply_special_application.html'
     return render_template('apply_special_application.html',
                            application_type_choices=[
                                ('', '--- Select an Application Type ---'),
@@ -1730,8 +1770,7 @@ def get_student_academic_data(student_id):
             # and not a withdrawal, pass/fail, audit, incomplete, or certain non-GPA grades
             if grade_record.letter_grade.upper() not in ['W', 'P', 'CR', 'S', 'U', 'AUD', 'I', 'AEG', 'CMP']:
                  # Assuming 'credit_hours' attribute exists on the Course model
-                # Use getattr with a default of 1.0 if 'credit_hours' is missing
-                credit_hours_for_gpa = getattr(course, 'credit_hours', 1.0) 
+                credit_hours_for_gpa = getattr(course, 'credit_hours', 1.0) # Default to 1.0 if not found
 
             total_grade_points_sum += (gpa_points * credit_hours_for_gpa)
             total_gpa_credit_hours_sum += credit_hours_for_gpa
@@ -1786,8 +1825,24 @@ def view_transcript(current_user):
             logging.info(f"Transcript view restricted for student '{current_user.username}' due to active hold: {active_hold.reason}.")
             return redirect(url_for('enrollment.student_hold_status'))
 
+    student_data = get_student_academic_data(current_user.id) # Fetch data first
+
+    # Check if student has grades; if not, generate dummy ones for testing
+    if not student_data or not student_data['courses']: # No grades found in the fetched data
+        logging.info(f"Student {current_user.id} has no grades. Attempting to generate dummy grades.")
+        generate_dummy_grades_for_student(current_user.id)
+        
+        # Re-fetch data after attempting to generate grades
+        student_data = get_student_academic_data(current_user.id) 
+
+        if not student_data or not student_data['courses']: # Re-check if generation failed or still no grades
+             flash("No academic record found for you. Please contact administration or try generating dummy grades (if applicable).", "info")
+             logging.warning(f"Dummy grade generation failed for student {current_user.id} or still no grades found after generation attempt.")
+             # Render with empty data if still no grades.
+             return render_template('view_transcript.html', student=None) # Pass None or empty dict if no data
+
     logging.info(f"Rendering transcript view for student '{current_user.username}'.")
-    return render_template('view_transcript.html')
+    return render_template('view_transcript.html', student=student_data) # Pass student_data to the template
 
 @enrollment_bp.route('/student/download_transcript_pdf', methods=['GET'])
 @token_required
@@ -1808,9 +1863,9 @@ def download_transcript_pdf(current_user):
 
     student_data = get_student_academic_data(current_user.id)
 
-    if not student_data:
+    if not student_data or not student_data['courses']: # Added check for empty courses list
         flash("Could not retrieve your academic record for transcript generation. Please contact administration.", "danger")
-        logging.error(f"Failed to retrieve academic data for student {current_user.id} for transcript generation.")
+        logging.error(f"Failed to retrieve academic data for student {current_user.id} for transcript generation (no courses found).")
         return redirect(url_for('enrollment.view_transcript'))
 
     # --- ReportLab PDF Generation Logic ---

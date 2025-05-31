@@ -68,29 +68,27 @@
             text-decoration: underline;
         }
 
-        .flash {
-            padding: 0.625rem;
-            margin: 0.625rem 0;
-            border-radius: 0.25rem;
-            display: none; /* Hidden by default, shown by JS */
+        /* Flash message styles (updated for consistency with dashboard/enroll) */
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
         }
 
-        .flash.error {
-            background: #fee2e2;
-            /* red-100 */
-            color: #991b1b;
-            /* red-700 */
-            border: 1px solid #ef4444;
-            /* red-400 */
-        }
-
-        .flash.success {
-            background: #d1fae5;
-            /* green-100 */
+        .flash-success {
+            background-color: #d1fae5;
             color: #065f46;
-            /* green-700 */
-            border: 1px solid #4ade80;
-            /* green-400 */
+        }
+
+        .flash-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .flash-info {
+            background-color: #dbeafe;
+            color: #1e40af;
         }
 
         .no-courses {
@@ -178,15 +176,18 @@
     <div class="enrollment-container">
         <h2>Your Enrolled Courses for Semester 2, 2025</h2>
         
-        <div id="flash-messages-container">
-            {% with messages = get_flashed_messages(with_categories=true) %}
+        {# Display Flask flashed messages #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-            {% for category, message in messages %}
-            <div class="flash {{ category }}" style="display: block;">{{ message }}</div>
-            {% endfor %}
+            <div class="space-y-2 mb-4">
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
             {% endif %}
-            {% endwith %}
-        </div>
+        {% endwith %}
 
 
         {% if enrolled_courses %}
@@ -205,6 +206,7 @@
                     <td>{{ course.code }}</td>
                     <td>{{ course.title }}</td>
                     <td>{{ course.semester }}</td>
+                   {# Display units with one decimal place #}
                     <td><a href="#" class="drop-button" data-course-code="{{ course.code }}"
                             data-course-title="{{ course.title }}">Drop Course</a></td>
                 </tr>
@@ -239,22 +241,14 @@
         const modalCourseTitle = document.getElementById('modal-course-title');
         const confirmDropButton = document.getElementById('confirmDrop');
         const cancelDropButton = document.getElementById('cancelDrop');
-        const flashMessagesContainer = document.getElementById('flash-messages-container');
+        // Removed flashMessagesContainer as Flask's flash system is used directly in HTML
+        // const flashMessagesContainer = document.getElementById('flash-messages-container');
 
         let courseCodeToDrop = null;
         let rowToRemove = null;
 
-        function showFlashMessage(message, category) {
-            const flashDiv = document.createElement('div');
-            flashDiv.classList.add('flash', category);
-            flashDiv.textContent = message;
-            flashMessagesContainer.appendChild(flashDiv);
-            flashDiv.style.display = 'block'; // Make it visible
-            setTimeout(() => {
-                flashDiv.style.display = 'none';
-                flashDiv.remove();
-            }, 5000); // Hide after 5 seconds
-        }
+        // Removed custom showFlashMessage function as Flask's flash system is used directly in HTML
+        // function showFlashMessage(message, category) { ... }
 
         dropButtons.forEach(button => {
             button.addEventListener('click', function (event) {
@@ -277,8 +271,10 @@
         confirmDropButton.addEventListener('click', async function () {
             if (courseCodeToDrop && rowToRemove) {
                 try {
+                    // It's generally better practice to use POST/DELETE for actions that change server state.
+                    // For now, keeping GET as it was in your original code, but noting for improvement.
                     const response = await fetch(`/enrollment_services/drop_course/${courseCodeToDrop}`, {
-                        method: 'GET', // Or 'POST' if you prefer, but GET is simpler for this action
+                        method: 'GET', 
                         headers: {
                             'Content-Type': 'application/json',
                             // Include authorization token if your API expects it
@@ -286,30 +282,24 @@
                         }
                     });
 
+                    // After a drop, the server should ideally redirect with a flash message.
+                    // If it sends JSON, you'd process it here. Assuming server redirect for simplicity.
+                    // For now, if the server redirects, this fetch won't directly get JSON response.
+                    // Instead, we just refresh the page or rely on the redirect to show flash.
                     if (response.ok) {
-                        rowToRemove.remove();
-                        modal.style.display = "none";
-                        showFlashMessage(`Course ${courseCodeToDrop} dropped successfully.`, 'success');
-
-                        // Check if the table is empty after dropping
-                        if (document.querySelector('.course-table tbody').children.length === 0) {
-                            const table = document.querySelector('.course-table');
-                            if (table) {
-                                table.remove();
-                            }
-                            const noCoursesMessage = document.createElement('p');
-                            noCoursesMessage.classList.add('no-courses');
-                            noCoursesMessage.textContent = 'No courses selected.';
-                            document.querySelector('.enrollment-container').appendChild(noCoursesMessage);
-                        }
+                        // The server's drop_course route already redirects with a flash message.
+                        // So, a simple page reload here will show that message.
+                        window.location.reload(); 
                     } else {
-                        const errorData = await response.json();
-                        showFlashMessage(errorData.message || 'Failed to drop course.', 'error');
+                        // If server returns an error JSON (e.g., 400, 401, 500) without redirecting
+                        const errorText = await response.text(); // Get raw text to inspect
+                        console.error('Failed to drop course, server response:', response.status, errorText);
+                        alert('Failed to drop course. Please check server logs for details.'); // Use alert as a fallback
                         modal.style.display = "none";
                     }
                 } catch (error) {
                     console.error('Error dropping course:', error);
-                    showFlashMessage('An error occurred while dropping the course.', 'error');
+                    alert('An unexpected error occurred while dropping the course.');
                     modal.style.display = "none";
                 } finally {
                     courseCodeToDrop = null;
