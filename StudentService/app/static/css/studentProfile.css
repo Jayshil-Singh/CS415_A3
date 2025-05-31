@@ -34,7 +34,7 @@ body {
 /* Main content area */
 main {
     flex-grow: 1;
-    padding: 16px;
+    padding: 0px 16px;
     display: flex;
     justify-content: center;
     align-items: flex-start; /* Align content to the top */
