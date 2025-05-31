@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    {# Font Awesome - if used globally, otherwise link in specific page's head block #}
+    {# <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> #}
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base_style.css') }}">
+    {% block head %}{# Page-specific head content (title, page-specific CSS) #}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+    <div id="header-container">
+        {% block header %}
+            {% include 'partials/header.html' ignore missing %}
+        {% endblock %}
+    </div>
+
+    {% block body_before_main %}
+        {# For elements like full-page navigation drawers #}
+    {% endblock %}
+
+    <main class="page-content-wrapper {% block main_class %}{% endblock %}">
+        
+        {# --- START OF FLASHED MESSAGES SECTION --- #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashed-messages-container container"> {# Added .container for consistent padding/width #}
+                    {% for category, message in messages %}
+                        {# Use category for styling, default to 'info' if no category #}
+                        <div class="alert alert-{{ category if category else 'info' }}" role="alert">
+                            {{ message }}
+                            {# Optional: Add a close button if you want dismissable alerts #}
+                            {# <button type="button" class="close-alert" onclick="this.parentElement.style.display='none';" aria-label="Close">&times;</button> #}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {# --- END OF FLASHED MESSAGES SECTION --- #}
+
+        {% block body %}
+            {# Main page content from child templates goes here #}
+        {% endblock %}
+    </main>
+
+    {% block body_after_main %}
+    {% endblock %}
+
+    <div id="footer-container">
+        {% block footer %}
+            {% include 'partials/footer.html' ignore missing %}
+        {% endblock %}
+    </div>
+    
+    {% block scripts %}{# Global or page-specific scripts #}{% endblock %}
+</body>
+</html>

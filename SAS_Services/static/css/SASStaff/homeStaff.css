@@ -1,0 +1,310 @@
+/* static/css/SASStaff/homeStaff.css */
+
+/* General Body Styles */
+body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: #e8eaf6; /* Approximate Colors.indigo[50] */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease; /* For drawer push effect */
+}
+
+/* Custom Header Placeholder Styles */
+#custom-header {
+    background-color: #008080; /* headerTeal */
+    color: white;
+    padding: 10px 20px; /* Adjusted padding */
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    position: sticky; /* Make header sticky */
+    top: 0;
+    z-index: 1000; /* Ensure header is above other content */
+}
+
+#custom-header h1 {
+    margin: 0;
+    font-size: 1.6em; /* Adjusted font size */
+    flex-grow: 1; /* Allow title to take available space */
+    text-align: center; /* Center title */
+}
+
+.menu-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px; /* Material icon size */
+    cursor: pointer;
+    padding: 8px;
+    margin-right: 10px; /* Space between button and title */
+}
+
+
+/* Drawer Styles */
+.drawer {
+    height: 100%;
+    width: 0; /* Initially hidden */
+    position: fixed;
+    z-index: 1001; /* Above header for slide-over */
+    top: 0;
+    left: 0;
+    background-color: #ffffff; /* White background for drawer */
+    overflow-x: hidden;
+    transition: 0.3s ease; /* Smooth transition for opening/closing */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.drawer.open {
+    width: 280px; /* Width of the drawer when open */
+}
+
+.drawer-header {
+    padding: 20px;
+    background-color: #3f51b5; /* Colors.indigo */
+    color: white;
+    display: flex;
+    flex-direction: column; /* Stack icon and text vertically */
+    align-items: flex-start; /* Align items to the start */
+}
+
+.drawer-header-icon {
+    font-size: 40px; /* Icon size */
+    margin-bottom: 10px;
+}
+
+.drawer-header-title {
+    font-size: 22px; /* Title size */
+    margin: 0;
+}
+
+.drawer-items-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Allow list to take available space */
+}
+
+/* Styling for the <a> tag wrapping the drawer item */
+.drawer-item-link {
+    text-decoration: none;
+    color: inherit; /* Inherit color from parent or set explicitly */
+    display: block; /* Make the link take up the full width for easier clicking */
+}
+
+.drawer-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    font-size: 16px;
+    color: #333; /* Ensure text color is set */
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.drawer-item:hover {
+    background-color: #f0f0f0; /* Light grey hover */
+}
+
+.drawer-item .material-icons { /* Target icons specifically within drawer-item */
+    margin-right: 20px;
+    color: #3f51b5; /* Colors.indigo for icons */
+}
+
+.drawer-item:last-child {
+    border-bottom: none;
+}
+
+/* Overlay for when drawer is open */
+.overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
+    z-index: 1000; /* Below drawer, above main content */
+    transition: opacity 0.3s ease;
+}
+
+.overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+
+/* Main Content Area */
+#main-content {
+    flex-grow: 1;
+    padding: 25px; /* Increased padding for overall spacing */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: margin-left 0.3s ease; /* For drawer push effect */
+}
+
+.page-title-container {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px; /* Space below "Staff Dashboard" main title */
+}
+.page-title-container h1 {
+    font-size: 2em; /* Main page title size */
+    color: #3f51b5; /* Colors.indigo */
+    margin: 0;
+}
+
+/* Welcome Message Styles */
+.welcome-container {
+    margin-bottom: 30px; /* More spacing below welcome message */
+    width: 100%;
+    text-align: center;
+}
+
+#welcome-message {
+    font-size: 1.3em; /* Slightly larger welcome message */
+    font-weight: 500; /* Medium weight */
+    color: #3f51b5; /* Colors.indigo */
+    margin: 0;
+}
+
+/* === UPDATED Dashboard Grid Styles === */
+.dashboard-grid {
+    display: flex;           /* Use flexbox for horizontal alignment */
+    flex-wrap: nowrap;       /* Prevent wrapping to ensure a single line */
+    justify-content: center; /* Center the cards horizontally */
+    gap: 20px;               /* Space between cards */
+    width: 100%;
+    max-width: 700px;      /* Adjust max-width to fit 3 smaller cards + gaps */
+                            /* (e.g., 3 * 160px + 2 * 20px = 480 + 40 = 520px. Give some buffer) */
+    padding: 20px 0;         /* Padding above/below the grid */
+    margin: 0 auto;          /* Center the grid container itself */
+}
+
+/* Styles for individual dashboard card links (the <a> tag) */
+.dashboard-card-link {
+    text-decoration: none;
+    color: inherit;
+    /* flex-basis: calc(33.333% - 14px); /* Example if you want them to equally share space with gaps */
+    /* max-width: 160px; */ /* Or let the card's width define it */
+}
+
+/* === UPDATED Dashboard Card Styles === */
+.dashboard-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Slightly adjusted shadow */
+    padding: 20px; /* Padding inside the card */
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    
+    width: 160px;  /* Fixed width for smaller, uniform tiles */
+    height: 160px; /* Fixed height for smaller, uniform tiles */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center;     /* Center content horizontally */
+    box-sizing: border-box;  /* Padding and border included in width/height */
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px); /* Slightly more lift on hover */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.18);
+}
+
+.dashboard-card .material-icons { /* Target icons specifically within dashboard-card */
+    font-size: 42px; /* Icon size */
+    color: #3f51b5; /* Colors.indigo */
+    margin-bottom: 12px; /* Space between icon and title */
+}
+
+.dashboard-card .card-title { /* Renamed from dashboard-card-title for consistency */
+    font-size: 1em; /* Adjusted font size for smaller cards */
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+}
+
+/* Custom Footer Placeholder Styles */
+#custom-footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 15px 20px;
+    margin-top: auto; /* Pushes footer to the bottom */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        max-width: 90%; /* Allow grid to be wider */
+        gap: 15px;
+        /* If still too wide for 3 cards, consider stacking them */
+        /* flex-wrap: wrap; /* Or flex-direction: column; */
+    }
+
+    .dashboard-card {
+        width: 150px; /* Slightly smaller cards for tablets if needed */
+        height: 150px;
+        padding: 15px;
+    }
+
+    .dashboard-card .material-icons {
+        font-size: 38px;
+    }
+
+    .dashboard-card .card-title {
+        font-size: 0.95em;
+    }
+
+    #custom-header h1 {
+        font-size: 1.4em;
+    }
+    #welcome-message {
+        font-size: 1.2em;
+    }
+    .page-title-container h1 {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 580px) { /* Adjust breakpoint as needed for when 3 cards no longer fit well */
+    .dashboard-grid {
+        flex-direction: column; /* Stack cards vertically */
+        align-items: center;    /* Center items when stacked */
+        gap: 20px;              /* Adjust gap for vertical stacking */
+        max-width: 300px;       /* Max width for a single column of cards */
+    }
+
+    .dashboard-card {
+        width: 100%; /* Make cards take full width of the new max-width of grid */
+        height: 150px; /* Height can remain or be 'auto' if content varies more */
+    }
+}
+
+@media (max-width: 480px) {
+    /* .dashboard-grid styles from 580px breakpoint likely still apply well */
+    /* .dashboard-card styles from 580px breakpoint likely still apply well */
+
+    .drawer.open {
+        width: 250px; /* Slightly smaller drawer for small screens */
+    }
+    #custom-header h1 {
+        font-size: 1.2em;
+    }
+    .page-title-container h1 {
+        font-size: 1.6em;
+    }
+    #welcome-message {
+        font-size: 1.1em;
+    }
+}

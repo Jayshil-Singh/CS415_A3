@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Fees - USP Enrollment System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .invoice-table th {
+            background-color: #f9fafb;
+        }
+
+        .invoice-total {
+            text-align: right;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        .payment-status {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.375rem;
+        }
+
+        .status-paid {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-hold {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .download-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .download-button:hover {
+            background-color: #4338ca;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{{ url_for('enrollment.dashboard') }}" class="flex-shrink-0">
+                        <img class="h-10 w-auto" src="https://placehold.co/150x50/003366/FFFFFF?text=USP+Enroll"
+                            alt="USP Logo">
+                    </a>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="{{ url_for('enrollment.dashboard') }}"
+                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="{{ url_for('enrollment.enroll') }}"
+                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
+                            <a href="{{ url_for('enrollment.display_courses') }}"
+                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My
+                                Enrollment</a>
+                            <a href="{{ url_for('enrollment.fees') }}"
+                                class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium"
+                                aria-current="page">Fees</a>
+                            <a href="programmes.html"
+                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Programmes</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <a href="profile.html"
+                            class="p-1 rounded-full text-gray-500 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
+                            title="Profile">
+                            <span class="sr-only">View profile</span>
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </a>
+                        <a href="login.html"
+                            class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-button"
+                        class="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                        aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="{{ url_for('enrollment.dashboard') }}"
+                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="{{ url_for('enrollment.enroll') }}"
+                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
+                <a href="{{ url_for('enrollment.display_courses') }}"
+                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My
+                    Enrollment</a>
+                <a href="{{ url_for('enrollment.fees') }}"
+                    class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium"
+                    aria-current="page">Fees</a>
+                <a href="programmes.html"
+                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Programmes</a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="flex items-center px-5">
+                    <div class="flex-shrink-0">
+                        <img class="h-10 w-10 rounded-full" src="https://placehold.co/40x40/E0E0E0/757575?text=S"
+                            alt="User Avatar">
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium leading-none text-gray-800">Ratu Epeli Nailatikau</div>
+                        <div class="text-sm font-medium leading-none text-gray-500">s11223344@student.usp.ac.fj</div>
+                    </div>
+                </div>
+                <div class="mt-3 px-2 space-y-1">
+                    <a href="profile.html"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i
+                            class="fas fa-user-edit mr-2"></i>Your Profile</a>
+                    <a href="login.html"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i
+                            class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="invoice-header">
+            <h2 class="text-2xl font-semibold text-gray-900">Invoice</h2>
+            <p class="text-gray-600">University of the South Pacific</p>
+        </div>
+
+        <div class="invoice-details">
+            <div class="text-gray-700">
+                <p><strong>Student Name:</strong> {{ student.name }}</p>
+                <p><strong>Student ID:</strong> {{ student.id }}</p>
+            </div>
+            <div class="text-gray-700">
+                <p><strong>Invoice Number:</strong> {{ invoice.number }}</p>
+                <p><strong>Date:</strong> {{ invoice.date }}</p>
+                <p><strong>Semester:</strong> {{ invoice.semester }}</p>
+            </div>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Title</th>
+                    <th>Fee</th> </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.code }}</td>
+                    <td>{{ item.title }}</td>
+                    <td>${{ '%.2f' % item.fee }}</td> </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="invoice-total">
+            <p><strong>Total:</strong> ${{ '%.2f' % total }}</p>
+        </div>
+
+        <div class="payment-status status-{{ invoice.payment_status.lower() }}">
+            <p><strong>Payment Status:</strong> {{ invoice.payment_status }}</p>
+        </div>
+
+        <a href="{{ url_for('enrollment.download_invoice_pdf') }}" class="download-button">Download PDF</a>
+    </div>
+
+    <footer class="bg-white border-t mt-12">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+            &copy;
+            <script>
+                document.write(new Date().getFullYear())
+            </script>
+            USP Enrollment System. All rights reserved.
+        </div>
+    </footer>
+    <script>
+        // Basic mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+</body>
+
+</html>

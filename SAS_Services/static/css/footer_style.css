@@ -1,0 +1,138 @@
+/* static/css/footer_style.css */
+
+.custom-footer {
+    background-color: #009999; /* Teal/Blue - Adjust to match your desired color */
+    color: #e0e0e0; /* Light grey text for good contrast on dark background */
+    padding: 20px 0;    /* Increased vertical padding; horizontal padding is on the inner container */
+    font-size: 0.80em;
+    line-height: 1.5;
+    margin-top: auto;   /* Ensures it's pushed to the bottom by flex-grow on main content in base_style.css */
+    width: 100%;        /* CRITICAL: Make the footer element itself span full width */
+    box-sizing: border-box; /* Ensures padding doesn't add to the width */
+}
+
+.custom-footer .footer-content-container {
+    display: flex;
+    flex-wrap: wrap;            /* Allow items to wrap on smaller screens */
+    justify-content: space-between; /* Distribute space between left, center, right sections */
+    align-items: flex-start; /* Align items to the start of the cross-axis (top); use 'center' if preferred */
+    gap: 20px;                  /* Space between flex items if they wrap */
+    
+    /* Constrain and center the content within the full-width footer background */
+    max-width: 1140px;          /* Standard content width, adjust as needed */
+    margin: 0 auto;             /* Center this container horizontally */
+    padding: 0 25px;            /* Side padding for the content within this container */
+}
+
+.custom-footer .footer-left,
+.custom-footer .footer-center,
+.custom-footer .footer-right {
+    flex: 1; /* Allow flex items to grow and shrink to share space */
+    min-width: 250px; /* Prevent them from becoming too narrow before wrapping. Adjust as needed. */
+    padding: 10px 0; /* Vertical padding within each section */
+    box-sizing: border-box;
+}
+
+.custom-footer .footer-left {
+    text-align: left;
+}
+
+.custom-footer .footer-center {
+    text-align: center; /* Centers the logo if it's the only item */
+    display: flex; /* To center the logo perfectly if there are other elements or for consistency */
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-footer .footer-right {
+    text-align: right;
+}
+
+.custom-footer .footer-logo {
+    height: 50px; /* Adjusted height */
+    width: auto;
+    opacity: 0.95; /* Slightly less transparent */
+    display: inline-block; 
+    vertical-align: middle;
+}
+
+.custom-footer .footer-link {
+    color: #80cbc4; 
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.custom-footer .footer-link:hover {
+    color: #b2dfdb; 
+    text-decoration: underline;
+}
+
+.custom-footer .separator {
+    margin: 0 10px; /* Slightly more space for separator */
+    color: #78909c;
+}
+
+.custom-footer .footer-line {
+    margin: 8px 0 0 0; /* More space above copyright line */
+    font-size: 0.85em;
+    color: #b0bec5; 
+}
+
+.custom-footer .footer-right p {
+    margin: 5px 0; /* Consistent margin for address lines */
+    font-size: 0.9em;
+}
+
+/* Responsive adjustments for footer content stacking */
+@media (max-width: 768px) {
+    .custom-footer .footer-content-container {
+        flex-direction: column; /* Stack sections vertically */
+        align-items: center;    /* Center all sections when stacked */
+        text-align: center;     /* Ensure text within sections is also centered */
+        gap: 25px; /* Increased gap for stacked items */
+    }
+
+    .custom-footer .footer-left,
+    .custom-footer .footer-center,
+    .custom-footer .footer-right {
+        text-align: center !important; /* Force center alignment for all sections */
+        width: 100%;           /* Allow sections to take more width when stacked */
+        max-width: 450px;      /* But not excessively wide */
+        min-width: unset;      /* Remove min-width when stacked */
+        padding: 5px 0; /* Adjust padding for stacked view */
+    }
+    .custom-footer .footer-logo {
+        margin-bottom: 15px; /* Add space below logo when stacked */
+        height: 55px; /* Slightly larger logo when centered */
+    }
+    .custom-footer .footer-left span[style*="nowrap"] { /* Allow links to wrap if needed */
+        white-space: normal !important;
+        display: block; /* Make the span block to allow text centering */
+        margin-bottom: 8px;
+    }
+    .custom-footer .separator {
+        display: none; /* Optionally hide separators when stacked if they look odd */
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-footer {
+        padding: 25px 0; /* Reduce padding on very small screens */
+    }
+    .custom-footer .footer-content-container {
+        padding: 0 15px; /* Reduce side padding */
+    }
+    .custom-footer .footer-left,
+    .custom-footer .footer-center,
+    .custom-footer .footer-right {
+        max-width: 100%; /* Allow full width of the padded container */
+    }
+    .custom-footer .footer-logo {
+        height: 45px;
+    }
+    .custom-footer .footer-right p,
+    .custom-footer .footer-line,
+    .custom-footer .footer-link {
+        font-size: 0.8em; /* Slightly smaller text on very small screens */
+    }
+}

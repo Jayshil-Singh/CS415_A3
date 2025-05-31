@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Pages</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif; /* Use Inter for general text */
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .error-container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-family: 'Press Start 2P', monospace; /* Use Press Start 2P for headings */
+            font-size: 2rem;
+            color: #4c51bf; /* University Blue */
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        a {
+            color: #4c51bf;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .error-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        /* 404 Specific Styles */
+        .error-404 h1 {
+            font-size: 3rem;
+            color: #e64a43; /* A shade of red */
+        }
+        .error-404 p {
+            font-size: 1.2rem;
+            color: #555;
+        }
+        .error-404 .error-image {
+             /* Using a university library as a metaphor for "lost" */
+            content: url("https://source.unsplash.com/800x600/?library,books");
+        }
+
+        /* 500 Specific Styles */
+        .error-500 h1 {
+            font-size: 3rem;
+            color: #f5a623; /* A shade of orange/amber */
+        }
+        .error-500 p {
+            font-size: 1.2rem;
+            color: #555;
+        }
+        .error-500 .error-image {
+            /* Using a server room image for "internal server error" */
+            content: url("https://source.unsplash.com/800x600/?server,computer");
+        }
+
+        @media (max-width: 768px) {
+            .error-container {
+                max-width: 95%;
+            }
+            h1 {
+                font-size: 2.5rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+            .error-image {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body class="error-page">
+    <div class="error-container error-404">
+        <h1>404</h1>
+        <p>Oops! It seems you're lost in the stacks.</p>
+        <img src="" alt="Lost in Library" class="error-image">
+        <p>Let's get you back to the <a href="/">University Homepage</a>.</p>
+    </div>
+</body>
+</html>

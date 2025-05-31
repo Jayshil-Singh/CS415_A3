@@ -1,0 +1,96 @@
+{# templates/SASStaff/editST.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>Student Records Overview | SAS Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/editST.css') }}">
+    <style>
+        /* Make rows clickable if not using a direct link on a cell */
+        .student-link-row {
+            cursor: pointer;
+        }
+        .student-link-row:hover {
+            background-color: #f0f0f0; /* Example hover effect */
+        }
+        .table-wrapper table td a { /* Style for the link in the ID cell */
+            text-decoration: none;
+            color: #007bff; /* Example link color */
+        }
+        .table-wrapper table td a:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    {{ super() }}
+{% endblock %}
+
+{% block body_class %}view-students-list-page{% endblock %}
+
+{% block body %}
+    <div class="container">
+
+        <div class="page-title-container">
+            <h1 id="page-main-title">Student Records</h1>
+        </div>
+
+        {# Loading indicator will be handled by editST.js based on table content #}
+        <div id="loading-indicator" class="loading-indicator" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading student records...</p>
+        </div>
+
+        {# No students message will be handled by editST.js based on table content #}
+        <div id="no-students-message" class="no-students-message" style="display: none;">
+            <p>No students found. You can <a href="{{ url_for('sas_staff_register_student') }}">register new students</a>.</p>
+        </div>
+
+        <div id="student-table-container" class="student-table-container" style="display: block;"> {# Default to block, JS will hide if no data #}
+            <div class="table-wrapper">
+                <table id="students-overview-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Full Name</th>
+                            <th>Campus/Address</th> {# Changed header to reflect current data #}
+                        </tr>
+                    </thead>
+                    <tbody id="students-table-body">
+                        {# Loop through REAL student data passed from Flask #}
+                        {% if students and students|length > 0 %}
+                            {% for student_item in students %} {# Changed loop variable to avoid conflict if 'student' is used elsewhere #}
+                             <tr>
+                                <td>
+                                    {# Link to the displayST.html page for this student #}
+                                    <a href="{{ url_for('sas_staff_display_student', student_id=student_item.id) }}">
+                                        {{ student_item.id }}
+                                    </a>
+                                </td>
+                                <td>{{ student_item.full_name }}</td>
+                                <td>{{ student_item.campus }}</td> {# This will display the Address for now #}
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            {# This row will be shown if the students list from Flask is empty or not provided #}
+                            {# The JS will likely hide the table container and show #no-students-message instead #}
+                            <tr>
+                                <td colspan="3" style="text-align:center;">No student records found in the database.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="snackbar" class="snackbar">Snackbar message will appear here.</div>
+
+    </div> {# End .container #}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {# editST.js should primarily handle showing/hiding loading/no-students message based on table content #}
+    <script src="{{ url_for('static', filename='js/SASStaff/editST.js') }}"></script>
+{% endblock %}

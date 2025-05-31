@@ -1,0 +1,228 @@
+/* static/css/error_pages.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Pacifico&display=swap');
+
+body.error-page-active { /* Applied to body via {% block body_class %}error-page-active{% endblock %} in error templates */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure body takes at least full viewport height */
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #6f86d6, #48c6ef); /* Softer, more modern gradient */
+    color: #fff;
+    /* overflow: hidden; */ /* REMOVED THIS LINE to allow scrolling */
+    /* If you want to ensure scrolling is only vertical: */
+    overflow-x: hidden; /* Prevent horizontal scrollbars */
+    overflow-y: auto;   /* Allow vertical scrollbars only when needed */
+}
+
+.error-page-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers content vertically if it's shorter than viewport */
+    align-items: center;     /* Centers content horizontally */
+    text-align: center;
+    padding: 40px 20px;      /* Padding for breathing room, especially on smaller screens */
+    flex-grow: 1;            /* Allows this container to take up available vertical space */
+    box-sizing: border-box;
+    position: relative;      /* For positioning pseudo-elements like background shapes */
+    width: 100%;             /* Ensure it takes full width */
+}
+
+.error-content {
+    background-color: rgba(255, 255, 255, 0.15); /* Frosted glass effect */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    padding: 30px 40px; /* Adjusted padding */
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    max-width: 700px; /* Max width of the content box */
+    width: 100%;      /* Responsive width */
+    animation: fadeInScaleUp 0.8s ease-out forwards;
+    margin-top: 20px; /* Add some margin if content is very tall and starts at top */
+    margin-bottom: 20px; /* Add some margin if content is very tall */
+}
+
+@keyframes fadeInScaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.error-character-container {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.error-character {
+    width: 100%; /* Make image responsive within its container */
+    max-width: 250px; /* Adjust max size of the animated character */
+    height: auto;
+    animation: floatCharacter 4s ease-in-out infinite;
+}
+
+@keyframes floatCharacter {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+.error-title {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(2.5em, 5vw, 3.5em); /* Responsive font size */
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    animation: textPopIn 1s ease-out 0.5s forwards;
+    opacity: 0;
+}
+
+@keyframes textPopIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-message {
+    font-size: clamp(1em, 2.5vw, 1.2em); /* Responsive font size */
+    color: #e0e0e0;
+    line-height: 1.7;
+    margin-bottom: 10px;
+}
+
+.error-suggestion {
+    font-size: clamp(0.9em, 2vw, 1em); /* Responsive font size */
+    color: #d0d0d0;
+    margin-bottom: 30px;
+}
+
+.error-actions .btn {
+    display: inline-block;
+    padding: 12px 28px; /* Slightly adjusted padding */
+    font-size: clamp(0.95em, 2.2vw, 1.1em); /* Responsive font size */
+    font-weight: 600;
+    color: #3f51b5;
+    background-color: #ffffff;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 5px;
+}
+
+.error-actions .btn:hover {
+    background-color: #f0f0f0;
+    color: #303f9f;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.error-actions .btn-secondary {
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #555;
+}
+.error-actions .btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+}
+
+.error-details {
+    margin-top: 30px; /* Reduced margin */
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.15); /* Darker for better contrast with white text */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-align: left;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85em; /* Slightly larger for readability */
+    line-height: 1.5;
+    overflow-x: auto; /* Allow horizontal scroll for long error lines */
+    color: #f0f0f0; /* Lighter text for dark background */
+    max-height: 200px; /* Limit height and make this part scrollable if error is very long */
+    overflow-y: auto;  /* Scroll for error details if it's too long */
+}
+
+.error-details pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Specific for 404 - "Lost" theme */
+.error-page-container.error-404 .error-character {
+    animation: lookAround 5s ease-in-out infinite alternate, floatCharacter 4s ease-in-out infinite;
+}
+
+@keyframes lookAround {
+    0% { transform: rotate(-5deg) translateX(-3px); }
+    100% { transform: rotate(5deg) translateX(3px); }
+}
+
+/* Specific for 500 - "Server Overload/Sleeping" theme */
+.error-page-container.error-500 .error-character {
+    animation: serverShake 0.4s cubic-bezier(.36,.07,.19,.97) infinite alternate, floatCharacter 4s ease-in-out infinite;
+}
+
+.error-page-container.error-500 .error-content::after {
+    content: 'Zzz...';
+    position: absolute;
+    top: 10px; /* Adjusted position */
+    right: 15px; /* Adjusted position */
+    font-size: clamp(2em, 4vw, 3em); /* Responsive font size */
+    font-family: 'Pacifico', cursive;
+    color: rgba(255,255,255,0.4);
+    animation: steamPuff 3.5s ease-out infinite alternate; /* Slightly longer animation */
+    opacity: 0;
+}
+
+@keyframes serverShake {
+    0% { transform: translateX(-2px) rotate(-1.5deg); }
+    100% { transform: translateX(2px) rotate(1.5deg); }
+}
+
+@keyframes steamPuff {
+    0% { transform: translateY(5px) scale(0.9); opacity: 0; }
+    50% { transform: translateY(-15px) scale(1.15); opacity: 0.6; }
+    100% { transform: translateY(-35px) scale(1.4); opacity: 0; }
+}
+
+/* Fun background details (optional) */
+.error-page-container::before, .error-page-container::after {
+    content: '?';
+    font-family: 'Pacifico', cursive;
+    position: absolute;
+    font-size: clamp(10em, 20vw, 15em); /* Responsive */
+    opacity: 0.05;
+    color: #fff;
+    z-index: -1; /* Ensure it's behind content */
+}
+.error-page-container::before {
+    top: 5%;
+    left: 5%;
+    animation: rotatePulsate 15s linear infinite;
+}
+.error-page-container::after {
+    bottom: 5%;
+    right: 5%;
+    content: '!';
+    animation: rotatePulsate 18s linear infinite reverse;
+}
+
+@keyframes rotatePulsate {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}

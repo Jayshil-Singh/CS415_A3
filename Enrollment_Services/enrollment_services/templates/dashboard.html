@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrollment Dashboard - USP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #0056b3;
+        }
+        .nav-links {
+            margin-top: 20px;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin-right: 15px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            padding: 5px 0;
+        }
+        .nav-links a:hover {
+            color: #0056b3;
+        }
+        .section {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e9f5ff;
+            border-left: 5px solid #007bff;
+            border-radius: 4px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Enrollment Services Dashboard</h1>
+        <p>This is your central hub for managing academic programs, courses, enrollments, and fees at the University of the South Pacific.</p>
+
+        <div class="nav-links">
+            <a href="{{ url_for('enrollment.enroll') }}">Enroll in Courses</a>
+            <a href="{{ url_for('enrollment.display_courses') }}">View Enrolled Courses</a>
+            <a href="{{ url_for('enrollment.fees') }}">Check Fees & Invoices</a>
+            <a href="{{ url_for('enrollment.get_courses_api') }}">View All Courses (API)</a>
+            <a href="{{ url_for('enrollment.get_students') }}">View All Students (API)</a>
+            <a href="{{ url_for('enrollment.get_enrollments_api') }}">View All Enrollments (API)</a>
+        </div>
+
+        <div class="section">
+            <h2>Quick Actions:</h2>
+            <ul>
+                <li><strong>Enrollment:</strong> Begin the process of selecting and registering for new courses.</li>
+                <li><strong>Course Management:</strong> View details of available courses, prerequisites, and academic programs.</li>
+                <li><strong>Financials:</strong> Access your fee statements, invoice details, and payment statuses.</li>
+                <li><strong>Support:</strong> Find information on holds, student levels, and other academic services.</li>
+            </ul>
+        </div>
+
+        <p>Use the navigation links above to access different sections of the service.</p>
+
+        <div class="footer">
+            <p>&copy; 2025 The University of the South Pacific. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

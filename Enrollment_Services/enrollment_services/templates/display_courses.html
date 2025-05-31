@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Current Enrollment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f6f8;
+        }
+
+        .enrollment-container {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        /* Added position: relative for modal positioning */
+        h2 {
+            color: #374151;
+            /* gray-800 */
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .course-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.625rem;
+        }
+
+        .course-table th,
+        .course-table td {
+            padding: 0.75rem 0.9375rem;
+            text-align: left;
+            border-bottom: 1px solid #d1d5db;
+            /* gray-300 */
+        }
+
+        .course-table th {
+            background-color: #f0f2f5;
+            /* gray-100 */
+            color: #4b5563;
+            /* gray-600 */
+            font-weight: bold;
+        }
+
+        .course-table tr:nth-child(even) {
+            background-color: #f9fafb;
+            /* gray-50 */
+        }
+
+        .course-table td .drop-button {
+            color: #dc2626;
+            /* red-600 */
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .course-table td .drop-button:hover {
+            text-decoration: underline;
+        }
+
+        .flash {
+            padding: 0.625rem;
+            margin: 0.625rem 0;
+            border-radius: 0.25rem;
+            display: none; /* Hidden by default, shown by JS */
+        }
+
+        .flash.error {
+            background: #fee2e2;
+            /* red-100 */
+            color: #991b1b;
+            /* red-700 */
+            border: 1px solid #ef4444;
+            /* red-400 */
+        }
+
+        .flash.success {
+            background: #d1fae5;
+            /* green-100 */
+            color: #065f46;
+            /* green-700 */
+            border: 1px solid #4ade80;
+            /* green-400 */
+        }
+
+        .no-courses {
+            color: #6b7280;
+            /* gray-500 */
+            font-style: italic;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 10;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+            overflow: auto;
+            /* Enable scroll if needed */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            /* 15% from the top and centered */
+            padding: 1.25rem;
+            border: 1px solid #888;
+            width: 80%;
+            /* Could be more or less, depending on screen size */
+            border-radius: 0.5rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+            position: relative;
+            text-align: center;
+        }
+
+        .modal-header {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            /* gray-200 */
+            margin-bottom: 1rem;
+        }
+
+        .modal-body {
+            padding: 1.25rem 0;
+        }
+
+        .modal-footer {
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+            /* gray-200 */
+            text-align: right;
+        }
+
+        .modal-button {
+            padding: 0.625rem 1.25rem;
+            margin-left: 0.625rem;
+            border: none;
+            border-radius: 0.3125rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .modal-button.confirm {
+            background-color: #dc2626;
+            /* red-600 */
+            color: white;
+        }
+
+        .modal-button.cancel {
+            background-color: #6b7280;
+            /* gray-500 */
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="enrollment-container">
+        <h2>Your Enrolled Courses for Semester 2, 2025</h2>
+        
+        <div id="flash-messages-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash {{ category }}" style="display: block;">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+
+
+        {% if enrolled_courses %}
+        <table class="course-table">
+            <thead>
+                <tr>
+                    <th>COURSE CODE</th>
+                    <th>COURSE NAME</th>
+                    <th>SEMESTER</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in enrolled_courses %}
+                <tr>
+                    <td>{{ course.code }}</td>
+                    <td>{{ course.title }}</td>
+                    <td>{{ course.semester }}</td>
+                    <td><a href="#" class="drop-button" data-course-code="{{ course.code }}"
+                            data-course-title="{{ course.title }}">Drop Course</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-courses">No courses selected.</p>
+        {% endif %}
+
+        <div id="dropConfirmationModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Confirm Drop</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to drop <span id="modal-course-title"></span> (<span
+                            id="modal-course-code"></span>)?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="modal-button cancel" id="cancelDrop">Cancel</button>
+                    <button type="button" class="modal-button confirm" id="confirmDrop">Drop Course</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropButtons = document.querySelectorAll('.drop-button');
+        const modal = document.getElementById('dropConfirmationModal');
+        const modalCourseCode = document.getElementById('modal-course-code');
+        const modalCourseTitle = document.getElementById('modal-course-title');
+        const confirmDropButton = document.getElementById('confirmDrop');
+        const cancelDropButton = document.getElementById('cancelDrop');
+        const flashMessagesContainer = document.getElementById('flash-messages-container');
+
+        let courseCodeToDrop = null;
+        let rowToRemove = null;
+
+        function showFlashMessage(message, category) {
+            const flashDiv = document.createElement('div');
+            flashDiv.classList.add('flash', category);
+            flashDiv.textContent = message;
+            flashMessagesContainer.appendChild(flashDiv);
+            flashDiv.style.display = 'block'; // Make it visible
+            setTimeout(() => {
+                flashDiv.style.display = 'none';
+                flashDiv.remove();
+            }, 5000); // Hide after 5 seconds
+        }
+
+        dropButtons.forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                courseCodeToDrop = this.dataset.courseCode;
+                const courseTitle = this.dataset.courseTitle;
+                rowToRemove = this.closest('tr');
+                modalCourseCode.textContent = courseCodeToDrop;
+                modalCourseTitle.textContent = courseTitle;
+                modal.style.display = "block";
+            });
+        });
+
+        cancelDropButton.addEventListener('click', function () {
+            modal.style.display = "none";
+            courseCodeToDrop = null;
+            rowToRemove = null;
+        });
+
+        confirmDropButton.addEventListener('click', async function () {
+            if (courseCodeToDrop && rowToRemove) {
+                try {
+                    const response = await fetch(`/enrollment_services/drop_course/${courseCodeToDrop}`, {
+                        method: 'GET', // Or 'POST' if you prefer, but GET is simpler for this action
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Include authorization token if your API expects it
+                            'Authorization': `Bearer ${localStorage.getItem('jwt_token')}` 
+                        }
+                    });
+
+                    if (response.ok) {
+                        rowToRemove.remove();
+                        modal.style.display = "none";
+                        showFlashMessage(`Course ${courseCodeToDrop} dropped successfully.`, 'success');
+
+                        // Check if the table is empty after dropping
+                        if (document.querySelector('.course-table tbody').children.length === 0) {
+                            const table = document.querySelector('.course-table');
+                            if (table) {
+                                table.remove();
+                            }
+                            const noCoursesMessage = document.createElement('p');
+                            noCoursesMessage.classList.add('no-courses');
+                            noCoursesMessage.textContent = 'No courses selected.';
+                            document.querySelector('.enrollment-container').appendChild(noCoursesMessage);
+                        }
+                    } else {
+                        const errorData = await response.json();
+                        showFlashMessage(errorData.message || 'Failed to drop course.', 'error');
+                        modal.style.display = "none";
+                    }
+                } catch (error) {
+                    console.error('Error dropping course:', error);
+                    showFlashMessage('An error occurred while dropping the course.', 'error');
+                    modal.style.display = "none";
+                } finally {
+                    courseCodeToDrop = null;
+                    rowToRemove = null;
+                }
+            }
+        });
+
+        // Close the modal if the user clicks outside of it
+        window.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+                courseCodeToDrop = null;
+                rowToRemove = null;
+            }
+        });
+    </script>
+</body>
+
+</html>
