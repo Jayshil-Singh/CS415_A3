@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Academic Transcript</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            margin-top: 50px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 25px;
+        }
+        .action-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .action-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .action-button:active {
+            transform: translateY(0);
+        }
+        .note {
+            font-size: 0.9em;
+            color: #777;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            text-align: left;
+        }
+        .note strong {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Academic Transcript</h1>
+        <p>
+            You can generate and download your official academic transcript in PDF format.
+            This document provides a comprehensive record of your academic performance,
+            including courses completed, grades obtained, and GPA.
+        </p>
+        {# FIX: Changed url_for to point to the correct blueprint endpoint #}
+        <a href="{{ url_for('enrollment.download_transcript_pdf') }}" class="action-button" target="_blank">
+            Download My Official Transcript (PDF)
+        </a>
+
+        <div class="note">
+            <strong>Important Information:</strong>
+            <ul>
+                <li>The generated transcript is an official document.</li>
+                <li>It may take a few moments to generate the PDF, especially for large academic records.</li>
+                <li>Ensure you have a PDF viewer installed on your device to open the file.</li>
+                <li>For any discrepancies or questions regarding your transcript, please contact the Registrar's Office.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

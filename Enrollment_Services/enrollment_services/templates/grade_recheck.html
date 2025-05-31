@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Grade Recheck</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        .form-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .alert {
+            background-color: #ffeeba;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .errors {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .form-group.required label:after {
+            content: " *";
+            color: red;
+        }
+        .important-note {
+            background-color: #e6f7ff;
+            border-left: 5px solid #2196f3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Apply for Grade Recheck</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="important-note">
+            <p><strong>Please read carefully before submitting:</strong></p>
+            <ul>
+                <li>A grade recheck involves a review of your marked assessment components for calculation errors or omissions.</li>
+                <li>This is NOT a re-marking of your work.</li>
+                <li>There may be a fee associated with grade rechecks. This fee will be refunded if a grade change occurs.</li>
+                <li>Recheck requests must typically be submitted within a specified period after results are released.</li>
+            </ul>
+        </div>
+
+        <form method="POST" action="{{ url_for('enrollment.apply_grade_recheck') }}">
+            <div class="form-group required">
+                <label for="course_grade">Course and Grade to Recheck *</label>
+                <select id="course_grade" name="course_grade" class="form-control">
+                    {% for value, label in grade_choices %}
+                        <option value="{{ value }}" {% if value == current_selected_grade_id %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.course_grade %}
+                    <ul class="errors"><li>{{ errors.course_grade }}</li></ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group required">
+                <label for="reason">Reason for Recheck *</label>
+                <textarea id="reason" name="reason" class="form-control" rows="5"
+                    placeholder="e.g., 'I believe there was a calculation error in my final mark.', 'A specific component of my assessment seems to be missing from the final calculation.'">{{ current_reason }}</textarea>
+                {% if errors.reason %}
+                    <ul class="errors"><li>{{ errors.reason }}</li></ul>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Submit Recheck Request</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

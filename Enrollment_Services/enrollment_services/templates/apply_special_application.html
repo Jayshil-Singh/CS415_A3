@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Special Application</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Ensures padding doesn't increase total width */
+            font-size: 1em;
+        }
+        textarea {
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 100px;
+        }
+        .form-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .alert {
+            background-color: #ffeeba;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .hidden {
+            display: none;
+        }
+        .form-group.required label:after {
+            content: " *";
+            color: red;
+        }
+        .errors {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Apply for Special Application</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('enrollment.apply_special_application') }}">
+            <div class="form-group required">
+                <label for="application_type_select">Application Type *</label>
+                <select id="application_type_select" name="application_type" class="form-control">
+                    {% for value, label in application_type_choices %}
+                        <option value="{{ value }}" {% if value == current_application_type %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.application_type %}
+                    <ul class="errors"><li>{{ errors.application_type }}</li></ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group {% if current_application_type == 'Graduation' or current_application_type == '' %}hidden{% endif %}" id="course_selection_group">
+                <label for="course">Course</label>
+                <select id="course" name="course" class="form-control">
+                    {% for value, label in course_choices %}
+                        <option value="{{ value }}" {% if value == current_course_id %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.course %}
+                    <ul class="errors"><li>{{ errors.course }}</li></ul>
+                {% endif %}
+                <small>Select the specific course for which you are applying for a pass or re-sit.</small>
+            </div>
+
+            <div class="form-group required">
+                <label for="reason">Reason for Application *</label>
+                <textarea id="reason" name="reason" class="form-control" rows="7"
+                    placeholder="Clearly explain the reason for your application. Provide as much detail as possible. (e.g., for compassionate pass, detail circumstances; for graduation, any specific requests.)">{{ current_reason }}</textarea>
+                {% if errors.reason %}
+                    <ul class="errors"><li>{{ errors.reason }}</li></ul>
+                {% endif %}
+                <small>Clearly explain the reason for your application. Provide as much detail as possible.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="supporting_documents">Supporting Documents (e.g., Medical Certificates, Police Reports):</label>
+                <input type="file" id="supporting_documents" name="supporting_documents" accept=".pdf, .doc, .docx, .jpeg, .jpg, .png">
+                <small>Upload any relevant documents to support your application. (Max file size: 5MB)</small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Submit Application</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const applicationTypeSelect = document.getElementById('application_type_select');
+            const courseSelectionGroup = document.getElementById('course_selection_group');
+
+            function toggleCourseSelection() {
+                const selectedValue = applicationTypeSelect.value;
+                if (selectedValue === 'Compassionate Pass' || selectedValue === 'Aegrotat Pass' || selectedValue === 'Re-sit') {
+                    courseSelectionGroup.classList.remove('hidden');
+                } else {
+                    courseSelectionGroup.classList.add('hidden');
+                }
+            }
+
+            // Initial call to set visibility based on default selected value or pre-selected value
+            toggleCourseSelection();
+
+            // Add event listener for changes
+            applicationTypeSelect.addEventListener('change', toggleCourseSelection);
+        });
+    </script>
+</body>
+</html>

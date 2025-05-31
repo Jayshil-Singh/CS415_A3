@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Application Confirmed</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Basic styling for the confirmation page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #28a745; /* Green for success */
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        strong {
+            color: #007bff; /* Blue for emphasis */
+        }
+        .details {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 25px;
+            text-align: left;
+        }
+        .details p {
+            margin: 8px 0;
+            font-size: 1em;
+        }
+        .button-group {
+            margin-top: 30px;
+        }
+        .button-group a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .button-group a.dashboard {
+            background-color: #007bff;
+            color: white;
+        }
+        .button-group a.dashboard:hover {
+            background-color: #0056b3;
+        }
+        .button-group a.view-history {
+            background-color: #6c757d;
+            color: white;
+        }
+        .button-group a.view-history:hover {
+            background-color: #5a6268;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Application Submitted Successfully!</h1>
+        <p>Thank you for submitting your <strong>{{ application.application_type }}</strong> application.</p>
+        <p>Your application has been received and is now being processed.</p>
+
+        <div class="details">
+            <p><strong>Application ID:</strong> {{ application.id }}</p>
+            <p><strong>Application Type:</strong> {{ application.application_type }}</p>
+            {% if application.course %}
+                {# FIX: Accessing course code and name from the 'course' object directly #}
+                <p><strong>Course:</strong> {{ application.course.CourseID }} - {{ application.course.CourseName }}</p>
+            {% endif %}
+            <p><strong>Reason Provided:</strong> {{ application.reason }}</p>
+            <p><strong>Date Submitted:</strong> {{ application.date_submitted.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Current Status:</strong> <span style="font-weight: bold; color: #ffc107;">{{ application.status }}</span></p>
+        </div>
+
+        <p class="note">
+            You will be notified via email of any updates regarding your application status.
+            Please monitor your registered email address for official communication.
+        </p>
+
+        <div class="button-group">
+            {# FIX: Changed url_for to point to the correct blueprint endpoint #}
+            <a href="{{ url_for('enrollment.dashboard') }}" class="dashboard">Go to Dashboard</a>
+            {# FIX: Changed url_for to point to the correct blueprint endpoint #}
+            <a href="{{ url_for('enrollment.view_special_applications_history') }}" class="view-history">View My Applications History</a>
+        </div>
+    </div>
+</body>
+</html>

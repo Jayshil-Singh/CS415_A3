@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Official Academic Transcript</title>
+    <style>
+        /* Basic styles for PDF generation */
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 11pt;
+            margin: 1cm;
+        }
+        h1, h2, h3 {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-bottom: 0.5cm;
+            color: #333;
+        }
+        h1 { font-size: 18pt; }
+        h2 { font-size: 14pt; margin-top: 1cm; }
+        h3 { font-size: 12pt; margin-top: 0.8cm; }
+
+        .header-info, .student-info {
+            width: 100%;
+            margin-bottom: 0.8cm;
+            line-height: 1.5;
+        }
+        .header-info div, .student-info div {
+            padding: 2px 0;
+        }
+        .header-info strong, .student-info strong {
+            display: inline-block;
+            width: 150px; /* Adjust as needed for alignment */
+            text-align: right;
+            padding-right: 10px;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5cm;
+            font-size: 10pt;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .summary-table {
+            width: 50%;
+            margin-top: 1cm;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #000; /* Stronger border for summary */
+        }
+        .summary-table th, .summary-table td {
+            border: none;
+            padding: 5px 10px;
+        }
+        .summary-table th {
+            text-align: right;
+            background-color: #eee;
+        }
+        .summary-table td {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .footer {
+            margin-top: 2cm;
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .footer p { margin: 5px 0; }
+        .official-seal {
+            /* Placeholder for official seal/watermark */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1; /* Very faint */
+            z-index: -1;
+            /* background-image: url('{{ url_for('static', filename='images/university_seal.png') }}'); */
+            /* background-size: contain; */
+            /* width: 200px; */
+            /* height: 200px; */
+        }
+    </style>
+</head>
+<body>
+    <div class="official-seal"></div>
+    <div class="header-info">
+        <h1 class="text-center">UNIVERSITY OF THE SOUTH PACIFIC</h1>
+        <h2 class="text-center">Official Academic Transcript</h2>
+        <div class="text-center">
+            <p><strong>Registrar's Office</strong> | Suva, Fiji</p>
+            <p>Phone: [Your University Phone] | Email: [Your University Email]</p>
+            <p>Website: [Your University Website]</p>
+        </div>
+    </div>
+
+    <div class="student-info">
+        <h3>Student Information:</h3>
+        <div><strong>Name:</strong> {{ student.student_name }}</div>
+        <div><strong>Student ID:</strong> {{ student.student_id_number }}</div>
+        <div><strong>Program Enrolled:</strong> {{ student.program_enrolled }}</div>
+        <div><strong>Date Generated:</strong> {{ student.date_generated }}</div>
+    </div>
+
+    <h2>Academic Record:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Semester</th>
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Credits</th>
+                <th>Grade</th>
+                <th>GPA Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in student.courses %}
+            <tr>
+                <td>{{ course.year }}</td>
+                <td>{{ course.semester }}</td>
+                <td>{{ course.course_code }}</td>
+                <td>{{ course.course_name }}</td>
+                <td>{{ course.credit_hours }}</td>
+                <td>{{ course.letter_grade }}</td>
+                <td>{{ course.gpa_points_earned | round(2) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">No courses found in academic record.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="summary-table">
+        <tr>
+            <th>Cumulative GPA:</th>
+            <td>{{ student.total_gpa }}</td>
+        </tr>
+        <tr>
+            <th>Total Credits Earned:</th>
+            <td>{{ student.courses | sum(attribute='credit_hours') }}</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <p>This is an official document of the University of the South Pacific.</p>
+        <p>Any alteration or unauthorized duplication of this transcript may result in severe penalties.</p>
+        <p>Document generated on: {{ student.date_generated }}</p>
+        <p>Registrar's Signature: _________________________</p>
+    </div>
+</body>
+</html>

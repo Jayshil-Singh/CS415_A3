@@ -152,6 +152,7 @@
             margin-left: 1.5rem;
             position: relative;
         }
+
         .tree-node::before {
             content: '';
             position: absolute;
@@ -161,27 +162,31 @@
             height: 1px;
             background-color: #d1d5db;
         }
+
         .tree-node.year::before {
             height: calc(100% - 0.75rem);
             border-left: 1px solid #d1d5db;
             top: 0;
             left: -1.5rem;
         }
+
         .tree-node.semester::before {
             height: calc(100% - 0.75rem);
             border-left: 1px solid #d1d5db;
             top: 0;
             left: -1rem;
         }
+
         .tree-node.course::before {
             height: 1px;
             top: 0.75rem;
             left: -0.75rem;
             width: 0.75rem;
         }
+
         /* Specific adjustment for tree lines to avoid extending past last child */
-        .tree-node.year > .semester-container > .tree-node.semester:last-of-type::before,
-        .tree-node.semester > .course-group > .tree-node.course:last-of-type::before {
+        .tree-node.year>.semester-container>.tree-node.semester:last-of-type::before,
+        .tree-node.semester>.course-group>.tree-node.course:last-of-type::before {
             height: 0.75rem;
         }
     </style>
@@ -208,8 +213,14 @@
                                 Enrollment</a>
                             <a href="{{ url_for('enrollment.fees') }}"
                                 class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
-                            <a href="programmes.html"
-                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Programmes</a>
+                            <a href="{{ url_for('enrollment.view_transcript') }}"
+                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Transcript</a>
+                            <a href="{{ url_for('enrollment.apply_grade_recheck') }}"
+                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Grades</a>
+                            <a href="{{ url_for('enrollment.apply_special_application') }}"
+                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
+                            <a href="{{ url_for('enrollment.student_hold_status') }}"
+                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
                         </div>
                     </div>
                 </div>
@@ -221,7 +232,7 @@
                             <span class="sr-only">View profile</span>
                             <i class="fas fa-user-circle fa-lg"></i>
                         </a>
-                        <a href="login.html"
+                        <a href="{{ url_for('enrollment.logout') }}"
                             class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </a>
@@ -249,8 +260,14 @@
                     Enrollment</a>
                 <a href="{{ url_for('enrollment.fees') }}"
                     class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
-                <a href="programmes.html"
-                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Programmes</a>
+                <a href="{{ url_for('enrollment.view_transcript') }}"
+                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Transcript</a>
+                <a href="{{ url_for('enrollment.apply_grade_recheck') }}"
+                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Grades</a>
+                <a href="{{ url_for('enrollment.apply_special_application') }}"
+                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
+                <a href="{{ url_for('enrollment.student_hold_status') }}"
+                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
             </div>
             <div class="pt-4 pb-3 border-t border-gray-200">
                 <div class="flex items-center px-5">
@@ -267,7 +284,7 @@
                     <a href="profile.html"
                         class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i
                             class="fas fa-user-edit mr-2"></i>Your Profile</a>
-                    <a href="login.html"
+                    <a href="{{ url_for('enrollment.logout') }}"
                         class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i
                             class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
                 </div>
@@ -284,6 +301,7 @@
     <main>
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <div class="bg-white p-6 rounded-lg shadow-md">
+                {# Flash Messages Display Block #}
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                 <div class="space-y-2 mb-4">
@@ -465,10 +483,14 @@
                     }
                 });
 
-                if (currentUnits > maxUnits) {
-                    alert(`You can select a maximum of ${maxUnits} full units.`);
-                    checkbox.checked = false; // Revert the last check
-                }
+                // REMOVED CLIENT-SIDE ALERT FOR UNIT LIMIT
+                // The server-side /enroll route will now handle this validation
+                // and display a flash message upon redirect if units exceed the limit.
+                // if (currentUnits > maxUnits) {
+                //     alert(`You can select a maximum of ${maxUnits} full units.`);
+                //     checkbox.checked = false; // Revert the last check
+                // }
+
                 updateSelectedUnits(); // Update count and button state
             });
         });

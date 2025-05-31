@@ -63,9 +63,10 @@
             <a href="{{ url_for('enrollment.enroll') }}">Enroll in Courses</a>
             <a href="{{ url_for('enrollment.display_courses') }}">View Enrolled Courses</a>
             <a href="{{ url_for('enrollment.fees') }}">Check Fees & Invoices</a>
-            <a href="{{ url_for('enrollment.get_courses_api') }}">View All Courses (API)</a>
-            <a href="{{ url_for('enrollment.get_students') }}">View All Students (API)</a>
-            <a href="{{ url_for('enrollment.get_enrollments_api') }}">View All Enrollments (API)</a>
+            {# FIX: Updated endpoints to point to the newly added API routes in routes.py #}
+            <a href="{{ url_for('enrollment.get_courses_api') }}" target="_blank">View All Courses (API)</a>
+            <a href="{{ url_for('enrollment.get_students_api') }}" target="_blank">View All Students (API)</a>
+            <a href="{{ url_for('enrollment.get_enrollments_api') }}" target="_blank">View All Enrollments (API)</a>
         </div>
 
         <div class="section">
