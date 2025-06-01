@@ -11,8 +11,9 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            margin: 0; /* Changed from 20px to 0 to allow nav to span full width */
+            margin: 0;
             background-color: #f4f6f8;
+            padding-bottom: 60px; /* Added: Ensures content doesn't get hidden behind the fixed footer */
         }
 
         .enrollment-container {
@@ -152,11 +153,25 @@
             background-color: #6b7280;
             color: white;
         }
+
+        /* Footer styles (uniform) */
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: white;
+            background-color: teal;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 15px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
     </style>
 </head>
 
 <body>
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
+    <nav class="bg-teal-600 shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
@@ -165,14 +180,14 @@
                     </a>
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="{{ url_for('enrollment.dashboard') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                            <a href="{{ url_for('enrollment.enroll') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
+                            <a href="{{ url_for('enrollment.dashboard') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="{{ url_for('enrollment.enroll') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
                             <a href="{{ url_for('enrollment.display_courses') }}" class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">My Enrollment</a>
-                            <a href="{{ url_for('enrollment.fees') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
-                            <a href="{{ url_for('enrollment.view_transcript') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Transcript</a>
-                            <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Grades</a>
-                            <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
-                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
+                            <a href="{{ url_for('enrollment.fees') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
+                            <a href="{{ url_for('enrollment.view_transcript') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Transcript</a>
+                            <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Grades</a>
+                            <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
+                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
                         </div>
                     </div>
                 </div>
@@ -184,7 +199,7 @@
                     </div>
                 </div>
                 <div class="-mr-2 flex md:hidden">
-                    <button type="button" id="mobile-menu-button" class="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                    <button type="button" id="mobile-menu-button" class="bg-teal-500 inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
                         <i class="fas fa-bars fa-lg"></i>
                     </button>
@@ -193,18 +208,18 @@
         </div>
         <div class="md:hidden hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="{{ url_for('enrollment.dashboard') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
-                <a href="{{ url_for('enrollment.enroll') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
+                <a href="{{ url_for('enrollment.dashboard') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="{{ url_for('enrollment.enroll') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
                 <a href="{{ url_for('enrollment.display_courses') }}" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">My Enrollment</a>
-                <a href="{{ url_for('enrollment.fees') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
-                <a href="{{ url_for('enrollment.view_transcript') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Transcript</a>
-                <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Grades</a>
-                <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
-                <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
+                <a href="{{ url_for('enrollment.fees') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
+                <a href="{{ url_for('enrollment.view_transcript') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Transcript</a>
+                <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Grades</a>
+                <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
+                <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
             </div>
-            <div class="pt-4 pb-3 border-t border-gray-200">
+            <div class="pt-4 pb-3 border-t border-teal-500">
                 <div class="mt-3 px-2 space-y-1">
-                    <a href="{{ url_for('enrollment.logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
+                    <a href="{{ url_for('enrollment.logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-indigo-700 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
                 </div>
             </div>
         </div>
@@ -269,6 +284,10 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 The University of the South Pacific. All rights reserved.</p>
     </div>
 
     <script>

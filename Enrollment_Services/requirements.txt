@@ -6,3 +6,8 @@ requests
 Werkzeug
 PyJWT
 WeasyPrint
+pytest 
+pytest-flask 
+pytest-mock
+python-dotenv
+flask-migrate

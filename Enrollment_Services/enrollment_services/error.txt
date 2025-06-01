@@ -1,0 +1,950 @@
+
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+______________________ ERROR at setup of test_view_transcript_get_on_hold_restricted _______________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+    
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+______________________________ ERROR at setup of test_download_transcript_pdf ______________________________ 
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+____________________ ERROR at setup of test_download_transcript_pdf_on_hold_restricted _____________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+______________________________ ERROR at setup of test_apply_grade_recheck_get ______________________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+    
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+_________________________ ERROR at setup of test_apply_grade_recheck_post_success __________________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+    
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+______________ ERROR at setup of test_apply_grade_recheck_post_validation_error_short_reason _______________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+    
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+_____________________ ERROR at setup of test_apply_grade_recheck_post_already_pending ______________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+______________________ ERROR at setup of test_apply_grade_recheck_on_hold_restricted _______________________ 
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+    
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+_____________________________ ERROR at setup of test_view_recheck_history_get ______________________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+___________________________ ERROR at setup of test_apply_special_application_get ___________________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+    
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+_________________ ERROR at setup of test_apply_special_application_post_graduation_success _________________ 
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+    
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+_____________ ERROR at setup of test_apply_special_application_post_compassionate_pass_success _____________ 
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+__________ ERROR at setup of test_apply_special_application_post_validation_error_missing_course ___________ 
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+___________ ERROR at setup of test_apply_special_application_post_validation_error_short_reason ____________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+___________________ ERROR at setup of test_apply_special_application_on_hold_restricted ____________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+_______________________ ERROR at setup of test_view_special_applications_history_get _______________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+__________________________ ERROR at setup of test_student_hold_status_get_no_hold __________________________ 
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+_________________________ ERROR at setup of test_student_hold_status_get_with_hold _________________________ 
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+    
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+__________________________________ ERROR at setup of test_get_courses_api __________________________________ 
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _  
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+_________________________________ ERROR at setup of test_get_students_api __________________________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+    
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+    
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+________________________________ ERROR at setup of test_get_enrollments_api ________________________________
+
+    @pytest.fixture
+    def app():
+        """Create and configure a new app instance for each test."""
+        # Use an in-memory SQLite database for testing
+>       app = create_app({'TESTING': True, 'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
+
+enrollment_services\test_es.py:20: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+test_config = {'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:', 'TESTING': True}
+
+    def create_app(test_config=None):
+        # Create and configure the app
+        app = Flask(__name__, instance_relative_config=True)
+    
+        # Default configuration
+        app.config.from_mapping(
+            SECRET_KEY='dev', # Change this to a strong, random key in production!
+            SQLALCHEMY_DATABASE_URI='sqlite:///enrollment.db', # Default DB for development
+            SQLALCHEMY_TRACK_MODIFICATIONS=False,
+            JWT_SECRET_KEY='your_super_secret_key_here', # Change this to a strong, random key in production!            JWT_EXPIRATION_DELTA=timedelta(hours=1) # Token valid for 1 hour
+        )
+    
+        if test_config is None:
+            # Load the instance config, if it exists, when not testing
+            app.config.from_pyfile('config.py', silent=True)
+        else:
+            # Load the test config if passed in
+            app.config.from_mapping(test_config)
+
+        # Ensure the instance folder exists
+        try:
+            import os
+            os.makedirs(app.instance_path)
+        except OSError:
+            pass
+
+        # Initialize extensions with the app
+>       db.init_app(app)
+E       AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+enrollment_services\__init__.py:39: AttributeError
+========================================= short test summary info ==========================================
+ERROR enrollment_services/test_es.py::test_dashboard_get - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_dashboard_get_unauthorized_role - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_enroll_get - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_enroll_post_success - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_enroll_post_exceed_units - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_enroll_post_unmet_course_prerequisite - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_enroll_post_unmet_year_prerequisite - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_enroll_post_on_hold_restricted_service - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_display_courses_get - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_drop_course_success - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_drop_course_not_found - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_fees_get - AttributeError: module 'enrollment_services.db' has no 
+attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_download_invoice_pdf - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_view_transcript_get_with_grades - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_view_transcript_get_no_grades_generates_dummy - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_view_transcript_get_on_hold_restricted - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_download_transcript_pdf - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_download_transcript_pdf_on_hold_restricted - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_grade_recheck_get - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_grade_recheck_post_success - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_grade_recheck_post_validation_error_short_reason - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_grade_recheck_post_already_pending - AttributeError: module 
+'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_grade_recheck_on_hold_restricted - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_view_recheck_history_get - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_special_application_get - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_special_application_post_graduation_success - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_special_application_post_compassionate_pass_success - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_special_application_post_validation_error_missing_course - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_special_application_post_validation_error_short_reason - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_apply_special_application_on_hold_restricted - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_view_special_applications_history_get - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_student_hold_status_get_no_hold - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_student_hold_status_get_with_hold - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_get_courses_api - AttributeError: module 'enrollment_services.db' 
+has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_get_students_api - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+ERROR enrollment_services/test_es.py::test_get_enrollments_api - AttributeError: module 'enrollment_services.db' has no attribute 'init_app'. Did you mean: 'init_db'?
+====================================== 36 errors in 112.52s (0:01:52) ====================================== 
+PS C:\Users\avichal avneel nath\Desktop\avichal_dev\avichal\Enrollment_Services> 

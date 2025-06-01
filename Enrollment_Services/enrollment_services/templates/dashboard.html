@@ -13,6 +13,7 @@
             margin: 0;
             background-color: #f4f4f4;
             color: #333;
+            padding-bottom: 60px; /* Ensures content doesn't get hidden behind the fixed footer */
         }
         .container {
             max-width: 1000px; /* Adjusted for larger grid */
@@ -24,7 +25,7 @@
             margin-top: 20px;
         }
         h1, h2 {
-            color: #0056b3;
+            color: teal; /* Changed to teal to match nav and footer background */
             text-align: center;
         }
         .grid-container {
@@ -58,7 +59,7 @@
         }
         .grid-item a {
             display: inline-block;
-            background-color: #007bff;
+            background-color: teal; /* Changed to teal */
             color: white;
             padding: 10px 20px;
             border-radius: 5px;
@@ -67,13 +68,20 @@
             transition: background-color 0.2s ease;
         }
         .grid-item a:hover {
-            background-color: #0056b3;
+            background-color: #008080; /* A slightly darker shade of teal for hover effect */
         }
+        /* Modified Footer styles */
         .footer {
-            margin-top: 40px;
             text-align: center;
             font-size: 0.9em;
-            color: #777;
+            color: white; /* Changed text color for better contrast on teal background */
+            background-color: teal; /* Teal background as requested */
+            position: fixed; /* Fixed position */
+            bottom: 0;      /* At the bottom of the viewport */
+            width: 100%;    /* Spans full width */
+            padding: 15px 0; /* Vertical padding */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+            z-index: 1000; /* Ensures it's on top */
         }
         /* Flash message styles */
         .flash-message {
@@ -98,7 +106,7 @@
     </style>
 </head>
 <body>
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
+    <nav class="bg-teal-600 shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
@@ -108,20 +116,20 @@
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
                             <a href="{{ url_for('enrollment.dashboard') }}" class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Dashboard</a>
-                            <a href="{{ url_for('enrollment.enroll') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
-                            <a href="{{ url_for('enrollment.display_courses') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My Enrollment</a>
-                            <a href="{{ url_for('enrollment.fees') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
-                            <a href="{{ url_for('enrollment.view_transcript') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Transcript</a>
-                            <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Grades</a>
-                            <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
-                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
+                            <a href="{{ url_for('enrollment.enroll') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
+                            <a href="{{ url_for('enrollment.display_courses') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My Enrollment</a>
+                            <a href="{{ url_for('enrollment.fees') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
+                            <a href="{{ url_for('enrollment.view_transcript') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Transcript</a>
+                            <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Grades</a>
+                            <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
+                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
                         </div>
                     </div>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-4 flex items-center md:ml-6">
                         {% if current_user %}
-                        <span class="text-gray-700 text-sm font-medium mr-4">Hi, {{ current_user.FirstName }}</span>
+                        <span class="text-white text-sm font-medium mr-4">Hi, {{ current_user.FirstName }}</span>
                         {% endif %}
                         <a href="{{ url_for('enrollment.logout') }}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
@@ -129,7 +137,7 @@
                     </div>
                 </div>
                 <div class="-mr-2 flex md:hidden">
-                    <button type="button" id="mobile-menu-button" class="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                    <button type="button" id="mobile-menu-button" class="bg-teal-500 inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
                         <i class="fas fa-bars fa-lg"></i>
                     </button>
@@ -139,35 +147,34 @@
         <div class="md:hidden hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="{{ url_for('enrollment.dashboard') }}" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Dashboard</a>
-                <a href="{{ url_for('enrollment.enroll') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
-                <a href="{{ url_for('enrollment.display_courses') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My Enrollment</a>
-                <a href="{{ url_for('enrollment.fees') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
-                <a href="{{ url_for('enrollment.view_transcript') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Transcript</a>
-                <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Grades</a>
-                <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
-                <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
+                <a href="{{ url_for('enrollment.enroll') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
+                <a href="{{ url_for('enrollment.display_courses') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My Enrollment</a>
+                <a href="{{ url_for('enrollment.fees') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
+                <a href="{{ url_for('enrollment.view_transcript') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Transcript</a>
+                <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Grades</a>
+                <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
+                <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
             </div>
-            <div class="pt-4 pb-3 border-t border-gray-200">
-                {% if current_user %}
+            <div class="pt-4 pb-3 border-t border-teal-500"> {% if current_user %}
                 <div class="flex items-center px-5">
                     <div class="flex-shrink-0">
                         <img class="h-10 w-10 rounded-full" src="https://placehold.co/40x40/E0E0E0/757575?text={{ current_user.FirstName[0]|upper }}" alt="User Avatar">
                     </div>
                     <div class="ml-3">
-                        <div class="text-base font-medium leading-none text-gray-800">{{ current_user.FirstName }} {{ current_user.LastName }}</div>
-                        <div class="text-sm font-medium leading-none text-gray-500">{{ current_user.username }}</div>
+                        <div class="text-base font-medium leading-none text-white">{{ current_user.FirstName }} {{ current_user.LastName }}</div>
+                        <div class="text-sm font-medium leading-none text-teal-200">{{ current_user.username }}</div>
                     </div>
                 </div>
                 {% endif %}
                 <div class="mt-3 px-2 space-y-1">
-                    <a href="{{ url_for('enrollment.logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
+                    <a href="{{ url_for('enrollment.logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-indigo-700 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <div class="container">
-        <h1>Welcome to the Enrollment Services Dashboard</h1>
+        <h1 class="text-3xl font-bold">Welcome to the Enrollment Services Dashboard</h1>
         <p class="text-center text-lg text-gray-600">Your central hub for managing academic programs, courses, enrollments, and services.</p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -225,9 +232,9 @@
             </div>
         </div>
 
-        <div class="footer">
-            <p>&copy; 2025 The University of the South Pacific. All rights reserved.</p>
-        </div>
+    </div>
+    <div class="footer">
+        <p>&copy; 2025 The University of the South Pacific. All rights reserved.</p>
     </div>
 
     <script>
