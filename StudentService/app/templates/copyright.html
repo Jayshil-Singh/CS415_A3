@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>Copyright & Disclaimer</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/copyright.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+  <div class="content-wrapper">
+    <main class="info-page">
+      <h1>Copyright and Disclaimer</h1>
+
+      <p>
+        The University of the South Pacific (USP) attempts to ensure that the information contained
+        in this Web Site is accurate and up to date but sections may be amended without notice by
+        the USP. Persons intending to act on any information contained herein should first check
+        with the USP to ascertain whether any later information is available in respect of the
+        relevant material.
+      </p>
+
+      <p>
+        The USP claims copyright ownership of all information stored on this server, unless
+        expressly stated otherwise.
+      </p>
+
+      <p>
+        No information stored on this server may be used for commercial or any other purpose,
+        unless and until the USP gives its written permission.
+      </p>
+
+      <p>
+        The USP, its agents and employees will not be liable for any loss or damage arising
+        directly or indirectly from the possession, publication or use of or reliance on
+        information obtained from this Web Site. It is provided in good faith without express
+        or implied warranty.
+      </p>
+    </main>
+  </div>
+{% endblock %}

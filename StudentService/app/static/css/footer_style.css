@@ -1,0 +1,114 @@
+/* static/css/footer_style.css */
+/*─────────────────────────────────────────────────────────────────
+  force our footer wrapper to span edge-to-edge
+─────────────────────────────────────────────────────────────────*/
+#footer-container {
+  width: 100%;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Base footer styles (with fluid typography & padding)
+─────────────────────────────────────────────────────────────────*/
+.custom-footer {
+  background-color: #009999;
+  color: white;
+  font-family: sans-serif;
+  /* font scales between 0.75rem and 0.9rem as viewport goes from 300px to 1200px */
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+  /* vertical padding scales between 0.3rem and 0.5rem */
+  padding: clamp(0.3rem, 1.5vw, 0.5rem) 0;
+  line-height: 1.2;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Layout container—allows wrapping on very small widths
+─────────────────────────────────────────────────────────────────*/
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Left block: links + copyright
+─────────────────────────────────────────────────────────────────*/
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.15rem, 0.8vw, 0.25rem);
+}
+
+.footer-left .links-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.3rem, 1vw, 0.5rem);
+}
+
+.footer-left a {
+  color: white;
+  text-decoration: none;
+}
+
+.footer-left a:hover {
+  text-decoration: underline;
+}
+
+.footer-left .separator {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-left .footer-line {
+  margin: 0;
+  /* copyright line a bit smaller */
+  font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Center block: USP logo scales fluidly
+─────────────────────────────────────────────────────────────────*/
+.footer-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-center .footer-logo {
+  /* logo height scales between 40px and 57px */
+  height: clamp(40px, 5vw, 57px);
+  object-fit: contain;
+  margin: clamp(0.2rem, 1vw, 0.25rem) 0;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Right block: contact info
+─────────────────────────────────────────────────────────────────*/
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: clamp(0.15rem, 0.8vw, 0.25rem);
+}
+
+.footer-right p {
+  margin: 0;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  On very narrow screens, center everything
+─────────────────────────────────────────────────────────────────*/
+@media (max-width: 400px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .footer-left,
+  .footer-right {
+    align-items: center;
+  }
+}

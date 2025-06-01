@@ -1,0 +1,137 @@
+/* ───────────────────────────────────────────────────────────────── */
+/*                      LOGIN PAGE STYLESHEET                      */
+/* ───────────────────────────────────────────────────────────────── */
+
+body {
+  font-family: sans-serif;
+  background-color: rgb(172, 226, 228);
+  display: flex;            /* Enables flexbox */
+  justify-content: center;  /* Centers child horizontally */
+  align-items: center;      /* Centers child vertically */
+  min-height: 100vh;        /* Ensures body takes full viewport height */
+  margin: 0;
+}
+
+.login-container {
+  padding: 20px;
+}
+
+.blur-background {
+  border-radius: 24px;
+  backdrop-filter: blur(18px);
+}
+
+.login-card {
+  /* card width can be increased here */
+  width: 300px;
+  max-width: 90%;
+  padding: 32px;
+  background-color: #009999;
+  border-radius: 0px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  margin-left: auto;   /* Key for centering */
+  margin-right: auto;  /* Key for centering */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.usp-logo {
+  height: 70px;
+  margin-bottom: 20px;
+}
+
+.welcome-text {
+  font-size: 22px;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 4px;        /* tighter spacing */
+  text-align: center;
+}
+
+.login-continue-text {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 12px;       /* tighter spacing */
+  text-align: center;
+}
+
+
+/* ───────────────────────────────────────────────────────────────── */
+/*   Input fields: full width, squared corners                     */
+/* ───────────────────────────────────────────────────────────────── */
+.input-field,
+.password-field {
+  width: 100%;
+  padding: 14px 30px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.input-field::placeholder,
+.password-field::placeholder {
+  color: #aaa;
+}
+
+/* ───────────────────────────────────────────────────────────────── */
+/* Password wrapper + toggle button                                */
+/* ───────────────────────────────────────────────────────────────── */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+.password-field {
+  /* leave space on the right for the toggle button */
+  padding-right: 48px;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.toggle-password .material-icons-outlined {
+  font-size: 24px;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover .material-icons-outlined {
+  color: #000;
+}
+
+/* ───────────────────────────────────────────────────────────────── */
+/* Login button styling and centering                              */
+/* ───────────────────────────────────────────────────────────────── */
+.login-button {
+  width: 140px;
+  padding: 12px;
+  border: none;
+  border-radius: 24px;
+  background-color: #002B49;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.login-button:hover {
+  background-color: #001f36;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}

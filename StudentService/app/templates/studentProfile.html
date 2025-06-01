@@ -1,0 +1,362 @@
+{# templates/studentProfile.html #}
+{% extends "base.html" %}
+
+{% block head %}
+  <title>USP Student Profile</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/studentProfile.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+  <nav class="horizontal-nav">
+    <a href="#" class="nav-button selected" onclick="selectSection(0)">Personal Details</a>
+    <a href="#" class="nav-button" onclick="selectSection(1)">Address</a>
+    <a href="#" class="nav-button" onclick="selectSection(2)">Email &amp; Phone</a>
+    <a href="#" class="nav-button" onclick="selectSection(3)">Emergency Contact</a>
+    <a href="#" class="nav-button" onclick="selectSection(4)">Passport &amp; Visa</a>
+  </nav>
+
+  <main>
+    <div class="card">
+
+      <div id="personal-details-section">
+        <h2 class="section-title">Personal Details</h2>
+
+        <form method="post" enctype="multipart/form-data" id="profile-photo-form"> {# Add an ID to the form #}
+          <div class="photo-upload-section">
+            <div class="photo-and-info-row">
+              <div class="avatar-display">
+                {% if profile_data.profile_pic_id %}
+                  <img
+                    id="profile-avatar"
+                    src="{{ url_for('serve_photo', photo_id=profile_data.profile_pic_id) }}"
+                    alt="Profile Avatar"
+                  />
+                {% else %}
+                  <img
+                    id="profile-avatar"
+                    src="{{ url_for('static', filename='images/icon.png') }}"
+                    alt="Default Avatar"
+                  />
+                {% endif %}
+              </div>
+              <div class="upload-info-group">
+                <p>Upload Passport Size Photo</p>
+                <input
+                  type="file"
+                  name="photo"
+                  accept="image/jpeg, image/png"
+                  id="file-upload-input"
+                  style="display: none;"
+                />
+                <button type="button" class="upload-button" id="change-photo-btn">
+                  Change Profile Photo
+                </button>
+                <p id="file-name-display-container">
+                  <span id="file-name-display">No file chosen</span>
+                </p>
+                {# preview-only remove button, hidden by default via JS #}
+                <button
+                  type="button"
+                  class="remove-photo-button"
+                  id="preview-remove-photo-btn"
+                  style="display: none;"
+                >
+                  Remove Photo
+                </button>
+              </div>
+            </div>
+            <p class="error-text">
+              Please ensure that the photo you upload is your true resemblance and is of a passport size.
+              Only JPG/PNG files less than 5MB permitted.
+            </p>
+
+            {# --- BUTTON ROW: Save + server-side Remove --- #}
+            <div style="margin-top:16px; display:flex; gap:10px;">
+              <button
+                type="submit"
+                name="action"
+                value="save"
+                class="save-button"
+              >
+                Save
+              </button>
+
+              {% if profile_data.profile_pic_id %}
+                <button
+                  type="button" {# Change type to button to prevent immediate submission #}
+                  name="action"
+                  value="remove"
+                  class="remove-photo-button"
+                  id="server-remove-photo-btn" {# Add an ID for the server-side remove button #}
+                  style="display:inline-block; margin-left:0;"
+                >
+                  Remove Photo
+                </button>
+              {% endif %}
+            </div>
+            {# --------------------------- #}
+
+          </div>
+        </form>
+
+        <div class="profile-view-card">
+            <h4 class="card-subheader">Personal Details</h4>
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Full Name</span>
+                    <span class="info-value">{{ profile_data.first_name or '' }} {{ profile_data.middle_name or '' }} {{ profile_data.last_name or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Date of Birth</span>
+                    <span class="info-value">{{ profile_data.dob or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Gender</span>
+                    <span class="info-value">{{ profile_data.gender or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Citizenship</span>
+                    <span class="info-value">{{ profile_data.citizenship or 'Not Provided' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-view-card">
+            <h4 class="card-subheader">Academic Details</h4>
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Student Level</span>
+                    <span class="info-value">{{ profile_data.student_level or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Registered Campus</span>
+                    <span class="info-value">{{ profile_data.student_campus or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Program</span>
+                    <span class="info-value">{{ profile_data.program or 'Not Provided' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-view-card verification-notice-card">
+            <h4 class="card-subheader notice-header">Please Verify Your Information</h4>
+            <p>If any of the information displayed in your profile is incorrect, please contact the Student Administrative Services Office at your earliest convenience. You may need to provide appropriate documentary evidence for corrections.</p>
+            <p>Email: <a href="mailto:sas@university.example.com">sas@university.example.com</a> (Replace with actual email)</p>
+            <p>Phone: +123-456-7890 (Replace with actual phone)</p>
+        </div>
+  
+      </div>
+
+      <div id="address-section" style="display: none;">
+        <h2 class="section-title">Address</h2>
+        {# START: PASTED FIELD SECTIONS from Jayshil's template for Mailing Address #}
+        <div class="profile-view-card">
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Street Address</span>
+                    <span class="info-value">{{ profile_data.address.street or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">City / Town</span>
+                    <span class="info-value">{{ profile_data.address.city or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">State / Province / Division</span>
+                    <span class="info-value">{{ profile_data.address.state or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Country</span>
+                    <span class="info-value">{{ profile_data.address.country or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Postal Code / Zip Code</span>
+                    <span class="info-value">{{ profile_data.address.postal_code or 'Not Provided' }}</span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <p class="form-text text-muted small">
+                    To update your address, please visit the Student Administrative Services office or contact them directly.
+                </p>
+            </div>
+        </div>
+
+      </div>
+
+      <div id="email-phone-section" style="display: none;">
+        <h2 class="section-title">Email &amp; Phone</h2>
+        {# START: PASTED FIELD SECTIONS from Jayshil's template for Contact Information #}
+        <div class="profile-view-card">
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">University Email Address</span>
+                    <span class="info-value">{{ profile_data.email or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Primary Phone Number</span>
+                    <span class="info-value">{{ profile_data.phone or 'Not Provided' }}</span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <p class="form-text text-muted small">
+                    Your university email is your official contact method. To update your phone number, please visit the Student Administrative Services office.
+                </p>
+            </div>
+        </div>
+        {# END: PASTED FIELD SECTIONS for Contact Information #}
+      </div>
+
+      <div id="emergency-contact-section" style="display: none;">
+        <h2 class="section-title">Emergency Contact</h2>
+        {# Keeping your original structure here as Jayshil's snippet did not include this specifically #}
+        {% for label, value in [
+            ('First Name','N/A'),
+            ('Middle Name','N/A'),
+            ('Last Name','N/A'),
+            ('Relationship','N/A'),
+            ('Contact Phone','N/A')
+          ]
+        %}
+          <div class="label-value-row">
+            <div class="label">{{ label }}</div>
+            <div class="value-container">{{ value }}</div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div id="passport-visa-section" style="display: none;">
+        <h2 class="section-title">Passport &amp; Visa</h2>
+        {# START: PASTED FIELD SECTIONS from Jayshil's template for Passport & Visa Information #}
+        <div class="profile-view-card">
+            <div class="profile-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Passport Number</span>
+                    <span class="info-value">{{ profile_data.passport_visa.passport_number or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Visa Status / Type</span>
+                    <span class="info-value">{{ profile_data.passport_visa.visa_status or 'Not Provided' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Visa Expiration Date</span>
+                    <span class="info-value">{{ profile_data.passport_visa.expiry_date or 'Not Provided' }}</span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <p class="form-text text-muted small">
+                    Ensure your passport and visa information is always up to date. For any changes or to submit new documents, please contact the International Student Support office or Student Administrative Services.
+                </p>
+            </div>
+        </div>
+        {# END: PASTED FIELD SECTIONS for Passport & Visa Information #}
+      </div>
+    </div>
+  </main>
+
+  {# Custom Confirmation Modal #}
+  <div id="confirmation-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h3 class="modal-title">Confirm Photo Removal</h3>
+      <p>Are you sure you want to remove your profile photo?</p>
+      <div class="modal-buttons">
+        <button id="confirm-remove-btn" class="modal-button confirm">Yes, Remove</button>
+        <button id="cancel-remove-btn" class="modal-button cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function selectSection(index) {
+      const sections = [
+        'personal-details-section',
+        'address-section',
+        'email-phone-section',
+        'emergency-contact-section',
+        'passport-visa-section'
+      ];
+      const navButtons = document.querySelectorAll('.nav-button');
+      sections.forEach((id, i) => {
+        document.getElementById(id).style.display = (i === index) ? 'block' : 'none';
+        navButtons[i].classList.toggle('selected', i === index);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const changeBtn = document.getElementById('change-photo-btn'),
+            previewRemoveBtn = document.getElementById('preview-remove-photo-btn'), // Updated ID
+            serverRemoveBtn = document.getElementById('server-remove-photo-btn'), // New ID for server-side button
+            inp = document.getElementById('file-upload-input'),
+            nameDisp = document.getElementById('file-name-display'),
+            avatar = document.getElementById('profile-avatar'),
+            photoForm = document.getElementById('profile-photo-form'); // Get the form
+
+      // Modal elements
+      const modal = document.getElementById('confirmation-modal'),
+            confirmBtn = document.getElementById('confirm-remove-btn'),
+            cancelBtn = document.getElementById('cancel-remove-btn');
+
+      // hide preview-only remove (already in CSS as well, but good to ensure)
+      if (previewRemoveBtn) previewRemoveBtn.style.display = 'none';
+
+      // open file picker
+      if (changeBtn) {
+        changeBtn.addEventListener('click', () => inp.click());
+      }
+
+      // preview newly selected file
+      if (inp) {
+        inp.addEventListener('change', () => {
+          if (!inp.files[0]) return;
+          nameDisp.textContent = inp.files[0].name;
+          const reader = new FileReader();
+          reader.onload = e => avatar.src = e.target.result;
+          reader.readAsDataURL(inp.files[0]);
+          if (previewRemoveBtn) previewRemoveBtn.style.display = 'block';
+        });
+      }
+
+      // preview-only “remove”
+      if (previewRemoveBtn) {
+        previewRemoveBtn.addEventListener('click', () => {
+          // This "remove" is just for clearing the preview, no server interaction here
+          inp.value = '';
+          nameDisp.textContent = 'No file chosen';
+          avatar.src = "{{ url_for('static', filename='images/icon.png') }}";
+          previewRemoveBtn.style.display = 'none';
+        });
+      }
+
+      // Handle server-side "Remove Photo" button click (shows custom modal)
+      if (serverRemoveBtn) {
+        serverRemoveBtn.addEventListener('click', (event) => {
+          event.preventDefault(); // Prevent default form submission
+          modal.style.display = 'flex'; // Show the modal
+        });
+      }
+
+      // Handle "Yes, Remove" click in the modal
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+          // Create a hidden input to signal the "remove" action
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'action';
+          hiddenInput.value = 'remove';
+          photoForm.appendChild(hiddenInput); // Add it to the form
+          photoForm.submit(); // Submit the form
+          modal.style.display = 'none'; // Hide modal
+        });
+      }
+
+      // Handle "Cancel" click in the modal
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          modal.style.display = 'none'; // Hide the modal
+        });
+      }
+    });
+  </script>
+{% endblock %}

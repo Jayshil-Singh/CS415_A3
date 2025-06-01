@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>USP Student Services – Contact Us</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/contact.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+  <div class="content-wrapper">
+    <main class="info-page">
+
+      <!-- Page title -->
+      <h1>Contact Us</h1>
+
+      <!-- Two-column grid -->
+      <div class="info-grid">
+
+        <!-- LEFT column -->
+        <div class="info-column">
+          <h2>Opening Hours</h2>
+          <p><strong>Monday–Thursday:</strong> 8:30 am – 4:00 pm</p>
+          <p><strong>Friday:</strong> 8:30 am – 3:00 pm</p>
+          <p><strong>Saturday, Sunday &amp; Public Holidays:</strong> Closed</p>
+
+          <h2>Telephony Service</h2>
+          <p><strong>Phone:</strong> +(679) 323 1000</p>
+          <p><strong>Toll Free:</strong> 1568 (from Digicel, Vodafone, Telecom Fiji)</p>
+        </div>
+
+        <!-- RIGHT column -->
+        <div class="info-column">
+          <h2>In Person</h2>
+          <p>
+            Student Services Center<br/>
+            (opposite USP Fitness Center)<br/>
+            Laucala Campus, Suva
+          </p>
+
+          <h2>By Post</h2>
+          <p>
+            Student Administrative Services (SAS)<br/>
+            The University of the South Pacific (USP)<br/>
+            Laucala Campus<br/>
+            Private Mail Bag<br/>
+            Suva, Fiji Islands
+          </p>
+
+          <h2>Email</h2>
+          <p>
+            <a href="mailto:contactus@usp.ac.fj">contactus@usp.ac.fj</a>
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+{% endblock %}

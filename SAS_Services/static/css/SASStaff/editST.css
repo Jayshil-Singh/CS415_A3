@@ -1,0 +1,392 @@
+/* static/css/SASStaff/editST.css */
+
+/* Page Title Styling */
+.page-title-container {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px; /* Increased space below title */
+}
+
+#page-main-title { /* This is the h1 "Manage Student Records" */
+    font-size: 1.8em; /* Consistent with other page titles */
+    font-weight: 600;
+    color: #00796b; /* Theme color */
+    margin: 0;
+}
+
+/* Loading Indicator Styles */
+.loading-indicator {
+    text-align: center;
+    padding: 40px 20px; /* Adjusted padding */
+    color: #555;
+    width: 100%;
+    max-width: 600px; /* Consistent max-width */
+    margin: 20px auto; /* Center it and add vertical margin */
+}
+
+.spinner {
+    border: 5px solid #e0e0e0; 
+    border-top: 5px solid #00796b; /* Theme teal color */
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    animation: spin 1.2s linear infinite;
+    margin: 0 auto 15px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* No Students Message */
+.no-students-message {
+    text-align: center;
+    padding: 30px 20px; /* Adjusted padding */
+    font-size: 1.1em;
+    color: #777;
+    background-color: #f9f9f9; /* Light background for the message block */
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    max-width: 700px; /* Consistent max-width */
+    margin: 20px auto; /* Center it */
+}
+
+/* Student Table Container and Wrapper */
+.student-table-container {
+    width: 100%;
+    max-width: 1140px; /* Max width for the table area, can match .container or be slightly larger */
+    margin-left: auto;   /* Center the table container */
+    margin-right: auto;  /* Center the table container */
+    margin-bottom: 30px; /* Space below the table */
+    /* overflow: hidden; /* This might not be needed if table-wrapper handles scroll */
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Enables horizontal scrolling for the table */
+    border: 1px solid #dee2e6; /* Slightly softer border */
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07); /* Softer shadow */
+}
+
+/* Table Styles */
+#students-table {
+    width: 100%;
+    min-width: 1000px; /* Minimum width to encourage scrolling if content is wide */
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+#students-table th,
+#students-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef; /* Lighter border for rows */
+    white-space: nowrap; 
+}
+
+#students-table th {
+    background-color: #f8f9fa; 
+    font-weight: 600;
+    color: #495057; /* Darker grey for header text */
+    position: sticky; 
+    top: 0; 
+    z-index: 10; /* Ensure header stays above table content when scrolling table */
+    /* box-shadow: inset 0 -2px 0 #00796b; /* Optional: bottom border for sticky header */
+}
+
+#students-table tbody tr:nth-child(even) {
+    background-color: #fcfcfc; /* Subtle striping for readability */
+}
+#students-table tbody tr:hover {
+    background-color: #e9ecef; /* Hover effect for rows */
+}
+
+#students-table td:last-child { /* Actions column */
+    text-align: center;
+    white-space: nowrap; /* Prevent action buttons from wrapping */
+}
+
+/* Action Buttons in Table */
+.action-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 8px; /* Slightly more padding */
+    margin: 0 4px; /* More space between buttons */
+    font-size: 20px; 
+    color: #555;
+    transition: color 0.2s, transform 0.1s ease;
+    border-radius: 4px; /* Slight rounding for hover effect */
+}
+.action-button:hover {
+    transform: scale(1.1);
+}
+
+.action-button.edit-btn { /* Specific class from your HTML */
+    color: #007bff; /* Blue for edit */
+}
+.action-button.edit-btn:hover {
+    color: #0056b3; 
+}
+
+.action-button.delete-btn { /* Specific class from your HTML */
+    color: #dc3545; /* Red for delete */
+}
+.action-button.delete-btn:hover {
+    color: #c82333; 
+}
+
+
+/* Modal Styles (General for this page, ensure consistency with global modal styles if any) */
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.55);
+    display: none; /* JS toggles this to flex */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* High z-index */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    backdrop-filter: blur(3px); /* Optional frosted glass */
+}
+.modal.active { /* JS should add this class to show */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    width: 90%;
+    max-width: 600px; /* Default max-width for modals on this page */
+    text-align: left; /* Default for form content */
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    overflow-y: auto; /* Allow modal content to scroll if it's too tall */
+    max-height: 90vh; /* Prevent modal from being taller than viewport */
+}
+.modal.active .modal-content {
+    transform: scale(1);
+}
+
+/* Specific for the edit modal if it needs to be wider for the form */
+.edit-modal-content {
+    max-width: 750px; /* Wider for the edit form with multiple columns */
+}
+
+.modal-content h3 { /* For modal titles like #edit-modal-title */
+    margin-top: 0;
+    margin-bottom: 20px; /* More space below title */
+    font-size: 1.5em; /* Larger modal title */
+    color: #00796b; /* Theme color */
+    text-align: center; /* Center modal title */
+}
+.modal-content p { /* For messages in confirmation dialogs */
+    margin-bottom: 25px;
+    font-size: 1em;
+    color: #555;
+    line-height: 1.6;
+    text-align: center; /* Center paragraph text in confirmation modals */
+}
+
+/* Form structure within modal (reusing from registerST.css for consistency) */
+.modal-content fieldset {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+.modal-content legend {
+    font-weight: 600;
+    color: #004d40;
+    padding: 0 8px;
+    font-size: 1.1em;
+}
+.modal-content .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px 20px; /* row-gap column-gap */
+    margin-bottom: 15px;
+}
+.modal-content .form-row:last-child { margin-bottom: 0; }
+
+.modal-content .form-group {
+    flex: 1 1 calc(50% - 10px); /* Two columns */
+    display: flex;
+    flex-direction: column;
+    min-width: 200px; /* Min width for inputs */
+}
+.modal-content label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #444;
+    font-size: 0.9em;
+}
+.modal-content label .required { color: #d32f2f; font-weight: bold; }
+
+.modal-content input[type="text"],
+.modal-content input[type="tel"],
+.modal-content input[type="date"],
+.modal-content select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 0.95em;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.modal-content input[type="text"]:focus,
+.modal-content input[type="tel"]:focus,
+.modal-content input[type="date"]:focus,
+.modal-content select:focus {
+    border-color: #00796b;
+    box-shadow: 0 0 0 0.2rem rgba(0, 121, 107, 0.25);
+    outline: none;
+}
+.modal-content .validation-error {
+    display: block; color: #d32f2f; font-size: 0.8em; margin-top: 4px; min-height: 1.1em;
+}
+.modal-content input.invalid, .modal-content select.invalid { border-color: #d32f2f !important; }
+.modal-content input.invalid:focus, .modal-content select.invalid:focus { box-shadow: 0 0 0 0.2rem rgba(211, 47, 47, 0.25) !important; }
+
+
+.modal-actions { /* For buttons inside modals */
+    margin-top: 25px; /* More space above buttons */
+    display: flex;
+    justify-content: flex-end; 
+    gap: 12px; /* Space between modal buttons */
+    padding-top: 15px;
+    border-top: 1px solid #eee; /* Separator line */
+}
+
+.dialog-button { /* Base for modal buttons */
+    padding: 10px 22px; /* Adjusted padding */
+    font-size: 0.95em;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.15s ease;
+    min-width: 100px;
+}
+.dialog-button:active { transform: translateY(1px); }
+
+/* Specific modal button classes (ensure these match your HTML or use general .btn-primary etc.) */
+.dialog-button.button-primary, /* From your HTML */
+.dialog-button.btn.btn-primary { /* If using general button classes */
+    background-color: #00796b; /* Teal */
+    color: white;
+}
+.dialog-button.button-primary:hover,
+.dialog-button.btn.btn-primary:hover {
+    background-color: #00695c; /* Darker Teal */
+}
+
+.dialog-button.btn.btn-secondary { /* For Cancel buttons */
+    background-color: #6c757d; /* Grey */
+    color: white;
+}
+.dialog-button.btn.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.dialog-button.danger, /* For Delete button */
+.dialog-button.btn.btn-danger {
+    background-color: #dc3545; 
+    color: white;
+}
+.dialog-button.danger:hover,
+.dialog-button.btn.btn-danger:hover {
+    background-color: #c82333;
+}
+
+
+/* Snackbar Styles */
+#snackbar {
+    visibility: hidden;
+    min-width: 280px;
+    background-color: #323232; /* Darker snackbar */
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 16px;
+    position: fixed;
+    z-index: 10001; /* Above everything */
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 1em;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+    opacity: 0; /* Start fully transparent for fadein */
+    transition: opacity 0.5s, bottom 0.5s; /* Smooth transition for fade and position */
+}
+
+#snackbar.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px; /* Slide up a bit more */
+    /* JS will handle hiding it after a timeout */
+}
+/* Remove keyframe animations if using JS for timeout and CSS for fade */
+
+
+/* Responsive adjustments */
+@media (max-width: 1024px) { /* Adjust breakpoint for when table needs more help */
+    #students-table {
+        min-width: 800px; /* Reduce min-width on smaller desktops/large tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title-container h1 { /* Was #page-main-title, now h1 */
+        font-size: 1.5em; /* Adjusted */
+    }
+    #students-table th,
+    #students-table td {
+        padding: 10px 8px;
+        font-size: 0.85em;
+    }
+    .action-button {
+        font-size: 18px;
+        margin: 0 2px; /* Tighter spacing for action buttons */
+    }
+    .modal-content.edit-modal-content { /* Edit form modal content */
+        max-width: 95%; /* Allow it to be wider on tablets */
+        padding: 20px;
+    }
+    .modal-content .form-row {
+        flex-direction: column; /* Stack form groups in modal */
+        gap: 0;
+        margin-bottom: 0;
+    }
+    .modal-content .form-group {
+        flex-basis: 100%;
+        min-width: unset;
+        margin-bottom: 15px;
+    }
+}
+@media (max-width: 480px) {
+    .modal-content {
+        padding: 20px 15px;
+    }
+    .modal-actions {
+        flex-direction: column; /* Stack modal buttons */
+        gap: 10px;
+    }
+    .modal-actions .dialog-button {
+        width: 100%; /* Full width modal buttons */
+    }
+}

@@ -1,0 +1,7 @@
+
+Flask==3.0.*
+Flask-SQLAlchemy==3.1.*
+Flask-Cors==4.*
+python-dotenv==1.*
+PyJWT==2.*
+pandas==2.*        # only needed for data loading script

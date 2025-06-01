@@ -1,0 +1,254 @@
+/* static/css/SAdmin/Remove.css */
+
+/* Main container for this specific page, assuming it's within the .page-content-wrapper from base.html */
+.remove-staff-main {
+    /* Styles from your 'main' selector, applied here more specifically */
+    width: 100%; /* Takes full width of its parent (likely .container or .page-content-wrapper) */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* This will help center block children if they don't have margin:auto */
+    padding-bottom: 20px; /* Add some space at the bottom */
+}
+
+.page-title-container {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 25px; /* Space below title */
+}
+
+#page-title { /* Assuming this ID is used for the "View & Remove Users" heading */
+    font-size: 1.8em; /* Adjust as needed */
+    color: #333; /* Or your theme's heading color */
+    font-weight: 600;
+    margin: 0;
+}
+
+.toggle-buttons-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px; /* Increased space */
+    border: 1px solid #ccc; /* Optional: container for buttons */
+    border-radius: 8px;
+    padding: 5px;
+    background-color: #f9f9f9; /* Light background for the button group */
+    max-width: fit-content; /* Make container only as wide as its content */
+    margin-left: auto; /* Center the button group */
+    margin-right: auto; /* Center the button group */
+}
+
+.toggle-button {
+    padding: 10px 20px; /* Slightly adjusted padding */
+    border: 1px solid transparent; /* Start with transparent border */
+    border-radius: 6px; /* Slightly less rounded to fit inside container */
+    font-size: 0.95em; /* Slightly smaller font */
+    font-weight: 500; /* Medium weight */
+    cursor: pointer;
+    margin: 0 4px; /* Space between buttons */
+    transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    min-width: 100px; /* Ensure buttons have a decent minimum width */
+    text-align: center;
+}
+
+.toggle-button.selected {
+    background-color: #00796b; /* Your teal variant */
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 121, 107, 0.4); /* Shadow with a hint of the button color */
+    border-color: #00695c; /* Darker border for selected state */
+}
+
+.toggle-button:not(.selected) {
+    background-color: #f0f0f0; /* Lighter grey for non-selected */
+    color: #444; /* Darker text for better contrast */
+    border-color: #d0d0d0; /* Subtle border for non-selected */
+}
+.toggle-button:not(.selected):hover {
+    background-color: #e0e0e0; /* Slightly darker on hover for non-selected */
+    border-color: #c0c0c0;
+}
+
+
+.list-container {
+    width: 100%;
+    max-width: 700px; /* Adjusted max-width for better centering, feel free to change */
+    margin-left: auto;   /* Key for centering */
+    margin-right: auto;  /* Key for centering */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1); /* Slightly enhanced shadow */
+    overflow-y: auto; /* For scrollable list if it grows */
+    padding: 10px; /* Padding inside the container, around the list items */
+}
+
+.list-item {
+    padding: 18px 20px; /* Increased padding for better spacing */
+    border-bottom: 1px solid #f0f0f0; /* Lighter border */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+.list-item:hover {
+    background-color: #f9f9f9; /* Subtle hover for list items */
+}
+
+.list-item:last-child {
+    border-bottom: none;
+}
+
+.item-details {
+    flex-grow: 1; /* Allow details to take available space */
+    margin-right: 15px; /* Space between details and delete button */
+}
+
+.item-details h3 {
+    margin: 0 0 6px 0; /* Adjusted margin */
+    font-size: 1.15em; /* Slightly larger name */
+    color: #00796b; /* Use theme color for name */
+    font-weight: 500;
+}
+
+.item-details p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #555;
+    line-height: 1.5; /* Improved line height for multi-line details */
+    white-space: pre-line;
+}
+.item-details p:not(:last-child) {
+    margin-bottom: 4px; /* Space between detail lines */
+}
+
+
+.delete-button {
+    background-color: transparent;
+    border: none;
+    color: #e53935; /* Slightly less harsh red */
+    font-size: 1.5em; /* Make icon a bit larger */
+    cursor: pointer;
+    padding: 8px; /* Increase clickable area */
+    border-radius: 50%; /* Make it circular for icon buttons */
+    transition: color 0.2s ease, background-color 0.2s ease;
+    display: flex; /* For centering icon if needed */
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-button:hover {
+    color: #c62828; /* Darker Red */
+    background-color: #ffebee; /* Very light red background on hover */
+}
+.delete-button .material-icons-outlined, /* If using an icon font */
+.delete-button .material-icons {
+    font-size: inherit; /* Make icon font size same as button's font-size */
+}
+
+
+.empty-list-message {
+    text-align: center;
+    padding: 30px 20px; /* More padding */
+    font-size: 1.05em; /* Adjusted size */
+    font-weight: 500;
+    color: #777;
+    background-color: #f9f9f9; /* Light background for message area */
+    border-radius: 8px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 700px; /* Match list-container */
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+/* Modal Styles (Confirm Dialog) */
+.modal { /* This class is on your confirmation-dialog div */
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.55); /* Slightly darker overlay */
+    display: flex; /* JS will toggle this from 'none' to 'flex' */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Ensure it's on top of other page content, but below header dropdown if any conflict */
+    opacity: 0; /* Start hidden for transition */
+    visibility: hidden; /* Start hidden for transition */
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Fade out */
+}
+.modal.active { /* Add this class with JS to show modal */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s linear 0s; /* Fade in */
+}
+
+
+.modal-content {
+    background-color: white;
+    padding: 25px 30px; /* More padding */
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25); /* Softer, larger shadow */
+    width: 90%;
+    max-width: 420px; /* Slightly wider for comfort */
+    text-align: center;
+    transform: scale(0.95); /* Start slightly smaller for transition */
+    transition: transform 0.3s ease;
+}
+.modal.active .modal-content {
+    transform: scale(1); /* Scale to full size when active */
+}
+
+
+.modal-content h2 { /* This is #dialog-title */
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+    color: #333;
+}
+.modal-content p { /* This is #dialog-message */
+    margin-bottom: 25px;
+    font-size: 1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+    gap: 10px; /* Space between buttons */
+}
+
+.dialog-button { /* Base for #cancel-button and #remove-confirm-button */
+    padding: 10px 20px; /* Generous padding */
+    border: 1px solid transparent; /* Base border */
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500; /* Medium weight */
+    font-size: 0.95em;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    min-width: 90px; /* Ensure minimum width */
+    text-align: center;
+}
+
+#cancel-button { /* Specific styling for Cancel */
+    background-color: #f0f0f0; /* Light grey */
+    color: #444;
+    border-color: #ddd;
+}
+#cancel-button:hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.dialog-button.remove { /* For Remove Confirm button */
+    background-color: #e53935; /* Danger red */
+    color: white;
+    border-color: #d32f2f;
+}
+.dialog-button.remove:hover {
+    background-color: #c62828; /* Darker red on hover */
+    border-color: #b71c1c;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}

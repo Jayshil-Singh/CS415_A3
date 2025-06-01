@@ -1,0 +1,108 @@
+{# templates/SASStaff/gradeRE.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>Grade Recheck Applications | SAS Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/gradeRE.css') }}">
+{% endblock %}
+
+{% block header %}
+    {{ super() }}
+{% endblock %}
+
+{% block body_class %}grade-recheck-page{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="page-title-container">
+        <h1>Grade Recheck Applications</h1>
+    </div>
+
+    <div id="loading-indicator" class="loading-indicator" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading applications...</p>
+    </div>
+
+    <div id="no-applications-message" class="no-applications-message" style="display: none;">
+        <p>No grade recheck applications found at this time.</p>
+    </div>
+
+    <div id="applications-table-container" class="applications-table-container">
+        <div class="table-wrapper">
+            <table id="grade-recheck-table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Campus</th>
+                        <th>Course Code</th>
+                        <th>Coordinator's Name</th>
+                        <th>Receipt Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="applications-table-body">
+                    {% if applications %}
+                        {% for app_item in applications %}
+                        <tr>
+                            <td>{{ app_item.student_id }}</td>
+                            <td>{{ app_item.first_name }}</td>
+                            <td>{{ app_item.last_name }}</td>
+                            <td>{{ app_item.campus }}</td>
+                            <td>{{ app_item.course_code }}</td>
+                            <td>{{ app_item.coordinator_name }}</td>
+                            <td>
+                                {% if app_item.receipt_image_url %}
+                                <a href="{{ app_item.receipt_image_url }}" target="_blank" class="receipt-image-link">
+                                    <img src="{{ app_item.receipt_image_url }}" alt="Receipt for {{ app_item.student_id }}" class="receipt-thumbnail">
+                                </a>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="action-button approve-btn" data-id="{{ app_item.student_id }}" data-course="{{ app_item.course_code }}" aria-label="Approve recheck for {{ app_item.student_id }}">
+                                    <span class="material-icons-outlined">check_circle</span> Approve
+                                </button>
+                                <button class="action-button reject-btn" data-id="{{ app_item.student_id }}" data-course="{{ app_item.course_code }}" aria-label="Reject recheck for {{ app_item.student_id }}">
+                                    <span class="material-icons-outlined">cancel</span> Reject
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" style="text-align:center;">No applications to display.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# NEW Modal for Rejection Information #}
+    <div id="rejection-info-modal" class="modal" style="display:none;" role="dialog" aria-labelledby="rejection-info-modal-title" aria-modal="true">
+        <div class="modal-content">
+            <button class="modal-close-button" aria-label="Close modal">&times;</button>
+            <h3 id="rejection-info-modal-title">Action Required</h3>
+            <p id="rejection-info-message">Please email the student (ID: <span id="rejection-modal-student-id"></span> for course <span id="rejection-modal-course-code"></span>) to inform them that their grade recheck application has been processed and their grade has not changed.</p>
+            <div class="modal-actions">
+                <button type="button" id="rejection-info-ok-btn" class="dialog-button btn btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+</div> {# End .container #}
+{% endblock %}
+
+{% block footer %}
+    {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/SASStaff/gradeRE.js') }}"></script>
+{% endblock %}

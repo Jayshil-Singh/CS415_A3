@@ -1,0 +1,136 @@
+{# templates/login.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>USP Student Services – Login</title>
+  <!-- Material Icons for the password-eye toggle -->
+  <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+    rel="stylesheet"
+  />
+  <!-- Page-specific CSS -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/login.css') }}"
+  />
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block body %}
+  <div class="login-container">
+    <div class="blur-background">
+      <div class="login-card">
+
+        <!-- USP Logo -->
+        <img
+          src="{{ url_for('static', filename='images/usp_logo.svg') }}"
+          alt="USP Logo"
+          class="usp-logo"
+        />
+
+        <!-- Welcome Text -->
+        <h1 class="welcome-text">Welcome</h1>
+        <p class="login-continue-text">Login to continue</p>
+
+        <!-- Error Banner (hidden until login fails) -->
+        <div id="errorBanner" class="error-banner" style="display:none;">
+          <span id="errorMsg"></span>
+          <button type="button" class="close-banner" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+          <!-- hidden role for now -->
+          <input type="hidden" id="role" value="student" />
+
+          <!-- Email -->
+          <input
+            id="email"
+            type="email"
+            class="input-field"
+            placeholder="Student Email"
+            required
+          />
+
+          <!-- Password + toggle -->
+          <div class="password-wrapper">
+            <input
+              id="password"
+              type="password"
+              class="input-field password-field"
+              placeholder="Password"
+              required
+            />
+            <button
+              type="button"
+              id="togglePassword"
+              class="toggle-password"
+              aria-label="Show or hide password"
+            >
+              <span class="material-icons-outlined" id="toggleIcon">
+                visibility_off
+              </span>
+            </button>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="login-button">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline JS: toggle eye, handle JSON login, show/hide banner -->
+  <script>
+    // Close error banner when × clicked
+    document.querySelector('.close-banner').addEventListener('click', () => {
+      document.getElementById('errorBanner').style.display = 'none';
+    });
+
+    // Toggle password field visibility
+    document.getElementById('togglePassword').addEventListener('click', () => {
+      const pwd  = document.getElementById('password');
+      const icon = document.getElementById('toggleIcon');
+      const hidden = pwd.type === 'password';
+      pwd.type = hidden ? 'text' : 'password';
+      icon.textContent = hidden ? 'visibility' : 'visibility_off';
+    });
+
+    // Submit login via JSON POST
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const role     = document.getElementById('role').value;
+      const banner   = document.getElementById('errorBanner');
+      const msg      = document.getElementById('errorMsg');
+
+      // reset banner
+      banner.style.display = 'none';
+      msg.textContent      = '';
+
+      try {
+        const resp = await fetch('{{ url_for("auth.login_post") }}', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, role })
+        });
+        const data = await resp.json();
+
+        if (resp.ok) {
+          // on success, redirect to home
+          window.location.href = '{{ url_for("home") }}';
+        } else {
+          // show error banner
+          msg.textContent = data.message || 'Invalid credentials, please verify and retry.';
+          banner.style.display = 'flex';
+        }
+      } catch {
+        msg.textContent = 'Network error, please try again.';
+        banner.style.display = 'flex';
+      }
+    });
+  </script>
+{% endblock %}

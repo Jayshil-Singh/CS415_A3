@@ -1,0 +1,261 @@
+.all-students-page .page-content-wrapper .container {
+    /* Styles specific to the container on this page, if needed */
+}
+
+.page-title-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-title-container h1 {
+    font-size: 1.8em;
+    color: #00796b; /* Theme color */
+    font-weight: 600;
+    margin: 0;
+}
+
+.loading-indicator,
+.no-enrollments-message { /* Combined for similar styling */
+    text-align: center;
+    padding: 30px 20px;
+    color: #555;
+    width: 100%;
+    max-width: 600px; /* Max width for these messages */
+    margin: 20px auto; /* Center the block */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px dashed #ddd; /* For no-enrollments-message */
+}
+.no-enrollments-message p, .loading-indicator p { 
+    margin:0; 
+    font-style: italic; 
+}
+.spinner { 
+    border: 5px solid #e0e0e0; 
+    border-top: 5px solid #00796b; 
+    border-radius: 50%; width: 40px; height: 40px;
+    animation: spin 1s linear infinite; margin: 0 auto 15px auto;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+
+.enrollments-table-container {
+    width: 100%;
+    max-width: 1140px; /* Adjust to fit your content well, often matches .container width */
+    margin-left: auto;
+    margin-right: auto; 
+    margin-bottom: 30px;
+}
+
+.table-controls-allST { 
+    margin-bottom: 20px; 
+    display: flex;
+    justify-content: flex-end; /* Align search to the right */
+}
+
+#search-input-allST { 
+    padding: 10px 15px; 
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    min-width: 300px; 
+    font-size: 0.95em; 
+}
+#search-input-allST:focus {
+    border-color: #00796b;
+    box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.25); 
+    outline: none;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto; 
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+}
+
+#enrollments-table-allST { 
+    width: 100%;
+    min-width: 900px; /* Adjust based on content to encourage scroll rather than squish */
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+#enrollments-table-allST th,
+#enrollments-table-allST td {
+    padding: 14px 18px; /* INCREASED PADDING for more space */
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle; 
+    /* white-space: nowrap; /* REMOVED from general td to allow wrapping */
+}
+
+#enrollments-table-allST th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap; /* Keep for headers */
+    position: sticky;
+    top: 0; 
+    z-index: 1; 
+}
+
+/* Allow specific columns to wrap if their content is long */
+#enrollments-table-allST td:nth-child(2), /* Full Name */
+#enrollments-table-allST td:nth-child(3) { /* Course Enrolled In */
+    white-space: normal; /* Allow wrapping */
+}
+
+
+/* Min-widths for columns to ensure they have adequate space */
+#enrollments-table-allST th:nth-child(1), /* Student ID */
+#enrollments-table-allST td:nth-child(1) {
+    min-width: 120px; 
+}
+#enrollments-table-allST th:nth-child(2), /* Full Name */
+#enrollments-table-allST td:nth-child(2) {
+    min-width: 200px; 
+}
+#enrollments-table-allST th:nth-child(3), /* Course Enrolled In */
+#enrollments-table-allST td:nth-child(3) {
+    min-width: 250px; 
+}
+#enrollments-table-allST th:nth-child(4), /* Enter Grade */
+#enrollments-table-allST td:nth-child(4),
+#enrollments-table-allST th:nth-child(5), /* Change Grade */
+#enrollments-table-allST td:nth-child(5) {
+    min-width: 130px; 
+    text-align: center; 
+}
+
+
+#enrollments-table-allST tbody tr:nth-child(even) { background-color: #fdfdfd; }
+#enrollments-table-allST tbody tr:hover { background-color: #f1f3f5; }
+#enrollments-table-allST td.no-data-message { 
+    text-align: center; 
+    font-style: italic; 
+    color: #777; 
+    padding: 25px; 
+}
+
+.action-button {
+    background-color: transparent;
+    border: 1px solid #ced4da; 
+    color: #495057; 
+    padding: 8px 14px; 
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none; 
+    display: inline-flex;
+    align-items: center;
+    gap: 6px; 
+    font-size: 0.9em; 
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+    line-height: 1.2; 
+}
+.action-button .material-icons-outlined {
+    font-size: 18px; 
+}
+
+.action-button.enter-grade-btn {
+    color: #00796b; 
+    border-color: #00796b;
+}
+.action-button.enter-grade-btn:hover {
+    background-color: #00796b;
+    color: white;
+    box-shadow: 0 1px 4px rgba(0, 121, 107, 0.3);
+}
+
+.action-button.change-grade-btn {
+    color: #ff8f00; 
+    border-color: #ff8f00;
+}
+.action-button.change-grade-btn:hover {
+    background-color: #ff8f00;
+    color: white;
+    box-shadow: 0 1px 4px rgba(255, 143, 0, 0.3);
+}
+
+/* Modal styles for change grade (if you add this functionality) */
+#change-grade-modal .modal-content {
+    max-width: 500px; 
+}
+#change-grade-modal .form-group {
+    margin-bottom: 15px;
+}
+#change-grade-modal label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+#change-grade-modal #new-grade-input {
+    width: 100%;
+    padding: 10px; 
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+#change-grade-modal .validation-error {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) { 
+    #enrollments-table-allST {
+        min-width: auto; /* Allow table to shrink more, rely on cell min-widths and wrapper scroll */
+    }
+    /* Adjust min-widths if needed for this breakpoint */
+    #enrollments-table-allST th:nth-child(1), td:nth-child(1) { min-width: 100px; }
+    #enrollments-table-allST th:nth-child(2), td:nth-child(2) { min-width: 180px; }
+    #enrollments-table-allST th:nth-child(3), td:nth-child(3) { min-width: 220px; }
+    #enrollments-table-allST th:nth-child(4), td:nth-child(4),
+    #enrollments-table-allST th:nth-child(5), td:nth-child(5) { min-width: 120px; }
+}
+
+@media (max-width: 768px) {
+    .page-title-container h1 {
+        font-size: 1.6em;
+    }
+    #enrollments-table-allST th,
+    #enrollments-table-allST td {
+        padding: 10px 12px; 
+        font-size: 0.88em; 
+    }
+    .action-button {
+        padding: 6px 10px; 
+        font-size: 0.85em; 
+    }
+    .action-button .material-icons-outlined {
+        font-size: 17px;
+    }
+    .table-controls-allST {
+        justify-content: center; 
+        margin-bottom: 15px;
+    }
+    #search-input-allST {
+        width: 90%; 
+        min-width: unset; 
+        padding: 10px;
+    }
+}
+@media (max-width: 576px) {
+    /* On very small screens, you might want action buttons to stack or icons only */
+    .action-button span:not(.material-icons-outlined) { 
+        /* display: none; */ /* Uncomment to hide text and only show icons */
+    }
+    .action-button .material-icons-outlined {
+        /* margin-right: 0; */ /* Remove margin if text is hidden */
+    }
+    #enrollments-table-allST th,
+    #enrollments-table-allST td {
+        padding: 8px 8px; /* Further reduce padding */
+        font-size: 0.82em;
+    }
+}

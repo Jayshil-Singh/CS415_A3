@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>Holds &amp; Student Access</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/holds&studentAccess.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+<main class="holds-page">
+  <div class="holds-card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      Holds &amp; Student Access
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body">
+
+      <!-- 3.1 View Student Hold -->
+      <section class="hold-section">
+        <h2>Account Holds</h2>
+        <div class="hold-status">
+          <span class="material-icons-outlined hold-icon">
+            block
+          </span>
+          <div class="hold-details">
+            <p class="status">On Hold: Tuition Not Paid</p>
+            <p class="reason">
+              Reason: Semester fees overdue since 2025-06-01.
+            </p>
+            <p class="unavailable-label">Services Unavailable:</p>
+            <ul class="unavailable-list">
+              <li>Course Enrollment</li>
+              <li>Transcript Requests</li>
+              <li>Library Access</li>
+              <li>Financial Aid Applications</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+{% endblock %}

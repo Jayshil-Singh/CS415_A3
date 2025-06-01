@@ -1,0 +1,7 @@
+<semesters>
+    <semester semesterName="Semester1" />
+    <semester semesterName="Semester2" />
+    <semester semesterName="Trimester1" />
+    <semester semesterName="Trimester2" />
+    <semester semesterName="Trimester3" />
+</semesters>

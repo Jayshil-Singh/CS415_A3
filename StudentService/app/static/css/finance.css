@@ -1,0 +1,143 @@
+/*─────────────────────────────────────────────────────────────────
+  1) Page & card container
+─────────────────────────────────────────────────────────────────*/
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+ main.finance-page {
+   background-color: #F6F0FB;
+   padding: 0.3rem;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   min-height: 75vh;
+ }
+
+ .finance-card {
+   width: 100%;
+   max-width: 1040px;
+   flex: 1;                  /* ← allow the card to grow vertically */
+   background: #FFFFFF;
+   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+   border-radius: 0;
+   overflow: hidden;
+   display: flex;
+   flex-direction: column;
+ }
+
+
+/*─────────────────────────────────────────────────────────────────
+  2) Card header
+─────────────────────────────────────────────────────────────────*/
+.card-header {
+  background-color: #082D57;
+  color: #FFFFFF;
+  padding: 0.75rem 1rem;
+  font-size: 1.125rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  3) Collapsible sections
+─────────────────────────────────────────────────────────────────*/
+.finance-section {
+  border-top: 1px solid #E0E0E0;
+}
+.finance-section summary {
+  background-color: #51a2fd;
+  color: #FFFFFF;
+  padding: 0.75rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+.finance-section summary::-webkit-details-marker {
+  display: none;
+}
+.finance-section[open] summary {
+  text-decoration: underline;
+}
+
+.section-content {
+  padding: 1rem;
+  flex: 1; /* fill vertical space if needed */
+}
+
+/*─────────────────────────────────────────────────────────────────
+  4) Empty state text
+─────────────────────────────────────────────────────────────────*/
+.empty-text {
+  font-style: italic;
+  color: #555;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  5) Table layout (desktop)
+─────────────────────────────────────────────────────────────────*/
+.finance-table-wrapper {
+  overflow-x: auto;
+}
+.finance-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.finance-table th,
+.finance-table td {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+.finance-table th {
+  background-color: #082D57;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  6) Card layout (mobile)
+─────────────────────────────────────────────────────────────────*/
+.finance-cards {
+  display: none;
+}
+.card-item {
+  background: #FFFFFF;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.card-item div {
+  margin-bottom: 0.5rem;
+}
+.action-row {
+  text-align: right;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  7) Action button
+─────────────────────────────────────────────────────────────────*/
+.btn-action {
+  background-color: #009999;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.btn-action:hover {
+  background-color: #007F7F;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  8) Responsive switch at 600px
+─────────────────────────────────────────────────────────────────*/
+@media (min-width: 600px) {
+  .finance-cards { display: none; }
+  .finance-table-wrapper { display: block; }
+}
+@media (max-width: 599px) {
+  .finance-cards { display: block; }
+  .finance-table-wrapper { display: none; }
+}

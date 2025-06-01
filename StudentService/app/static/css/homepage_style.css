@@ -1,0 +1,168 @@
+/*─────────────────────────────────────────────────────────────────
+  homepage_style.css (updated with fixed 4-column desktop grid)
+─────────────────────────────────────────────────────────────────*/
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light grey background */
+}
+
+.usp-logo img {
+    height: 40px; /* Adjust as needed */
+}
+
+/* Hero Section Styles */
+.hero-section {
+    position: relative;
+    width: 100%;
+    height: 370px; /* As in Flutter */
+    overflow: hidden;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.48);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 16px;
+    color: white;
+}
+
+.hero-content h1 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.hero-content p {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Features Grid Styles
+─────────────────────────────────────────────────────────────────*/
+.features-grid-container {
+    padding: 10px 6px;
+    background-color: #F6F0FB;
+}
+
+.features-grid {
+    display: grid;
+    /* always 4 columns on desktop, wrapping extras to next row */
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 2px;
+}
+
+.feature-tile {
+    background-color: #083057;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    min-height: 220px;
+}
+
+.feature-tile:hover {
+    background-color: #2c537a;
+}
+
+.feature-icon {
+    font-size: 80px;
+    margin-bottom: 12px;
+}
+
+.feature-label {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Tablet/Laptop breakpoint: ≤900px → 2×2 grid & scale hero text
+─────────────────────────────────────────────────────────────────*/
+@media (max-width: 900px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .hero-content h1 {
+    font-size: 22px;
+  }
+  .hero-content p {
+    font-size: 1.25rem;
+  }
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Small tablets/large phones: ≤600px → 2 across, smaller tiles & hero
+─────────────────────────────────────────────────────────────────*/
+@media (max-width: 600px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .feature-tile {
+    padding: 16px;
+    min-height: 180px;
+  }
+  .feature-icon {
+    font-size: 60px;
+  }
+  .feature-label {
+    font-size: 16px;
+  }
+  .hero-content h1 {
+    font-size: 20px;
+  }
+  .hero-content p {
+    font-size: 1rem;
+  }
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Phones: ≤400px → single column, extra small icons/text & hero
+─────────────────────────────────────────────────────────────────*/
+@media (max-width: 400px) {
+  .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .feature-tile {
+    padding: 12px;
+    min-height: 140px;
+  }
+  .feature-icon {
+    font-size: 48px;
+  }
+  .feature-label {
+    font-size: 14px;
+  }
+  .hero-content h1 {
+    font-size: 18px;
+  }
+  .hero-content p {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,114 @@
+{# templates/partials/header.html - Updated with Conditional Drawer Button #}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/header_style.css') }}"/>
+
+<header class="header">
+    <div class="header-left-section">
+        {% if show_nav_drawer_button %}
+            <button id="menu-button" class="main-menu-button material-icons" aria-label="Open Menu">menu</button>
+        {% else %}
+            {% set dynamic_home_url_default = url_for('sas_login') %}
+            {% if current_user and current_user.user_type == 'admin' %}
+                {% set dynamic_home_url_default = url_for('super_admin_home') %}
+            {% elif current_user and current_user.user_type == 'manager' %}
+                {% set dynamic_home_url_default = url_for('sas_manager_home') %}
+            {% elif current_user and current_user.user_type == 'staff' %}
+                {% set dynamic_home_url_default = url_for('sas_staff_home') %}
+            {% endif %}
+            <a href="{{ url_for('sas_staff_home') }}" class="logo-link">
+                <img src="{{ url_for('static', filename='images/usp_logo.svg') }}" alt="USP Logo" class="logo"/>
+            </a>
+        {% endif %}
+    </div>
+
+    {% set header_title_text = "SAS Portal" %} {# Default title #}
+    {% if current_user and current_user.user_type != 'Guest' %}
+        {% if current_user.user_type == 'admin' %}
+            {% set header_title_text = "Super Admin Dashboard" %}
+        {% elif current_user.user_type == 'manager' %}
+            {% set header_title_text = "SAS Manager Dashboard" %}
+        {% elif current_user.user_type == 'staff' %}
+            {% set header_title_text = "SAS Staff Dashboard" %}
+        {% endif %}
+    {% endif %}
+    
+    <div class="header-title-container">
+        <h1 class="header-title-text">{{ header_title_text }}</h1>
+    </div>
+    
+    <div class="header-right-section">
+        {% if current_user and current_user.user_type in ['admin', 'manager', 'staff'] %}
+        <div class="user-menu">
+            <span class="material-icons-outlined user-icon">person</span>
+            <ul class="dropdown">
+                <li class="dropdown-header">Hi, {{ current_user.username }} ({{ current_user.user_type.title() }})</li>
+                <li class="divider"></li>
+                <li>
+                    <a id="logout-link" href="{{ url_for('sas_logout') }}"> 
+                        <span class="material-icons-outlined mi">logout</span>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</header>
+
+<div id="logout-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-dialog small">
+    <p>Are you sure you want to log out?</p>
+    <div class="modal-actions">
+      <button id="cancel-logout" class="btn btn-secondary">Cancel</button>
+      <button id="confirm-logout" class="btn btn-primary">Log Out</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Script for user-menu dropdown and logout modal
+document.addEventListener('DOMContentLoaded', () => {
+    const userMenu = document.querySelector('.header .user-menu'); // More specific selector
+    if (userMenu) {
+        const icon = userMenu.querySelector('.user-icon');
+        if (icon) {
+            icon.addEventListener('click', e => {
+                e.stopPropagation();
+                userMenu.classList.toggle('open');
+            });
+        }
+        document.addEventListener('click', (e) => {
+            if (userMenu.classList.contains('open') && !userMenu.contains(e.target)) {
+                userMenu.classList.remove('open');
+            }
+        });
+    }
+
+    const modal = document.getElementById('logout-modal');
+    const logoutLink = document.getElementById('logout-link');
+    const btnCancel = document.getElementById('cancel-logout');
+    const btnConfirm = document.getElementById('confirm-logout');
+
+    if (logoutLink && modal && btnCancel && btnConfirm) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        });
+        btnCancel.addEventListener('click', () => {
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        });
+        btnConfirm.addEventListener('click', () => {
+            window.location.href = logoutLink.href;
+        });
+        // Close modal on overlay click
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 300);
+            }
+        });
+    }
+});
+</script>

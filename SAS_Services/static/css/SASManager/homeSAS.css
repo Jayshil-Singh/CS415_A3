@@ -1,0 +1,281 @@
+.sas-manager-dashboard .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center flex items (like status-container, dashboard-grid) horizontally */
+    width: 100%; /* Ensure the container takes available width from page-content-wrapper */
+}
+
+/* Page Title Styling (if you have a specific H1 for "Registration Control") */
+.page-title-container { /* Assuming you have this div from previous HTML structures */
+    text-align: center;
+    margin-bottom: 30px; /* More space below the title */
+}
+
+.page-title-container h1 { /* If you have an h1 like "Registration Control" */
+    font-size: 1.8em; /* Adjust as needed */
+    color: #2c3e50; /* Consistent heading color */
+    font-weight: 600;
+    margin: 0;
+}
+
+
+/* Registration Status Notifier Styling */
+.status-container {
+    width: 100%;
+    max-width: 650px; /* Or adjust to match dashboard-grid or desired width */
+    background-color: #ffffff;
+    color: #333;
+    padding: 18px 25px; /* Slightly more padding */
+    border-radius: 10px; /* Slightly more rounded */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07); /* Softer shadow */
+    margin-bottom: 30px; /* More space */
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+#registration-status {
+    margin: 0;
+    font-size: 1.15em; /* Slightly larger */
+    font-weight: 500;
+    color: #00796b; /* Default to open/positive color, JS can change this */
+    /* Text wrapping will happen naturally due to max-width of .status-container */
+    line-height: 1.5; /* Ensure good readability if it wraps */
+}
+/* Example: Style for "Closed" status if JS adds a class */
+.status-container.closed #registration-status {
+    color: #c62828; /* Red for closed status */
+}
+.status-container.open #registration-status {
+    color: #2e7d32; /* Green for open status */
+}
+
+
+/* Action Message Styling (if used) */
+.action-message {
+    width: 100%;
+    max-width: 650px; /* Match status container */
+    padding: 12px 20px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 1em;
+    border: 1px solid transparent;
+}
+.action-message.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-color: #a5d6a7;
+}
+.action-message.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border-color: #ef9a9a;
+}
+
+
+/* Dashboard Grid (for the "Open/Close Registration" tiles) */
+.dashboard-grid {
+    display: flex;
+    justify-content: center; /* This will center the tiles if they don't fill the max-width */
+    align-items: stretch; 
+    flex-wrap: wrap; 
+    gap: 30px; /* Increased gap for better separation */
+    width: 100%;
+    max-width: 700px; /* Max width for the grid containing the two tiles */
+    margin-left: auto; /* Explicitly center the grid container itself */
+    margin-right: auto; /* Explicitly center the grid container itself */
+    padding: 10px 0; 
+}
+
+/* Dashboard Tile Styling */
+.dashboard-tile {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08); /* Slightly more pronounced shadow */
+    padding: 30px; /* Increased padding */
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    border: 1px solid #e9ecef; /* Lighter border */
+    
+    width: calc(50% - 15px); /* (100% / 2 tiles) - (gap / 2) */
+    max-width: 320px; /* Max width for a single tile */
+    min-width: 250px; /* Min width to prevent too much squishing before wrapping */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    min-height: 230px; 
+    box-sizing: border-box;
+}
+
+.dashboard-tile:hover {
+    transform: translateY(-6px) scale(1.03); /* More noticeable hover */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Styles for DISABLED tile state */
+.dashboard-tile.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f8f9fa; /* Lighter background when disabled */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Less shadow */
+}
+.dashboard-tile.disabled:hover {
+    transform: none; /* No hover effect when disabled */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Keep shadow minimal */
+}
+.dashboard-tile.disabled .tile-icon .fas,
+.dashboard-tile.disabled .tile-title,
+.dashboard-tile.disabled .tile-description {
+    color: #adb5bd; /* Greyed out text/icons */
+}
+
+
+.tile-icon {
+    margin-bottom: 20px; /* More space */
+}
+
+.tile-icon .fas { /* Font Awesome icons */
+    font-size: 3.2em; 
+    color: #00796b; 
+}
+
+.tile-title {
+    font-size: 1.35em; /* Slightly larger */
+    font-weight: 600;
+    color: #343a40; /* Darker title */
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.tile-description {
+    font-size: 0.9em;
+    color: #6c757d; /* Softer grey for description */
+    line-height: 1.6;
+    margin: 0;
+    flex-grow: 1; 
+}
+
+
+/* Modal Styles (Copied from previous version, ensure consistency) */
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.55);
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+    backdrop-filter: blur(3px);
+}
+.modal.active { 
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    width: 90%;
+    max-width: 450px; 
+    text-align: center;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+.modal.active .modal-content {
+    transform: scale(1);
+}
+
+.modal-content h3 { 
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+    color: #333;
+    font-weight: 600;
+}
+.modal-content p { 
+    margin-bottom: 25px;
+    font-size: 1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end; 
+    gap: 10px;
+}
+
+.dialog-button {
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95em;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    min-width: 90px;
+    text-align: center;
+}
+
+.dialog-button.btn-secondary,
+#cancel-action-button { 
+    background-color: #f0f0f0;
+    color: #444;
+    border-color: #ddd;
+}
+.dialog-button.btn-secondary:hover,
+#cancel-action-button:hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.dialog-button.button-primary, 
+.dialog-button.btn-primary,    
+#confirm-action-button,
+#status-modal-ok-button {
+    background-color: #00796b; 
+    color: white;
+    border-color: #00695c;
+}
+.dialog-button.button-primary:hover,
+.dialog-button.btn-primary:hover,
+#confirm-action-button:hover,
+#status-modal-ok-button:hover {
+    background-color: #00695c; 
+    border-color: #005a4f;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+
+/* Responsive adjustments for tiles */
+@media (max-width: 650px) { /* Breakpoint when tiles might become too squished */
+    .dashboard-grid {
+        flex-direction: column; 
+        align-items: center; 
+        max-width: 350px; /* Adjust width for a single column of tiles */
+        gap: 20px; /* Adjust gap for vertical stacking */
+    }
+    .dashboard-tile {
+        flex-basis: auto; 
+        width: 100%; /* Make tiles full width of the new dashboard-grid max-width */
+        min-height: 200px; /* Adjust min height for stacked view */
+        max-width: 100%; /* Allow it to take full width of its parent grid */
+    }
+    .status-container, .action-message {
+        max-width: 350px; /* Match the stacked dashboard grid width */
+    }
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>All Programs</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        ul { list-style: none; padding-left: 0; }
+        li { margin: 8px 0; }
+        a { text-decoration: none; color: #0066cc; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Available Programs</h1>
+    {% if programs %}
+        <ul>
+        {% for prog in programs %}
+            <li>
+                <strong>{{ prog.program_name }}</strong> (ID: {{ prog.program_id }})  
+                ►  <a href="{{ url_for('catalog_bp.show_program_courses', program_id=prog.program_id) }}">
+                        View Courses &amp; Prerequisites
+                    </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No programs found in the database.</p>
+    {% endif %}
+    <p><a href="{{ url_for('index') }}">← Back to Home</a></p>
+</body>
+</html>

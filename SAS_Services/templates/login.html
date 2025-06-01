@@ -1,0 +1,116 @@
+{# templates/login.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>USP Student Services – SAS Login</title>
+
+  <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/login.css') }}"
+  />
+
+  <style>
+    .login-help {
+      font-size: 0.85em;
+      color: #666;
+      margin: 10px 0;
+      text-align: left;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+    .login-help ul {
+      margin: 5px 0;
+      padding-left: 20px;
+    }
+    .login-help li {
+      margin: 3px 0;
+    }
+  </style>
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block body %}
+  <div class="login-container">
+    <div class="blur-background">
+      <div class="login-card">
+        <img
+          src="{{ url_for('static', filename='images/usp_logo.svg') }}"
+          alt="USP Logo"
+          class="usp-logo"
+        />
+        <h1 class="welcome-text">SAS Portal</h1>
+        <p class="login-continue-text">Login to continue</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+
+        <form action="{{ url_for('sas_login') }}" method="post" class="login-form">
+          <div class="input-group">
+            <input
+              type="text"
+              name="identifier"
+              class="input-field"
+              placeholder="Enter your ID or student email"
+              required
+              aria-label="ID or Email"
+            />
+          </div>
+
+          <div class="input-group password-wrapper">
+            <input
+              type="password"
+              name="password"
+              class="input-field password-field"
+              placeholder="Password"
+              id="password"
+              required
+              aria-label="Password"
+            />
+            <button
+              type="button"
+              id="togglePassword"
+              class="toggle-password"
+              aria-label="Show or hide password"
+            >
+              <span class="material-icons-outlined" id="toggleIcon">
+                visibility_off
+              </span>
+            </button>
+          </div>
+
+          <button type="submit" class="login-button">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const pwdInput = document.getElementById('password');
+      const toggleBtn = document.getElementById('togglePassword');
+      const icon = document.getElementById('toggleIcon');
+
+      if (pwdInput && toggleBtn && icon) {
+        toggleBtn.addEventListener('click', () => {
+          const isHidden = pwdInput.type === 'password';
+          pwdInput.type = isHidden ? 'text' : 'password';
+          icon.textContent = isHidden ? 'visibility' : 'visibility_off';
+        });
+      }
+    });
+  </script>
+{% endblock %}

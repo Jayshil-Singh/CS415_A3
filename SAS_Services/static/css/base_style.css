@@ -1,0 +1,159 @@
+/* static/css/base_style.css */
+
+html {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e8eaf6; /* Main background for areas outside constrained content */
+    color: #333;
+    display: flex;
+    flex-direction: column; /* Stack header, main, footer vertically */
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Header Container: Takes full width. Background is applied by .header in header_style.css */
+#header-container {
+    width: 100%;
+    /* position: sticky, top, z-index are handled by .header itself if it needs to be sticky */
+}
+
+.flashed-messages-container {
+    /* Uses .container class for width/padding from your existing base_style.css if defined */
+    /* If .container isn't suitable, define width/margin here: */
+    /* width: 90%; */
+    /* max-width: 960px; */
+    /* margin: 20px auto; */
+    padding-top: 15px; /* Add some space if it's directly under the header */
+}
+
+.alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem; /* Or your theme's border-radius */
+    font-size: 0.95rem;
+    position: relative; /* For potential close button positioning */
+}
+
+/* Default category if none specified or if you use 'info' */
+.alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* For flash(message, 'success') */
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+/* For flash(message, 'error') or flash(message, 'danger') */
+.alert-error, 
+.alert-danger { 
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* For flash(message, 'warning') */
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+/* Styling for the optional close button */
+.alert .close-alert {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1;
+    color: inherit; /* Takes color from parent .alert-* */
+    opacity: 0.6;
+    cursor: pointer;
+    padding: 0;
+}
+
+.alert .close-alert:hover,
+.alert .close-alert:focus {
+    opacity: 0.9;
+    text-decoration: none;
+    outline: none;
+}
+
+/* Main Content Wrapper: Constrains width and centers content, allows vertical growth */
+.page-content-wrapper {
+    width: 100%; /* Takes full width initially */
+    max-width: 1200px; /* Adjust this to your preferred max content width */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 25px 20px; /* Padding for the content inside main */
+    flex-grow: 1; /* Allows main content to expand and push footer down */
+    box-sizing: border-box; /* Ensures padding doesn't add to max-width */
+}
+/* Special class for error pages if they need different main content styling */
+body.error-page-active .page-content-wrapper {
+    max-width: none;
+    padding: 0; /* Error page CSS will handle its own padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Footer Container: Takes full width. Background is applied by .custom-footer in footer_style.css */
+#footer-container {
+    width: 100%;
+}
+
+/* General Purpose Container (Optional, for use inside .page-content-wrapper) */
+.container {
+    width: 100%;
+    /* If you want .container to also have a max-width (often same as .page-content-wrapper or slightly less) */
+    /* max-width: 1140px; */
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    padding-left: 15px; /* Standard padding */
+    padding-right: 15px;
+}
+
+/* Basic Typography & Links */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.85rem; /* Slightly adjusted */
+    font-weight: 600;
+    color: #2c3e50;
+}
+p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+.material-icons,
+.material-icons-outlined {
+    vertical-align: middle;
+    line-height: 1;
+}

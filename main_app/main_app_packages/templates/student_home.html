@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Student Home - USP Student Portal{% endblock %}
+
+{% block content %}
+<div class="student-home-container">
+    <div class="welcome-section">
+        <h1>Welcome to the USP Student Portal</h1>
+        <p class="welcome-message">Your central hub for academic information and services.</p>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search for courses, announcements, or events...">
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="{{ url_for('main_bp.get_profile', student_id=current_user.id) }}" class="action-button interactive-card" data-href="{{ url_for('main_bp.get_profile', student_id=current_user.id) }}">
+                <i class="fas fa-user"></i>
+                <span>View Profile</span>
+            </a>
+            <a href="#" class="action-button interactive-card" data-href="#">
+                <i class="fas fa-book"></i>
+                <span>My Courses</span>
+            </a>
+            <a href="#" class="action-button interactive-card" data-href="#">
+                <i class="fas fa-calendar"></i>
+                <span>Academic Calendar</span>
+            </a>
+            <a href="#" class="action-button interactive-card" data-href="#">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Academic Progress</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="announcements-section">
+        <h2>Latest Announcements</h2>
+        <div class="announcement-list">
+            <div class="announcement-card interactive-card" data-href="#announcement1">
+                <h3>Welcome to the New Academic Year</h3>
+                <p>Important information about the start of the new academic year.</p>
+                <span class="date">August 1, 2024</span>
+                <div class="card-actions">
+                    <button class="btn btn-small" onclick="notifications.show('Announcement saved!', 'success')">
+                        <i class="fas fa-bookmark"></i> Save
+                    </button>
+                    <button class="btn btn-small" onclick="notifications.show('Announcement shared!', 'info')">
+                        <i class="fas fa-share"></i> Share
+                    </button>
+                </div>
+            </div>
+            <div class="announcement-card interactive-card" data-href="#announcement2">
+                <h3>Course Registration Open</h3>
+                <p>Register for your courses for the upcoming semester.</p>
+                <span class="date">July 15, 2024</span>
+                <div class="card-actions">
+                    <button class="btn btn-small" onclick="notifications.show('Announcement saved!', 'success')">
+                        <i class="fas fa-bookmark"></i> Save
+                    </button>
+                    <button class="btn btn-small" onclick="notifications.show('Announcement shared!', 'info')">
+                        <i class="fas fa-share"></i> Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="upcoming-events">
+        <h2>Upcoming Events</h2>
+        <div class="event-list">
+            <div class="event-card interactive-card" data-href="#event1">
+                <h3>Orientation Day</h3>
+                <p>Welcome event for new students</p>
+                <span class="date">August 15, 2024</span>
+                <div class="card-actions">
+                    <button class="btn btn-small" onclick="notifications.show('Event added to calendar!', 'success')">
+                        <i class="fas fa-calendar-plus"></i> Add to Calendar
+                    </button>
+                    <button class="btn btn-small" onclick="notifications.show('Event shared!', 'info')">
+                        <i class="fas fa-share"></i> Share
+                    </button>
+                </div>
+            </div>
+            <div class="event-card interactive-card" data-href="#event2">
+                <h3>Career Fair</h3>
+                <p>Meet potential employers and explore career opportunities</p>
+                <span class="date">September 20, 2024</span>
+                <div class="card-actions">
+                    <button class="btn btn-small" onclick="notifications.show('Event added to calendar!', 'success')">
+                        <i class="fas fa-calendar-plus"></i> Add to Calendar
+                    </button>
+                    <button class="btn btn-small" onclick="notifications.show('Event shared!', 'info')">
+                        <i class="fas fa-share"></i> Share
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student_home.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,170 @@
+/* static/css/SASStaff/displayST.css */
+
+.display-student-details-page .page-title-container {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.display-student-details-page .page-title-container h1 small {
+    display: block;
+    font-size: 0.6em;
+    color: #6c757d; /* Bootstrap text-muted color */
+    margin-top: 5px;
+}
+
+.detail-section {
+    margin-bottom: 25px; /* Increased spacing between sections */
+    padding: 20px;
+    background-color: #ffffff; /* Optional: card-like background for sections */
+    border: 1px solid #e0e0e0; /* Optional: light border for sections */
+    border-radius: 8px; /* Optional: rounded corners for sections */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Optional: subtle shadow */
+}
+
+.detail-section h3 {
+    margin-top: 0; /* Remove default top margin from h3 if it's the first child */
+    margin-bottom: 15px; /* Increased spacing below section titles */
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px; /* Increased padding below section titles */
+    font-size: 1.4em; /* Slightly larger section titles */
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px 25px; /* Increased column gap slightly */
+}
+
+.detail-item {
+    margin-bottom: 10px; /* Default spacing, grid gap will handle most */
+    display: flex; /* Use flex for better alignment of label and input/span */
+    flex-direction: column; /* Stack label above input/span */
+}
+
+.detail-item strong, 
+.detail-item label {
+    display: block;
+    color: #555;
+    margin-bottom: 5px; /* Increased spacing after label */
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Common styling for display spans, inputs, and selects */
+.detail-item span,
+.detail-item input,
+.detail-item select {
+    display: block;
+    width: 100%;
+    padding: 10px; /* Slightly increased padding */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 0.95rem; /* Consistent font size */
+    line-height: 1.5;
+}
+
+/* Styling for fields in display (readonly) mode */
+.detail-item input[readonly],
+.detail-item select[disabled] { /* Selects use disabled for non-edit mode */
+    background-color: #f8f9fa;
+    color: #495057;
+    border-color: #ced4da;
+    cursor: default;
+    /* -webkit-appearance: none; For custom styling of disabled selects if needed */
+    /* -moz-appearance: none; */
+    /* appearance: none; */
+}
+.detail-item input[readonly]:focus,
+.detail-item select[disabled]:focus {
+    outline: none; /* Remove focus outline for readonly/disabled fields */
+    box-shadow: none;
+}
+
+
+/* Styling for spans when not in edit mode (if you decide to use spans for display) */
+/* The current HTML uses inputs/selects directly and makes them readonly/disabled */
+.detail-item span.display-value { 
+    border: 1px solid transparent;
+    padding: 10px;
+    min-height: 40px; /* Match input height (padding + line-height approx) */
+    background-color: #e9ecef;
+    border-radius: 4px;
+    word-wrap: break-word; /* Ensure long text wraps */
+}
+
+.action-buttons-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    text-align: right; /* Aligns buttons to the right */
+}
+
+.action-buttons-footer .action-button {
+    margin-left: 10px; /* Space between buttons */
+}
+.action-buttons-footer .action-button:first-child {
+    margin-left: 0;
+}
+
+
+.validation-error {
+    color: #dc3545; /* Bootstrap danger color */
+    font-size: 0.8em;
+    margin-top: 4px;
+    display: block; /* Ensures it takes its own line */
+    min-height: 1em; /* Reserve space to prevent layout shifts */
+}
+
+input.invalid,
+select.invalid {
+    border-color: #dc3545 !important; /* Bootstrap danger color */
+    /* background-color: #fbe Nne; Optional: light red background */
+}
+input.invalid:focus,
+select.invalid:focus {
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); /* Bootstrap danger focus shadow */
+}
+
+/* Snackbar (if not already styled globally) */
+.snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1060; /* Above modals (typically 1050) */
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+}
+.snackbar.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+.snackbar.success { background-color: #28a745; /* Green for success */ }
+.snackbar.error { background-color: #dc3545; /* Red for error */ }
+
+/* Animations for snackbar */
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+@-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}

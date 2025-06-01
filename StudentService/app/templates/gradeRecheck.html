@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>Grade Recheck &amp; Notifications</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/gradeRecheck.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+<main class="grade-recheck-page">
+  <div class="grade-recheck-card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      Grade Recheck &amp; Notifications
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body">
+      <div class="sections-wrapper">
+
+        <!-- Grade Recheck Form -->
+        <section class="form-section">
+          <h2>Submit Grade Recheck</h2>
+          <form method="post" action="{{ url_for('grade_recheck') }}">
+            <label for="courses">Select Course(s)</label>
+            <select id="courses" name="courses" multiple required>
+              {% for course in courses %}
+                <option value="{{ course.id }}">
+                  {{ course.code }} — {{ course.name }}
+                </option>
+              {% endfor %}
+            </select>
+
+            <label for="reason">Reason for Recheck</label>
+            <textarea
+              id="reason"
+              name="reason"
+              rows="4"
+              placeholder="Explain why you believe your grade should be reviewed."
+              required
+            ></textarea>
+
+            <button type="submit" class="btn-submit">
+              Submit Request
+            </button>
+          </form>
+        </section>
+
+        <!-- Notifications Panel -->
+        <section class="notifications-section">
+          <h2>Notifications</h2>
+          <ul class="notification-list">
+            {% for note in notifications %}
+              <li class="notification-item {% if note.is_new %}new{% endif %}">
+                <span class="material-icons-outlined">
+                  {{ 'notification_important' if note.is_new else 'notifications' }}
+                </span>
+                <div class="notification-text">
+                  <strong>{{ note.course_code }}</strong>: {{ note.message }}
+                  {% if note.is_new %}
+                    <span class="badge">New</span>
+                  {% endif %}
+                </div>
+              </li>
+            {% else %}
+              <li class="no-notifications">
+                No notifications at this time.
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+{% endblock %}

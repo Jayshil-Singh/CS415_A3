@@ -1,0 +1,82 @@
+{# templates/view_transcript.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>Academic Transcript</title>
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/academicTranscript.css') }}"
+  />
+{% endblock %}
+
+{% block body %}
+<main class="transcript-page">
+  <div class="transcript-card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      Academic Transcript
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body">
+
+      <!-- Student Details (hard-coded for now) -->
+      <section class="student-info">
+        <h2>Student Details</h2>
+        <p><strong>Name:</strong> Alice Smith</p>
+        <p><strong>ID:</strong> 123456</p>
+        <p><strong>Program:</strong> Bachelor of Arts in Literature</p>
+      </section>
+
+      <!-- Transcript Table (hard-coded rows) -->
+      <section class="transcript-table-section">
+        <table class="transcript-table">
+          <thead>
+            <tr>
+              <th>Course Code</th>
+              <th>Course Name</th>
+              <th>Credits</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CS101</td>
+              <td>Introduction to Programming</td>
+              <td>3</td>
+              <td>A</td>
+            </tr>
+            <tr>
+              <td>MATH201</td>
+              <td>Calculus II</td>
+              <td>4</td>
+              <td>B+</td>
+            </tr>
+            <tr>
+              <td>ENG150</td>
+              <td>English Composition</td>
+              <td>3</td>
+              <td>A–</td>
+            </tr>
+            <tr>
+              <td>HIST210</td>
+              <td>World History</td>
+              <td>3</td>
+              <td>B</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Download Button -->
+      <div class="download-button-container">
+        <button type="button" class="btn-download">
+          Download Transcript (PDF)
+        </button>
+      </div>
+
+    </div>
+  </div>
+</main>
+{% endblock %}

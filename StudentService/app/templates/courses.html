@@ -1,0 +1,42 @@
+
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>USP Student Courses</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/courses.css') }}">
+{% endblock %}
+
+{% block body %}
+<main class="courses-page">
+  <div class="courses-card">
+    <div class="card-header">
+      Courses / Prerequisites
+    </div>
+    <div class="card-body">
+      {% for course in student_courses %}
+        <div class="course-entry">
+          <h3>
+            {{ course.title }} ({{ course.code }})
+            {% if course.code in completed_courses %}
+              <span class="badge badge-success">Completed</span>
+            {% else %}
+              <span class="badge badge-warning">Not Completed</span>
+            {% endif %}
+          </h3>
+          {% if course.code in prerequisite_map %}
+            <ul>
+              <strong>Prerequisites:</strong>
+              {% for prereq in prerequisite_map[course.code] %}
+                <li>{{ prereq }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p><em>No prerequisites</em></p>
+          {% endif %}
+        </div>
+        <hr>
+      {% endfor %}
+    </div>
+  </div>
+</main>
+{% endblock %}

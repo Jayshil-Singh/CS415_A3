@@ -1,0 +1,144 @@
+/*─────────────────────────────────────────────────────────
+  specialApplications.css — updated to remove gaps
+─────────────────────────────────────────────────────────*/
+
+/* 1) Reset & base font */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+/* 2) Main wrapper */
+main.special-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 75vh;
+  align-items: center;
+  background-color: #F6F0FB;
+  padding: 0.3rem;
+}
+
+/* 3) Card container */
+.special-card {
+  width: 100%;
+  max-width: 1040px;
+  background: #FFF;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+ 
+  display: flex;
+  flex-direction: column;
+}
+
+/* 4) Card header */
+.card-header {
+  background-color: #082D57;
+  color: #FFF;
+  padding: 0.75rem 1rem;
+  font-size: 1.125rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+/* 5) Remove top/bottom padding so first/last sections touch edges */
+.card-body {
+  padding: 0;
+}
+
+/* 6) Sections full-width + alternating backgrounds */
+/*    Only first two sections get a bottom margin */
+.grad-section,
+.compassionate-section {
+  width: 100%;
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+.resit-section {
+  width: 100%;
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
+  margin-bottom: 0;           /* no gap under last section */
+}
+.grad-section             { background-color: #E3F2FD; }
+.compassionate-section    { background-color: #FFF;    }
+.resit-section            { background-color: #E3F2FD; }
+
+/* 7) Section titles */
+.grad-section h2,
+.compassionate-section h2,
+.resit-section h2 {
+  margin-top: 0;
+  font-size: 1.125rem;
+  color: #083057;
+}
+
+/* 8) Standard field styling */
+.field {
+  margin-bottom: 16px;
+}
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #083057;
+  font-size: 1rem;
+}
+.field input[type="text"],
+.field select,
+.field textarea,
+.field input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* inline checkboxes */
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.checkbox-field input[type="checkbox"] {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+}
+
+/* 9) Two-column grid for Compassionate & Re-sit */
+.two-col-grid {
+  display: grid;
+  grid-template-columns: 2fr 2fr; /* tweak these ratios as desired */
+  gap: 24px;
+  margin-bottom: 16px;
+}
+@media (max-width: 800px) {
+  .two-col-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 10) Increase textarea height */
+.two-col-grid .field textarea {
+  min-height: 130px;   /* taller box */
+}
+
+/* 11) Buttons */
+.btn-submit {
+  background-color: #083057;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;  /* right-align */
+}
+.btn-submit:hover {
+  background-color: #062C47;
+}

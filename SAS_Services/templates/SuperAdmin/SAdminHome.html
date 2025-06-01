@@ -1,0 +1,68 @@
+{# templates/SuperAdmin/SAdminHome.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }} {# Includes head content from base.html #}
+    <title>Super Admin Dashboard | USP Student Services</title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/SuperAdmin/SAdHomepage.css') }}"
+    />
+    {# Material Icons are now expected to be fully handled by base.html #}
+    <style>
+        /* Page-specific CSS tweaks, if any */
+    </style>
+{% endblock %}
+
+{# Header and Footer are now handled by base.html using server-side includes.
+   These blocks can be empty or use {{ super() }} if base.html's blocks have default content
+   you wish to inherit alongside specific additions for this page.
+   If base.html's header/footer blocks directly include the partials,
+   then these blocks here don't strictly need {{ super() }} unless base.html
+   has other content in those blocks besides the include.
+#}
+{% block header %}
+    {{ super() }} {# This will render what's in base.html's header block (which includes partials/header.html) #}
+{% endblock %}
+
+{% block body %}
+<div class="container"> {# Ensure .container is styled appropriately in SAdHomepage.css or a global CSS #}
+    <div class="body-content"> 
+        <div class="dashboard-container">
+            <p class="welcome-text">Welcome, Super Admin!</p>
+            <div class="dashboard-grid">
+                <a href="{{ url_for('super_admin_remove_staff') }}" class="dashboard-card-link" aria-label="Remove Managers and Staffs">
+                    <div class="dashboard-card" role="link"> 
+                        <i class="material-icons card-icon">person_remove</i>
+                        <div class="card-title">Remove Managers and Staffs</div>
+                    </div>
+                </a>
+                </div>
+        </div>
+    </div>
+
+    <nav class="drawer" id="super-admin-drawer"> 
+        <div class="drawer-header">
+            <i class="material-icons drawer-icon">supervisor_account</i>
+            <h2 class="drawer-title">Super Admin Menu</h2>
+        </div>
+        <a href="{{ url_for('super_admin_remove_staff') }}" class="drawer-item-link" aria-label="Remove Managers and Staffs from menu">
+            <div class="drawer-item" role="link">  
+                <i class="material-icons drawer-item-icon">person_remove</i>
+                <span class="drawer-item-text">Remove Managers and Staffs</span>
+            </div>
+        </a>
+        </nav>
+</div>
+{% endblock %}
+
+{% block footer %}
+    {{ super() }} {# This will render what's in base.html's footer block (which includes partials/footer.html) #}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }} 
+    {# The loadHeaderAndFooter JavaScript function is REMOVED #}
+    {# Any page-specific JS for SAdminHome (e.g., drawer toggle) should be in SAdHomepage.js #}
+    <script src="{{ url_for('static', filename='js/SAdmin/SAdHomepage.js') }}"></script>
+{% endblock %}

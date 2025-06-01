@@ -1,0 +1,242 @@
+{# templates/SASStaff/displayST.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>Student Details | {{ student.first_name | default('Student') }} {{ student.last_name | default('Record') }} | SAS Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SASStaff/displayST.css') }}">
+{% endblock %}
+
+{% block header %}
+    {{ super() }}
+{% endblock %}
+
+{% block body_class %}display-student-details-page{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <div class="page-title-container">
+        <h1>
+            Student: <span id="student-header-name">{{ student.first_name | default('') }} {{ student.middle_name | default('') }} {{ student.last_name | default('Details') }}</span>
+            <small class="text-muted">(ID: <span id="student-header-id">{{ student.id | default('N/A') }}</span>)</small>
+        </h1>
+    </div>
+
+    {% if student %}
+    <form id="edit-student-details-form" novalidate>
+        <input type="hidden" name="studentId" value="{{ student.id }}">
+
+        <div class="student-details-content">
+            <div class="detail-section personal-details">
+                <h3>Personal Details</h3>
+                <div class="detail-grid">
+                    {# ... (FirstName, MiddleName, LastName, DOB, Gender, Citizenship) ... #}
+                    <div class="detail-item">
+                        <label for="edit-first-name">First Name <span class="required">*</span></label>
+                        <input type="text" id="edit-first-name" name="firstName" value="{{ student.first_name }}" readonly required>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-middle-name">Middle Name</label>
+                        <input type="text" id="edit-middle-name" name="middleName" value="{{ student.middle_name }}" readonly>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-last-name">Last Name <span class="required">*</span></label>
+                        <input type="text" id="edit-last-name" name="lastName" value="{{ student.last_name }}" readonly required>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-date-of-birth">Date of Birth <span class="required">*</span></label>
+                        <input type="date" id="edit-date-of-birth" name="dateOfBirth" value="{{ student.date_of_birth }}" readonly required>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-gender">Gender <span class="required">*</span></label>
+                        <select id="edit-gender" name="gender" disabled required>
+                            <option value="">Select Gender</option>
+                            {% for gender_val in all_genders %}
+                            <option value="{{ gender_val }}" {% if student.gender == gender_val %}selected{% endif %}>{{ gender_val }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-citizenship">Citizenship <span class="required">*</span></label>
+                        <input type="text" id="edit-citizenship" name="citizenship" value="{{ student.citizenship }}" readonly required>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-passport-number">Passport Number <span class="required">*</span></label>
+                        <input type="text" id="edit-passport-number" name="passportNumber" value="{{ student.passport_number }}" readonly required>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-visa-status">Visa Status</label>
+                        <input type="text" id="edit-visa-status" name="visaStatus" value="{{ student.visa_status if student.visa_status else 'N/A' }}" readonly placeholder="N/A if not applicable">
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-visa-expiry">Visa Expiry Date</label>
+                        <input type="date" id="edit-visa-expiry" name="visaExpiry" value="{{ student.visa_expiry }}" readonly>
+                        <span class="validation-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section contact-details">
+                <h3>Contact Information</h3>
+                <div class="detail-grid">
+                    {# ... (Address, Contact, Email) ... #}
+                     <div class="detail-item">
+                        <label for="edit-address">Address <span class="required">*</span></label>
+                        <input type="text" id="edit-address" name="address" value="{{ student.address }}" readonly required>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-contact">Contact Number <span class="required">*</span></label>
+                        <input type="tel" id="edit-contact" name="contact" value="{{ student.contact }}" placeholder="679-XXXXXXX" readonly required>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-email">Email <span class="required">*</span></label>
+                        <input type="email" id="edit-email" name="email" value="{{ student.email }}" readonly required>
+                        <span class="validation-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section academic-details">
+                <h3>Academic Details</h3>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <label for="edit-student-level">Student Level <span class="required">*</span></label>
+                        <select id="edit-student-level" name="studentLevel" disabled required>
+                            <option value="">Select Level</option>
+                             {% for level in all_student_levels %}
+                            <option value="{{ level }}" {% if student.student_level == level %}selected{% endif %}>{{ level }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-program-name">Program <span class="required">*</span></label>
+                        <select id="edit-program-name" name="programName" disabled required>
+                            <option value="">Select Program</option>
+                            {% for prog_name in all_programs %}
+                            <option value="{{ prog_name }}" {% if student.program_name == prog_name %}selected{% endif %}>{{ prog_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-campus-name">Campus <span class="required">*</span></label>
+                        <select id="edit-campus-name" name="campusName" disabled required>
+                            <option value="">Select Campus</option>
+                            {% for campus_name_opt in all_campuses %}
+                            <option value="{{ campus_name_opt }}" {% if student.campus_name == campus_name_opt %}selected{% endif %}>{{ campus_name_opt }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item">
+                        <label for="edit-program-type-name">Program Type <span class="required">*</span></label>
+                        <select id="edit-program-type-name" name="programTypeName" disabled required>
+                            <option value="">Select Program Type</option>
+                            {% for pt_name in all_program_types %}
+                            <option value="{{ pt_name }}" {% if student.program_type_name == pt_name %}selected{% endif %}>{{ pt_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="validation-error"></span>
+                    </div>
+
+                    {# NEW: Subprogram Fields (initially hidden, managed by JS) #}
+                    <div class="detail-item subprogram-group" id="edit-subprogram1-group" style="display: none;">
+                        <label for="edit-subprogram1">Subprogram 1 <span id="edit-subprogram1-required-asterisk" class="required" style="display: none;">*</span></label>
+                        <select id="edit-subprogram1" name="subprogram1" disabled>
+                            <option value="">Select Subprogram 1</option>
+                            {# Options will be populated by JS - assuming all_subprogrammes is available #}
+                            {% for sub_prog in all_subprogrammes %} {# Assuming 'all_subprogrammes' is passed from Flask #}
+                            <option value="{{ sub_prog }}" {% if student.subprogram1 == sub_prog %}selected{% endif %}>{{ sub_prog }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="validation-error"></span>
+                    </div>
+                    <div class="detail-item subprogram-group" id="edit-subprogram2-group" style="display: none;">
+                        <label for="edit-subprogram2">Subprogram 2 <span id="edit-subprogram2-required-asterisk" class="required" style="display: none;">*</span></label>
+                        <select id="edit-subprogram2" name="subprogram2" disabled>
+                            <option value="">Select Subprogram 2</option>
+                            {% for sub_prog in all_subprogrammes %} {# Assuming 'all_subprogrammes' is passed from Flask #}
+                            <option value="{{ sub_prog }}" {% if student.subprogram2 == sub_prog %}selected{% endif %}>{{ sub_prog }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="validation-error"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons-footer">
+             <button type="button" id="edit-student-details-btn" class="action-button dialog-button btn btn-secondary" data-studentid="{{ student.id }}">
+                <span class="material-icons">edit</span> Edit Details
+            </button>
+            <button type="submit" id="save-student-changes-btn" class="action-button dialog-button btn btn-primary" style="display: none;">
+                <span class="material-icons">save</span> Save Changes
+            </button>
+            <button type="button" id="cancel-edit-student-btn" class="action-button dialog-button btn btn-light" style="display: none;">
+                <span class="material-icons">cancel</span> Cancel
+            </button>
+            <button type="button" id="disable-student-btn" class="action-button dialog-button btn btn-danger" data-studentid="{{ student.id }}">
+                <span class="material-icons">no_accounts</span> Disable Student
+            </button>
+        </div>
+    </form>
+
+    {% else %}
+    <div class="alert alert-warning" role="alert">
+        Student details could not be found for the provided ID.
+    </div>
+    <a href="{{ url_for('sas_staff_edit_student') }}" class="btn btn-link">Back to Student Records</a>
+    {% endif %}
+
+    {# Snackbar and other Modals ... #}
+    <div id="snackbar" class="snackbar"></div>
+    <div id="disable-confirm-dialog" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Confirm Disable</h3>
+            <p>Are you sure you want to disable this student account?</p>
+            <div class="modal-actions">
+                <button type="button" class="dialog-button btn btn-secondary" data-action="cancel-disable">Cancel</button>
+                <button type="button" class="dialog-button btn btn-danger" data-action="confirm-disable">Confirm Disable</button>
+            </div>
+        </div>
+    </div>
+    <div id="save-changes-confirm-dialog" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3 id="save-changes-dialog-title">Confirm Changes</h3>
+            <p>Are you sure you want to save the changes?</p>
+            <div class="modal-actions">
+                <button type="button" id="cancel-save-action-btn" class="dialog-button btn btn-secondary">Cancel</button>
+                <button type="button" id="confirm-final-save-action-btn" class="dialog-button btn btn-primary">Confirm Save</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        const STUDENT_ID = "{{ student.id | default('', True) }}";
+        const ORIGINAL_STUDENT_DATA = {{ student | default({}, True) | tojson | safe }};
+        const ALL_PROGRAMS = {{ all_programs | default([], True) | tojson | safe }};
+        const ALL_STUDENT_LEVELS = {{ all_student_levels | default([], True) | tojson | safe }};
+        const ALL_GENDERS = {{ all_genders | default([], True) | tojson | safe }};
+        const ALL_CAMPUSES = {{ all_campuses | default([], True) | tojson | safe }};
+        const ALL_PROGRAM_TYPES = {{ all_program_types | default([], True) | tojson | safe }};
+        const ALL_SUBPROGRAMMES = {{ all_subprogrammes | default([], True) | tojson | safe }}; {# For populating subprogram dropdowns #}
+    </script>
+    <script src="{{ url_for('static', filename='js/SASStaff/displayST.js') }}"></script>
+{% endblock %}

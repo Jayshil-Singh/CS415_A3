@@ -1,0 +1,425 @@
+/* profile_style.css */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Horizontal navigation bar */
+.horizontal-nav {
+    background-color: #082d57; /* navbarBlue */
+    color: white;
+    display: flex;
+    justify-content: center;
+    padding: 4px 0;
+    overflow-x: auto; /* For responsiveness on smaller screens */
+}
+
+.nav-button {
+    padding: 12px 16px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.nav-button.selected {
+    background-color: #005f8f; /* selectedColor */
+}
+
+/* Main content area */
+main {
+    flex-grow: 1;
+    padding: 0px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align content to the top */
+}
+
+.card {
+    background-color: white;
+    border-radius: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 8px;
+    padding: 18px;
+    max-width: 1040px;
+    width: 100%;
+}
+
+.section-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+/* Emergency‐contact helper rows */
+.label-value-row {
+    display: flex;
+    margin-bottom: 8px;
+    align-items: baseline;
+}
+
+.label {
+    width: 120px;
+    font-weight: bold;
+    color: #555;
+}
+
+.value-container {
+    background-color: #e0e0e0;
+    padding: 6px 8px;
+    flex-grow: 1;
+    color: #333;
+}
+
+/* --- Photo Upload Section Styling --- */
+.photo-upload-section {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #ccc;
+    text-align: left; /* Ensure overall section content is left‐aligned */
+}
+
+.photo-and-info-row {
+    display: flex;
+    align-items: flex-start; /* Align avatar + upload‐info at top */
+    margin-bottom: 15px;
+}
+
+.avatar-display {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #656565;
+    background-color: #757575;
+    margin-right: 20px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+.upload-info-group {
+    flex-grow: 1;
+}
+
+.upload-info-group p {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    text-align: left;
+    display: block;
+}
+
+.upload-button {
+    background-color: #919494;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 5px;
+    display: block;
+    width: fit-content;
+}
+
+#file-name-display-container {
+    margin-top: 8px;
+    text-align: left;
+    display: block;
+}
+
+/* Make both Save + Remove part of the same “button-row” */
+.photo-upload-section .button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    align-items: center;
+}
+
+/* override previous block display on these */
+.save-button,
+.remove-photo-button {
+    display: inline-block;
+    margin-top: 0;
+    width: auto;
+}
+
+/* Save */
+.save-button {
+    background-color: #009999; /* headerTeal */
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    border-radius: 4px;
+}
+
+/* Server-side “Remove Photo” */
+.remove-photo-button {
+    background-color: #dc3545; /* red */
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+/* error text below file uploader */
+.error-text {
+    color: red;
+    margin-top: 8px;
+    font-size: 0.9em;
+    text-align: left;
+    display: block;
+}
+
+/* --------------------------------------------------------------------------------------------------
+  Profile cards styling 
+-------------------------------------------------------------------------------------------------- */
+.profile-view-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card-subheader {
+    font-size: 1.1em;
+    color: #082d57;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    padding: 5px 0;
+}
+
+.info-label {
+    font-weight: bold;
+    color: #555;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    background-color: #f5f5f5;
+    padding: 8px 10px;
+    border-radius: 4px;
+    color: #333;
+    font-size: 1em;
+    word-break: break-word;
+}
+
+.profile-actions {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: left;
+}
+
+.form-text {
+    font-size: 0.9em;
+    color: #777;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+.small {
+    font-size: 0.875em;
+}
+
+.notice-header {
+    color: #802323;
+}
+
+.verification-notice-card {
+    background-color: #ffe6e6;
+    border-color: #ffcccc;
+}
+
+/* --------------------------------------------------------------------------------------------------
+  Custom Confirmation Modal Styles
+-------------------------------------------------------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top of other content */
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    transform: translateY(-50px); /* Small animation effect */
+    animation: fadeInSlideUp 0.3s ease-out forwards;
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-title {
+    font-size: 1.5em;
+    color: #082d57;
+    margin-bottom: 15px;
+}
+
+.modal-content p {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Space between buttons */
+}
+
+.modal-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.modal-button.confirm {
+    background-color: #dc3545; /* Red for destructive action */
+    color: white;
+}
+
+.modal-button.confirm:hover {
+    background-color: #c82333;
+}
+
+.modal-button.cancel {
+    background-color: #6c757d; /* Gray for cancel */
+    color: white;
+}
+
+.modal-button.cancel:hover {
+    background-color: #5a6268;
+}
+
+
+/* --------------------------------------------------------------------------------------------------
+  Responsive tweaks
+-------------------------------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .horizontal-nav {
+        padding: 8px;
+    }
+    .nav-button {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+    .label {
+        width: 100px;
+    }
+    .card {
+        margin: 8px;
+        padding: 16px;
+    }
+    .photo-and-info-row {
+        flex-direction: column;
+        align-items: center;
+    }
+    .avatar-display {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    .upload-info-group {
+        align-items: center;
+    }
+    .upload-info-group p {
+        text-align: center;
+    }
+    .photo-upload-section > div > div {
+        justify-content: center;
+    }
+    .upload-button,
+    .remove-photo-button {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #file-name-display-container {
+        text-align: center;
+    }
+    .photo-upload-section .button-row {
+        justify-content: center;
+    }
+    .profile-info-grid {
+        grid-template-columns: 1fr;
+    }
+    .profile-actions {
+        text-align: center;
+    }
+    .modal-content {
+        padding: 20px;
+    }
+    .modal-title {
+        font-size: 1.3em;
+    }
+}
+
+@media (max-width: 576px) {
+    /* handled above */
+    .modal-buttons {
+        flex-direction: column;
+    }
+    .modal-button {
+        width: 100%;
+    }
+}

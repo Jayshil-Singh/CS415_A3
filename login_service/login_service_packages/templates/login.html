@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - USP SAS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .login-header h1 {
+            color: #0d6efd;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .login-header p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1.1rem;
+        }
+        .alert {
+            display: none;
+            margin-top: 1rem;
+        }
+        .role-selector {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>USP SAS Login</h1>
+            <p>Please sign in to continue</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="role-selector">
+                <select class="form-select" id="role" name="role" required>
+                    <option value="student">Student</option>
+                    <option value="sas_manager">SAS Manager</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
+            
+            <div class="form-floating" id="emailField">
+                <input type="email" class="form-control" id="email" name="email" 
+                       pattern="s\d{8}@student\.usp\.ac\.fj" 
+                       title="Must be in format: s[8 digits]@student.usp.ac.fj"
+                       placeholder="Email" required>
+                <label for="email">Student Email</label>
+                <div class="invalid-feedback">
+                    Please enter a valid USP student email (s[8 digits]@student.usp.ac.fj)
+                </div>
+            </div>
+            
+            <div class="form-floating" id="usernameField" style="display: none;">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+                <label for="username">Username</label>
+            </div>
+            
+            <div class="form-floating">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                <label for="password">Password</label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-login">Sign In</button>
+            
+            <div class="alert alert-danger" id="errorAlert" role="alert"></div>
+        </form>
+    </div>
+
+    <script>
+        const roleSelect = document.getElementById('role');
+        const emailField = document.getElementById('emailField');
+        const usernameField = document.getElementById('usernameField');
+        const emailInput = document.getElementById('email');
+        
+        function validateStudentEmail(email) {
+            const pattern = /^s\d{8}@student\.usp\.ac\.fj$/;
+            return pattern.test(email);
+        }
+        
+        roleSelect.addEventListener('change', function() {
+            if (this.value === 'student') {
+                emailField.style.display = 'block';
+                usernameField.style.display = 'none';
+                emailInput.required = true;
+                document.getElementById('username').required = false;
+            } else {
+                emailField.style.display = 'none';
+                usernameField.style.display = 'block';
+                emailInput.required = false;
+                document.getElementById('username').required = true;
+            }
+        });
+
+        emailInput.addEventListener('input', function() {
+            if (roleSelect.value === 'student') {
+                if (!validateStudentEmail(this.value)) {
+                    this.setCustomValidity('Please enter a valid USP student email (s[8 digits]@student.usp.ac.fj)');
+                } else {
+                    this.setCustomValidity('');
+                }
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const role = document.getElementById('role').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorAlert = document.getElementById('errorAlert');
+            
+            // Clear previous error
+            errorAlert.style.display = 'none';
+            errorAlert.textContent = '';
+            
+            try {
+                const loginData = role === 'student' 
+                    ? { email, password, role }
+                    : { username, password, role };
+
+                const response = await fetch('http://127.0.0.1:5002/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Store the token and user data
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Redirect based on role
+                    switch(data.user.role) {
+                        case 'student':
+                            window.location.href = 'http://127.0.0.1:5000/student_home';
+                            break;
+                        case 'sas_manager':
+                            window.location.href = 'http://127.0.0.1:5000/manager/dashboard';
+                            break;
+                        case 'admin':
+                            window.location.href = 'http://127.0.0.1:5000/admin/dashboard';
+                            break;
+                        default:
+                            window.location.href = 'http://127.0.0.1:5000/';
+                    }
+                } else {
+                    errorAlert.textContent = data.message || 'Login failed';
+                    errorAlert.style.display = 'block';
+                }
+            } catch (error) {
+                errorAlert.textContent = 'An error occurred. Please try again.';
+                errorAlert.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 
