@@ -2,24 +2,24 @@
 
 from .db import db
 from datetime import datetime
-from sqlalchemy import PrimaryKeyConstraint
+from sqlalchemy import PrimaryKeyConstraint, UniqueConstraint
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # --- User Management Entities ---
 class User(db.Model):
     __tablename__ = 'users'
-    id = db.Column(db.String(50), primary_key=True) # Corresponds to student_id, manager_id etc.
+    id = db.Column(db.String(50), primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False) # Store hashed password
-    role = db.Column(db.String(50), nullable=False, default='student') # e.g., 'student', 'sas_manager', 'admin'
+    password_hash = db.Column(db.String(256), nullable=False)
+    role = db.Column(db.String(50), nullable=False, default='student')
+    FirstName = db.Column(db.String(100), nullable=True)
+    LastName = db.Column(db.String(100), nullable=True)
 
     def set_password(self, password):
-        """Hashes the password and stores it."""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        """Checks if the provided password matches the stored hash."""
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
@@ -43,7 +43,6 @@ class Program(db.Model):
         lazy=True
     )
 
-
     def __repr__(self):
         return f"<Program {self.ProgramName} (ID: {self.ProgramID})>"
 
@@ -52,7 +51,7 @@ class SubProgram(db.Model):
     __tablename__ = 'SubPrograms'
     SubProgramID = db.Column(db.String(50), primary_key=True)
     SubProgramName = db.Column(db.String(255), nullable=False)
-    SubProgramType = db.Column(db.String(100))
+    SubProgramType = db.Column(db.String(100), nullable=True)
     ProgramID = db.Column(db.String(50), db.ForeignKey('Program.ProgramID'), nullable=False)
 
     courses = db.relationship('Course', back_populates='subprogram', lazy=True)
@@ -83,14 +82,16 @@ class Course(db.Model):
     SubProgramID = db.Column(db.String(50), db.ForeignKey('SubPrograms.SubProgramID'), nullable=False)
     CourseName = db.Column(db.String(255), nullable=False)
     PrerequisiteCourseID = db.Column(db.String(50), db.ForeignKey('Course.CourseID'), nullable=True)
-    FeeID = db.Column(db.String(50), db.ForeignKey('Course_Fees.FeeID'), nullable=True)
+    
+    credit_hours = db.Column(db.Float, nullable=False, default=1.0) 
 
     subprogram = db.relationship('SubProgram', back_populates='courses')
     prerequisite_for = db.relationship('Course', remote_side=[CourseID], backref='prerequisite', lazy=True)
     course_availabilities = db.relationship('CourseAvailability', back_populates='course', lazy=True)
     enrollments = db.relationship('Enrollment', back_populates='course', lazy=True)
     student_course_fees = db.relationship('StudentCourseFee', back_populates='course', lazy=True)
-    course_fees_records = db.relationship('CourseFee', back_populates='course', lazy=True, foreign_keys="CourseFee.CourseID")
+    
+    course_fees_records = db.relationship('CourseFee', back_populates='course', lazy=True)
 
     def __repr__(self):
         return f"<Course {self.CourseName} ({self.CourseID})>"
@@ -98,7 +99,7 @@ class Course(db.Model):
 class CourseAvailability(db.Model):
     __tablename__ = 'CourseAvailability'
     CourseAvailabilityID = db.Column(db.String(50), primary_key=True)
-    isAvailable = db.Column(db.Boolean, nullable=False, default=True)
+    isAvailable = db.Column(db.Boolean, nullable=False, default=True) 
     CourseID = db.Column(db.String(50), db.ForeignKey('Course.CourseID'), nullable=False)
     SemesterID = db.Column(db.String(50), db.ForeignKey('Semester.SemesterID'), nullable=False)
 
@@ -124,10 +125,9 @@ class Student(db.Model):
     CampusID = db.Column(db.String(50), nullable=True)
     ProgramID = db.Column(db.String(50), db.ForeignKey('Program.ProgramID'), nullable=True)
     SubProgramID = db.Column(db.String(50), db.ForeignKey('SubPrograms.SubProgramID'), nullable=True)
-    StudentLevelID = db.Column(db.String(50), db.ForeignKey('Student_Level.StudentLevelID'), nullable=True)
+    StudentLevelID = db.Column(db.String(50), db.ForeignKey('Student_Level.StudentLevelID'), nullable=True) # MADE NULLABLE
     CreatedAt = db.Column(db.DateTime, default=datetime.utcnow)
     Email = db.Column(db.String(255), unique=True, nullable=True)
-
 
     enrollments = db.relationship('Enrollment', back_populates='student', lazy=True)
     student_course_fees = db.relationship('StudentCourseFee', back_populates='student', lazy=True)
@@ -154,7 +154,7 @@ class StudentLevel(db.Model):
     LevelName = db.Column(db.String(255), nullable=True)
     AttributeName1 = db.Column(db.String(255), nullable=True)
     AttributeName2 = db.Column(db.String(255), nullable=True)
-    StudentID = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
+    StudentID = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=True) # CHANGED TO NULLABLE=TRUE
 
     student = db.relationship('Student', back_populates='student_levels_records', foreign_keys=[StudentID])
 
@@ -169,8 +169,10 @@ class Hold(db.Model):
     holdDate = db.Column(db.Date, default=datetime.utcnow)
     liftDate = db.Column(db.Date, nullable=True)
     StudentID = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
+    imposed_by_user_id = db.Column(db.String(50), db.ForeignKey('users.id'), nullable=True) 
 
     student = db.relationship('Student', back_populates='holds')
+    imposed_by_user = db.relationship('User', foreign_keys=[imposed_by_user_id], lazy=True)
 
     def __repr__(self):
         return f"<Hold {self.HoldID} for Student {self.StudentID} - Status: {self.status}>"
@@ -211,7 +213,7 @@ class StudentCourseFee(db.Model):
     paid_date = db.Column(db.Date, nullable=True)
     status = db.Column(db.String(50), default='Outstanding')
     StudentID = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
-    CourseID = db.Column(db.String(50), db.ForeignKey('Course.CourseID'), nullable=False)
+    CourseID = db.Column(db.String(50), db.ForeignKey('Course.CourseID'), nullable=True) # CourseID is now nullable for cases where it's not present in JSON
     FeeID = db.Column(db.String(50), db.ForeignKey('Course_Fees.FeeID'), nullable=True)
 
     student = db.relationship('Student', back_populates='student_course_fees')
@@ -221,38 +223,74 @@ class StudentCourseFee(db.Model):
     def __repr__(self):
         return f"<StudentCourseFee {self.StudentCourseFeeID} Student:{self.StudentID} Course:{self.CourseID} Status:{self.status}>"
 
-# Document Models
-class BirthCertificate(db.Model):
-    __tablename__ = 'BirthCertificate'
-    id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
-    filename = db.Column(db.String(255), nullable=False)
-    file_path = db.Column(db.String(512), nullable=False)
-    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
-    verified = db.Column(db.Boolean, default=False)
-    
-    student = db.relationship('Student', backref=db.backref('birth_certificate', uselist=False))
+# --- New Models (not directly from JSON, but defined for the system) ---
 
-class ValidID(db.Model):
-    __tablename__ = 'ValidID'
+class Grade(db.Model):
+    __tablename__ = 'grades'
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
-    filename = db.Column(db.String(255), nullable=False)
-    file_path = db.Column(db.String(512), nullable=False)
-    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
-    verified = db.Column(db.Boolean, default=False)
-    id_type = db.Column(db.String(50), nullable=False)
-    
-    student = db.relationship('Student', backref=db.backref('valid_id', uselist=False))
+    course_id = db.Column(db.String(50), db.ForeignKey('Course.CourseID'), nullable=False)
+    letter_grade = db.Column(db.String(5), nullable=False)
+    numerical_grade = db.Column(db.Float, nullable=True)
+    year = db.Column(db.Integer, nullable=False)
+    semester = db.Column(db.String(20), nullable=False)
 
-class AcademicTranscript(db.Model):
-    __tablename__ = 'AcademicTranscript'
+    student = db.relationship('Student', backref='grades_records', lazy=True)
+    course = db.relationship('Course', backref='course_grades_records', lazy=True)
+
+    __table_args__ = (UniqueConstraint('student_id', 'course_id', 'year', 'semester', name='_student_course_year_semester_uc'),)
+
+    def __repr__(self):
+        return f"<Grade {self.id} | Student: {self.student_id}, Course: {self.course_id}, Grade: {self.letter_grade}>"
+
+
+class GradeRecheck(db.Model):
+    __tablename__ = 'grade_rechecks'
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
-    filename = db.Column(db.String(255), nullable=False)
-    file_path = db.Column(db.String(512), nullable=False)
-    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
-    verified = db.Column(db.Boolean, default=False)
-    year_level = db.Column(db.String(20), nullable=False)  # Year 12 or Year 13
-    
-    student = db.relationship('Student', backref=db.backref('academic_transcript', uselist=False))
+    grade_id = db.Column(db.Integer, db.ForeignKey('grades.id'), nullable=False)
+    course_id = db.Column(db.String(50), db.ForeignKey('Course.CourseID'), nullable=False)
+    original_grade = db.Column(db.String(5), nullable=False)
+    reason = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(50), default='Pending', nullable=False)
+    admin_notes = db.Column(db.Text, nullable=True)
+    date_submitted = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    date_resolved = db.Column(db.DateTime, nullable=True)
+    new_grade_if_changed = db.Column(db.String(5), nullable=True)
+
+    student = db.relationship('Student', backref='grade_rechecks', lazy=True)
+    grade = db.relationship('Grade', backref='recheck_requests', lazy=True)
+    course = db.relationship('Course', backref='recheck_requests_for_course', lazy=True)
+
+    def __repr__(self):
+        return f"<GradeRecheck {self.id} | Student: {self.student_id}, Grade: {self.grade_id}, Status: {self.status}>"
+
+
+class SpecialApplication(db.Model):
+    __tablename__ = 'special_applications'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
+    application_type = db.Column(db.String(50), nullable=False)
+    course_id = db.Column(db.String(50), db.ForeignKey('Course.CourseID'), nullable=True)
+    reason = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(50), default='Pending', nullable=False)
+    admin_notes = db.Column(db.Text, nullable=True)
+    date_submitted = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    date_resolved = db.Column(db.DateTime, nullable=True)
+    external_form_path = db.Column(db.String(255), nullable=True)
+
+    student = db.relationship('Student', backref='special_applications', lazy=True)
+    course = db.relationship('Course', backref='special_applications_for_course', lazy=True)
+
+    def __repr__(self):
+        return f"<SpecialApplication {self.id} | Student: {self.student_id}, Type: {self.application_type}, Status: {self.status}>"
+
+
+class ServiceAccess(db.Model):
+    __tablename__ = 'service_access'
+    id = db.Column(db.Integer, primary_key=True)
+    service_name = db.Column(db.String(100), unique=True, nullable=False)
+    is_available_on_hold = db.Column(db.Boolean, default=True, nullable=False)
+
+    def __repr__(self):
+        return f"<ServiceAccess {self.id} | Name: {self.service_name}, AvailableOnHold: {self.is_available_on_hold}>"

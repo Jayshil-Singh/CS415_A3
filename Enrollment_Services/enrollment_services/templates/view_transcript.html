@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Academic Transcript</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            padding-bottom: 60px; /* Added: Ensures content doesn't get hidden behind the fixed footer */
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px; /* Increased max-width for table */
+            width: 100%;
+            margin-top: 20px; /* Adjusted margin-top */
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 25px;
+        }
+        .action-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .action-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .action-button:active {
+            transform: translateY(0);
+        }
+        .note {
+            font-size: 0.9em;
+            color: #777;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            text-align: left;
+        }
+        .note strong {
+            color: #333;
+        }
+
+        /* Flash message styles (copied for consistency) */
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        .flash-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .flash-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .flash-info {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Styles for the inline academic record table */
+        .academic-record-section {
+            text-align: left; /* Align section content to left */
+            margin-top: 20px;
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .academic-record-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .academic-record-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .academic-record-section th,
+        .academic-record-section td {
+            padding: 10px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+        }
+        .academic-record-section th {
+            background-color: #f3f4f6;
+            font-weight: bold;
+            color: #4b5563;
+        }
+        .academic-record-section tr:hover {
+            background-color: #f0f0f0;
+        }
+        .academic-record-section .summary-box {
+            background-color: #eff6ff; /* blue-50 */
+            border: 1px solid #bfdbfe; /* blue-200 */
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .academic-record-section .summary-item {
+            text-align: center;
+            margin: 5px 15px;
+        }
+        .academic-record-section .summary-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        .academic-record-section .summary-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1e40af; /* blue-800 */
+        }
+        /* Footer styles (uniform) */
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: white;
+            background-color: teal;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 15px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <nav class="bg-teal-600 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{{ url_for('enrollment.dashboard') }}" class="flex-shrink-0">
+                        <img class="h-10 w-auto" src="https://placehold.co/150x50/003366/FFFFFF?text=USP+Enroll" alt="USP Logo">
+                    </a>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="{{ url_for('enrollment.dashboard') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="{{ url_for('enrollment.enroll') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
+                            <a href="{{ url_for('enrollment.display_courses') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My Enrollment</a>
+                            <a href="{{ url_for('enrollment.fees') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
+                            <a href="{{ url_for('enrollment.view_transcript') }}" class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Transcript</a>
+                            <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Grades</a>
+                            <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
+                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <a href="{{ url_for('enrollment.logout') }}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-button" class="bg-teal-500 inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="{{ url_for('enrollment.dashboard') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="{{ url_for('enrollment.enroll') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
+                <a href="{{ url_for('enrollment.display_courses') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My Enrollment</a>
+                <a href="{{ url_for('enrollment.fees') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
+                <a href="{{ url_for('enrollment.view_transcript') }}" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Transcript</a>
+                <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Grades</a>
+                <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
+                <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-teal-500">
+                <div class="mt-3 px-2 space-y-1">
+                    <a href="{{ url_for('enrollment.logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-indigo-700 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Your Academic Transcript</h1>
+        <p>
+            Here is your current academic record. You can also download your official transcript as a PDF document.
+        </p>
+
+        {# Display Flask flashed messages #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="space-y-2 mb-4">
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        {# Inlined Academic Record Table #}
+        <div class="academic-record-section">
+            <h2>Student Record:</h2>
+            {% if student and student.courses %}
+            <div class="mb-4 text-center">
+                <p class="text-gray-700"><strong>Student Name:</strong> {{ student.student_full_name }}</p>
+                <p class="text-gray-700"><strong>Student ID:</strong> {{ student.student_id_number }}</p>
+                <p class="text-gray-700"><strong>Program:</strong> {{ student.program_enrolled }}</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                       
+                        <th>Grade</th>
+                        <th>GPA Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in student.courses %}
+                    <tr>
+                        
+                        <td>{{ course.course_code }}</td>
+                        <td>{{ course.course_name }}</td>
+                        
+                        <td>{{ course.letter_grade }}</td>
+                        <td>{{ "%.2f" | format(course.gpa_points_earned) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="summary-box">
+                <div class="summary-item">
+                    <div class="summary-label">Cumulative GPA:</div>
+                    <div class="summary-value">{{ student.cumulative_gpa }}</div>
+                </div>
+
+            </div>
+
+            {% else %}
+            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
+                <p class="font-bold">No Academic Record Found</p>
+                <p>It seems there are no grades recorded for you yet. Please use the "Generate Dummy Grades" button below for testing, or contact the Registrar's office if this is an error.</p>
+            </div>
+            {% endif %}
+        </div>
+        {# End Inlined Academic Record Table #}
+
+
+        <div class="mt-8 flex justify-center items-center flex-wrap">
+            <a href="{{ url_for('enrollment.download_transcript_pdf') }}" class="action-button" target="_blank">
+                <i class="fas fa-file-pdf mr-2"></i> Download My Official Transcript (PDF)
+            </a>
+           
+        </div>
+
+        <div class="note">
+            <strong>Important Information:</strong>
+            <ul>
+                <li>The downloaded transcript is an official document.</li>
+                <li>It may take a few moments to generate the PDF, especially for large academic records.</li>
+                <li>Ensure you have a PDF viewer installed on your device to open the file.</li>
+                <li>For any discrepancies or questions regarding your transcript, please contact the Registrar's Office.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer">
+        <p>&copy; 2025 The University of the South Pacific. All rights reserved.</p>
+    </div>
+    <script>
+        // Basic mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+</body>
+</html>

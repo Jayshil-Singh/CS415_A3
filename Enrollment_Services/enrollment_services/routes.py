@@ -1,39 +1,49 @@
 # enrollment_services/routes.py
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash, session, send_file, make_response
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash, session, make_response, current_app
 import logging
-from io import BytesIO # For in-memory PDF generation
+from io import BytesIO
+from datetime import datetime, timedelta
+import jwt
+from functools import wraps
+import uuid
+import random # For dummy grade generation
+
+# ReportLab Imports
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
-from datetime import datetime
-from sqlalchemy.exc import IntegrityError, InvalidRequestError # Ensure InvalidRequestError is imported
-from sqlalchemy.orm import joinedload # For eager loading relationships
-import jwt # For JSON Web Tokens
-from functools import wraps # For creating decorators
-from flask import current_app # Import current_app for accessing app.config in decorators/endpoints
-import uuid # Import uuid for generating unique IDs
+from reportlab.lib.units import inch
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
+from sqlalchemy.orm import joinedload
 
 # Import db and models from your package.
 from .db import db
 from .model import (
     Program, SubProgram, Semester, Course, CourseAvailability,
-    Student, StudentLevel, Hold,
-    Enrollment, CourseFee, StudentCourseFee,
-    User # Import the new User model for authentication
+    Student, StudentLevel, Hold, Enrollment, CourseFee, StudentCourseFee,
+    User,
+    Grade, GradeRecheck, SpecialApplication, ServiceAccess
 )
 
 # --- Blueprint Initialization ---
-# Create a Blueprint for all enrollment service routes.
 enrollment_bp = Blueprint('enrollment', __name__, template_folder='templates')
 
 # --- Logging Setup ---
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# --- IMPORTANT: Flask App Configuration for JWT ---
+# Ensure these are set in your main Flask app instance (e.g., in app.py or config.py)
+# Example:
+# app.config['JWT_SECRET_KEY'] = 'your_super_secret_key_here' # Change this to a strong, random key
+# app.config['JWT_EXPIRATION_DELTA'] = timedelta(hours=1) # Token valid for 1 hour
+# If not set, you will get a KeyError or similar 500 error.
 
 # --- Mock Data (IMPORTANT: To be Replaced with Actual Database Interactions) ---
-# These are placeholders for data that should eventually come from your database.
-
-# Mock student and invoice details
+# Note: student_details and invoice_details will be largely superseded by live data from DB in new routes.
 student_details = {
     'name': 'Ratu Epeli Nailatikau',
     'id': 's11223344'
@@ -45,43 +55,116 @@ invoice_details = {
     'payment_status': 'Paid'
 }
 
+# --- Define Program Structure and Prerequisites (EXISTING LOGIC) ---
+PROGRAM_STRUCTURE = {
+    'Year 1': {
+        'Semester 1': [
+            {'code': 'CS111', 'title': 'Introduction to C++ Programming', 'units': 1.0, 'prereq': None},
+            {'code': 'ST131', 'title': 'Introduction to Statistics', 'units': 1.0, 'prereq': None},
+            {'code': 'UU114', 'title': 'English for Academic Purposes', 'units': 1.0, 'prereq': None},
+            {'code': 'MA111', 'title': 'Calculus and Linear Algebra', 'units': 1.0, 'prereq': None},
+            {'code': 'UU100A', 'title': 'Communications and Information Literacy', 'units': 0.5, 'prereq': None},
+            {'code': 'MG101', 'title': 'Introduction to Management', 'units': 1.0, 'prereq': None},
+        ],
+        'Semester 2': [
+            {'code': 'CS111', 'title': 'Introduction to C++ Programming', 'units': 1.0, 'prereq': None},
+            {'code': 'CS112', 'title': 'Data Structures and Algorithms', 'units': 1.0, 'prereq': 'CS111'},
+            {'code': 'UU114', 'title': 'English for Academic Purposes (Repeat)', 'units': 1.0, 'prereq': None},
+            {'code': 'MG101', 'title': 'Introduction to Management', 'units': 1.0, 'prereq': None},
+            {'code': 'UU100A', 'title': 'Communications and Information Literacy', 'units': 0.5, 'prereq': None},
+            {'code': 'MA161', 'title': 'Discrete Mathematics', 'units': 1.0, 'prereq': None},
+            {'code': 'CS140', 'title': 'Introduction to Software Engineering', 'units': 1.0, 'prereq': None},
+        ]
+    },
+    'Year 2': {
+        'Semester 1': [
+            {'code': 'CS211', 'title': 'Object-Oriented Programming', 'units': 1.0, 'prereq': None},
+            {'code': 'CS230', 'title': 'Operating Systems', 'units': 1.0, 'prereq': None},
+            {'code': 'IS221', 'title': 'Database Management Systems', 'units': 1.0, 'prereq': None},
+            {'code': 'IS222', 'title': 'Systems Analysis and Design', 'units': 1.0, 'prereq': None},
+            {'code': 'UU200', 'title': 'Ethics and Governance', 'units': 1.0, 'prereq': None},
+            {'code': 'CS001', 'title': 'Industrial Attachment (Part 1)', 'units': 0.5, 'prereq': None},
+        ],
+        'Semester 2': [
+            {'code': 'CS241', 'title': 'Computer Networks', 'units': 1.0, 'prereq': None},
+            {'code': 'CS218', 'title': 'Software Engineering', 'units': 1.0, 'prereq': None},
+            {'code': 'CS219', 'title': 'Web Application Development', 'units': 1.0, 'prereq': None},
+            {'code': 'CS214', 'title': 'Artificial Intelligence', 'units': 1.0, 'prereq': None},
+            {'code': 'UU200', 'title': 'Ethics and Governance (Repeat)', 'units': 1.0, 'prereq': None},
+            {'code': 'CS001', 'title': 'Industrial Attachment (Part 1) (Repeat)', 'units': 0.5, 'prereq': None},
+        ]
+    },
+    'Year 3': {
+        'Semester 1': [
+            {'code': 'CS310', 'title': 'Advanced Algorithms', 'units': 1.0, 'prereq': None},
+            {'code': 'CS311', 'title': 'Compiler Design', 'units': 1.0, 'prereq': None},
+            {'code': 'CS352', 'title': 'Computer Graphics', 'units': 1.0, 'prereq': None},
+            {'code': 'IS333', 'title': 'Information Security', 'units': 1.0, 'prereq': None},
+            {'code': 'CS001', 'title': 'Industrial Attachment (Part 1) (Repeat)', 'units': 0.5, 'prereq': None},
+        ],
+        'Semester 2': [
+            {'code': 'CS324', 'title': 'Distributed Systems', 'units': 1.0, 'prereq': None},
+            {'code': 'CS341', 'title': 'Mobile Application Development', 'units': 1.0, 'prereq': None},
+            {'code': 'IS314', 'title': 'E-Commerce Systems', 'units': 1.0, 'prereq': None},
+            {'code': 'IS328', 'title': 'Project Management', 'units': 1.0, 'prereq': None},
+            {'code': 'CS001', 'title': 'Industrial Attachment (Part 1) (Repeat)', 'units': 0.5, 'prereq': None},
+        ]
+    },
+    'Year 4': {
+        'Semester 1': [
+            {'code': 'CS415', 'title': 'Advanced Software Engineering', 'units': 1.0, 'prereq': None},
+            {'code': 'CS412', 'title': 'Capstone Project I', 'units': 1.0, 'prereq': None},
+            {'code': 'CS403', 'title': 'Cloud Computing', 'units': 1.0, 'prereq': None},
+            {'code': 'CS001', 'title': 'Industrial Attachment (Part 1) (Repeat)', 'units': 0.5, 'prereq': None},
+        ],
+        'Semester 2': [
+            {'code': 'CS400', 'title': 'Industrial Attachment (Part 2)', 'units': 1.0, 'prereq': None},
+            {'code': 'CS412', 'title': 'Capstone Project II', 'units': 1.0, 'prereq': 'CS412'}, # Prereq for Capstone II is Capstone I
+            {'code': 'CS424', 'title': 'Machine Learning', 'units': 1.0, 'prereq': None},
+        ]
+    }
+}
+
+# Helper to get all course codes for a specific year (excluding repeats for completion check)
+def get_unique_course_codes_for_year(year_data):
+    unique_codes = set()
+    for semester_name, courses in year_data.items():
+        for course in courses:
+            base_code = course['code'].split('(')[0].strip()
+            unique_codes.add(base_code)
+    return unique_codes
+
 # --- Helper Functions for Data Processing and Serialization ---
 
 def calculate_invoice(enrolled_courses_codes):
     """Calculates the invoice details for the given course codes."""
     invoice_items = []
     total_amount = 0
-    # Fetch course data from the database, focusing on enrolled courses
-    courses_from_db = Course.query.filter(Course.CourseID.in_(enrolled_courses_codes)).options(joinedload(Course.course_fees_records)).all()
+    
+    all_program_courses = {}
+    for year_data in PROGRAM_STRUCTURE.values():
+        for semester_data in year_data.values():
+            for course_info in semester_data:
+                all_program_courses[course_info['code']] = course_info
 
-    for course_db in courses_from_db:
-        # Assuming fee_per_credit is still a mock concept for invoice, or you have a default fee.
-        # For accurate fees, you'd need CourseFee objects linked to courses.
-        # If CourseFee is populated, use that amount directly.
-        course_fee_amount = 0.0
-        if course_db.course_fees_records:
-            # Assuming one relevant fee per course for simplicity in this calculation
-            course_fee_amount = course_db.course_fees_records[0].amount
-        else:
-            # Fallback for courses without explicit fees or mock value
-            # You might want to get this dynamically from your CourseFee model in a real app
-            # For now, let's use a placeholder if no specific fee is linked
-            course_fee_amount = 50.00 # Default mock fee if not found via CourseFee
-
-        # Assuming credits are part of the Course model or a related entity.
-        # If not, you'd need to either mock them or add them to your schema.
-        # For demonstration, let's just assume a fixed credit or derive if possible.
-        course_credits = 3 # Placeholder if not in DB schema for Course
-
-        subtotal = course_credits * course_fee_amount
-        invoice_items.append({
-            'code': course_db.CourseID,
-            'title': course_db.CourseName,
-            'credits': course_credits,
-            'fee_per_credit': course_fee_amount,
-            'subtotal': subtotal
-        })
-        total_amount += subtotal
+    for course_code in enrolled_courses_codes:
+        course_info = all_program_courses.get(course_code)
+        if course_info:
+            course_fee_amount = 0.0
+            db_course_fee = CourseFee.query.filter_by(CourseID=course_code).first()
+            if db_course_fee:
+                course_fee_amount = float(db_course_fee.amount)
+            else:
+                course_fee_amount = course_info['units'] * 100.00
+            subtotal = course_fee_amount
+            invoice_items.append({
+                'code': course_info['code'],
+                'title': course_info['title'],
+                'credits': course_info['units'],
+                'fee_per_credit': course_fee_amount,
+                'subtotal': subtotal
+            })
+            total_amount += subtotal
     return invoice_items, total_amount
 
 
@@ -106,9 +189,6 @@ def serialize_semester(semester):
         "SemesterID": semester.SemesterID,
         "SemesterName": semester.SemesterName
     }
-# enrollment_services/routes.py (continued from Part 1)
-
-# --- Serialization Functions for API Responses (continued) ---
 
 def serialize_course(course):
     return {
@@ -204,64 +284,117 @@ def serialize_hold(hold):
         "StudentName": f"{hold.student.FirstName} {hold.student.LastName}" if hold.student else None
     }
 
+# New Serialization functions for the new models
+def serialize_grade(grade):
+    return {
+        "GradeID": grade.id,
+        "StudentID": grade.student_id,
+        "CourseID": grade.course_id,
+        "LetterGrade": grade.letter_grade,
+        "NumericalGrade": grade.numerical_grade,
+        "Year": grade.year,
+        "Semester": grade.semester,
+        "CourseName": grade.course.CourseName if grade.course else None,
+        "StudentName": f"{grade.student.FirstName} {grade.student.LastName}" if grade.student else None
+    }
+
+def serialize_grade_recheck(recheck):
+    return {
+        "RecheckID": recheck.id,
+        "StudentID": recheck.student_id,
+        "GradeID": recheck.grade_id,
+        "CourseID": recheck.course_id,
+        "OriginalGrade": recheck.original_grade,
+        "Reason": recheck.reason,
+        "Status": recheck.status,
+        "AdminNotes": recheck.admin_notes,
+        "DateSubmitted": recheck.date_submitted.isoformat() if recheck.date_submitted else None,
+        "DateResolved": recheck.date_resolved.isoformat() if recheck.date_resolved else None,
+        "NewGradeIfChanged": recheck.new_grade_if_changed,
+        "StudentName": f"{recheck.student.FirstName} {recheck.student.LastName}" if recheck.student else None,
+        "CourseName": recheck.course.CourseName if recheck.course else None
+    }
+
+def serialize_special_application(app):
+    return {
+        "ApplicationID": app.id,
+        "StudentID": app.student_id,
+        "ApplicationType": app.application_type,
+        "CourseID": app.course_id,
+        "Reason": app.reason,
+        "Status": app.status,
+        "AdminNotes": app.admin_notes,
+        "DateSubmitted": app.date_submitted.isoformat() if app.date_submitted else None,
+        "DateResolved": app.date_resolved.isoformat() if app.date_resolved else None,
+        "ExternalFormPath": app.external_form_path,
+        "StudentName": f"{app.student.FirstName} {app.student.LastName}" if app.student else None,
+        "CourseName": app.course.CourseName if app.course else None
+    }
+
+def serialize_service_access(service):
+    return {
+        "ServiceID": service.id,
+        "ServiceName": service.service_name,
+        "IsAvailableOnHold": service.is_available_on_hold
+    }
+
 
 # --- Authentication Decorator and Endpoints ---
-# enrollment_services/routes.py (update this function)
-
 def token_required(f):
-    """
-    Decorator to protect routes that require a valid JWT.
-    It checks for token in Flask session (for HTML pages) or Authorization header (for API calls).
-    """
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
 
-        # 1. Try to get token from Flask session (for HTML page loads)
         if 'jwt_token' in session:
             token = session['jwt_token']
-        # 2. If not in session, try to get from Authorization header (for API calls)
         elif 'Authorization' in request.headers:
             auth_header = request.headers['Authorization']
             if len(auth_header.split(" ")) == 2 and auth_header.split(" ")[0].lower() == 'bearer':
                 token = auth_header.split(" ")[1]
 
         if not token:
-            # If no token is found in session or header, redirect to login for HTML requests
-            # Or return JSON error for API requests
+            logging.warning("Token missing for authenticated route access.")
             if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
                 flash("Authentication required to access this page.", "error")
-                return redirect(url_for('login_page')) # Redirect to the app's login page
-            else: # Assume it's an API request expecting JSON
+                return redirect(url_for('enrollment.login_page'))
+            else:
                 return jsonify({'message': 'Token is missing!'}), 401
 
         try:
+            # Ensure JWT_SECRET_KEY is set in current_app.config
+            if 'JWT_SECRET_KEY' not in current_app.config:
+                logging.error("JWT_SECRET_KEY is not configured in Flask app.config!")
+                raise ValueError("JWT_SECRET_KEY is not configured")
+
             data = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=["HS256"])
             current_user = User.query.get(data['user_id'])
             if not current_user:
+                logging.warning(f"User with ID {data.get('user_id')} not found for valid token.")
                 if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
                     flash("Invalid user associated with token. Please log in again.", "error")
-                    return redirect(url_for('login_page'))
+                    return redirect(url_for('enrollment.login_page'))
                 else:
                     return jsonify({'message': 'User not found!'}), 401
 
         except jwt.ExpiredSignatureError:
+            logging.warning("Expired JWT token detected.")
             if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
                 flash("Your session has expired. Please log in again.", "error")
-                return redirect(url_for('login_page'))
+                return redirect(url_for('enrollment.login_page'))
             else:
                 return jsonify({'message': 'Token has expired!'}), 401
         except jwt.InvalidTokenError:
+            logging.warning("Invalid JWT token detected.")
             if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
                 flash("Invalid authentication token. Please log in again.", "error")
-                return redirect(url_for('login_page'))
+                return redirect(url_for('enrollment.login_page'))
             else:
                 return jsonify({'message': 'Token is invalid!'}), 401
         except Exception as e:
-            logging.error(f"Token verification error: {e}")
+            logging.exception(f"Token verification unexpected error: {e}") # Use exception for full traceback
             if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
                 flash("Authentication error. Please log in again.", "error")
-                return redirect(url_for('login_page'))
+                return redirect(url_for('enrollment.login_page'))
             else:
                 return jsonify({'message': 'Token verification failed: ' + str(e)}), 401
 
@@ -269,277 +402,528 @@ def token_required(f):
 
     return decorated
 
-# ... (rest of your routes.py code, all other routes remain as they were in the previous parts) ...
-
+@enrollment_bp.route('/login', methods=['GET']) # Added a GET route for login page
+def login_page():
+    return render_template('login.html')
 
 @enrollment_bp.route('/auth/login', methods=['POST'])
 def login():
-    """
-    Handles user login, authenticates credentials, and issues a JWT.
-    Expects JSON input: {"username": "...", "password": "..."}
-    """
     data = request.json
+    if not data:
+        data = request.form
+
     if not data or not 'username' in data or not 'password' in data:
-        return jsonify({'message': 'Missing username or password'}), 400
+        logging.warning("Login attempt with missing username or password.")
+        if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+            flash('Missing username or password', 'error')
+            return redirect(url_for('enrollment.login_page'))
+        else:
+            return jsonify({'message': 'Missing username or password'}), 400
 
-    user = User.query.filter_by(username=data['username']).first()
-    if not user or not user.check_password(data['password']):
-        return jsonify({'message': 'Invalid credentials'}), 401
+    username = data['username']
+    password = data['password']
 
-    # If credentials are valid, generate a JWT
-    token_payload = {
-        'user_id': user.id,
-        'username': user.username,
-        'role': user.role,
-        'exp': datetime.utcnow() + current_app.config['JWT_EXPIRATION_DELTA']
-    }
-    token = jwt.encode(token_payload, current_app.config['JWT_SECRET_KEY'], algorithm="HS256")
+    user = None
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            logging.info(f"Login failed: User '{username}' not found.")
+            if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+                flash('Invalid credentials', 'error')
+                return redirect(url_for('enrollment.login_page'))
+            else:
+                return jsonify({'message': 'Invalid credentials'}), 401
+        
+        # IMPORTANT: Ensure your User model has a check_password method
+        # that securely verifies the password (e.g., using werkzeug.security.check_password_hash)
+        if not user.check_password(password):
+            logging.info(f"Login failed: Incorrect password for user '{username}'.")
+            if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+                flash('Invalid credentials', 'error')
+                return redirect(url_for('enrollment.login_page'))
+            else:
+                return jsonify({'message': 'Invalid credentials'}), 401
 
-    # Store token in Flask session upon successful login (for HTML route authentication check)
-    session['jwt_token'] = token
+    except AttributeError as e:
+        # This likely means user.check_password does not exist or is malformed
+        logging.exception(f"AttributeError during user authentication for '{username}': {e}. "
+                          "Ensure User model has a 'check_password' method.")
+        if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+            flash('Server error during login. Please contact support.', 'error')
+            return redirect(url_for('enrollment.login_page'))
+        else:
+            return jsonify({'message': 'Server error during authentication.'}), 500
+    except Exception as e:
+        logging.exception(f"Unexpected error during user lookup or password check for '{username}': {e}")
+        if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+            flash('An unexpected error occurred during login. Please try again.', 'error')
+            return redirect(url_for('enrollment.login_page'))
+        else:
+            return jsonify({'message': 'An unexpected server error occurred.'}), 500
 
-    return jsonify({'message': 'Login successful', 'token': token, 'user': {'id': user.id, 'username': user.username, 'role': user.role}}), 200
+    try:
+        # Ensure JWT_SECRET_KEY and JWT_EXPIRATION_DELTA are set
+        if 'JWT_SECRET_KEY' not in current_app.config:
+            logging.error("JWT_SECRET_KEY is not configured in Flask app.config!")
+            raise ValueError("JWT_SECRET_KEY is not configured")
+        if 'JWT_EXPIRATION_DELTA' not in current_app.config:
+            logging.error("JWT_EXPIRATION_DELTA is not configured in Flask app.config!")
+            # Provide a default if not set, or raise error
+            current_app.config['JWT_EXPIRATION_DELTA'] = timedelta(hours=1)
+            logging.warning("Using default JWT_EXPIRATION_DELTA (1 hour). Please configure it explicitly.")
+
+        token_payload = {
+            'user_id': user.id,
+            'username': user.username,
+            'role': user.role,
+            'exp': datetime.utcnow() + current_app.config['JWT_EXPIRATION_DELTA']
+        }
+        token = jwt.encode(token_payload, current_app.config['JWT_SECRET_KEY'], algorithm="HS256")
+
+        session['jwt_token'] = token
+        session['user_role'] = user.role # Store role in session for easier access in templates
+
+        logging.info(f"User '{username}' logged in successfully. Role: {user.role}")
+
+        if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+            flash('Login successful!', 'success')
+            # Redirect based on role if needed, otherwise to a general dashboard
+            if user.role == 'student':
+                return redirect(url_for('enrollment.dashboard'))
+            # REMOVED ADMIN REDIRECTION: elif user.role in ['admin', 'sas_manager']:
+            # REMOVED ADMIN REDIRECTION:     return redirect(url_for('enrollment.admin_dashboard'))
+            else: # For any other role, or if student, go to dashboard
+                return redirect(url_for('enrollment.dashboard'))
+        else:
+            return jsonify({'message': 'Login successful', 'token': token, 'user': {'id': user.id, 'username': user.username, 'role': user.role}}), 200
+    except Exception as e:
+        logging.exception(f"Error during JWT encoding or session management for user '{username}': {e}")
+        if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+            flash('An error occurred after successful login. Please try again.', 'error')
+            return redirect(url_for('enrollment.login_page'))
+        else:
+            return jsonify({'message': 'Server error after authentication.'}), 500
+
+@enrollment_bp.route('/auth/logout')
+@token_required
+def logout(current_user):
+    session.pop('jwt_token', None)
+    session.pop('user_role', None)
+    flash('You have been logged out.', 'info')
+    logging.info(f"User '{current_user.username}' logged out.")
+    return redirect(url_for('enrollment.login_page'))
+
 
 @enrollment_bp.route('/auth/verify_token', methods=['GET'])
-@token_required # Protect this endpoint itself for demonstration
+@token_required
 def verify_token(current_user):
-    """
-    Verifies the provided JWT and returns user information.
-    Accessible only with a valid token.
-    """
-    # If the decorator passed, the token is valid and current_user is set
+    logging.debug(f"Token verification successful for user '{current_user.username}'.")
     return jsonify({
         'message': 'Token is valid',
         'user_id': current_user.id,
         'username': current_user.username,
         'role': current_user.role
     }), 200
-# enrollment_services/routes.py (add this in the authentication section)
 
 @enrollment_bp.route('/auth/set_session_token', methods=['POST'])
 def set_session_token():
-    """
-    Receives a JWT from the client and stores it in the Flask session.
-    This is used to bridge client-side localStorage/cookies with server-side session
-    for HTML page authentication checks.
-    """
     data = request.json
     token = data.get('token')
 
     if token:
-        # Optionally, you could decode and validate the token here again,
-        # but for this flow, we assume it's just received from a successful login
-        # and its validation will happen on actual protected routes.
-        session['jwt_token'] = token
+        try:
+            # Ensure JWT_SECRET_KEY is set
+            if 'JWT_SECRET_KEY' not in current_app.config:
+                logging.error("JWT_SECRET_KEY is not configured in Flask app.config for set_session_token!")
+                raise ValueError("JWT_SECRET_KEY is not configured")
+
+            decoded_token = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=["HS256"])
+            session['jwt_token'] = token
+            session['user_role'] = decoded_token.get('role')
+            logging.info(f"Session token set for user ID: {decoded_token.get('user_id')}, role: {decoded_token.get('role')}")
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
+            logging.warning(f"Attempted to set expired or invalid token in session via set_session_token: {e}")
+            # Clear session token if it's invalid
+            session.pop('jwt_token', None)
+            session.pop('user_role', None)
+            return jsonify({'message': 'Provided token is invalid or expired'}), 400
+        except Exception as e:
+            logging.exception(f"Unexpected error in set_session_token: {e}")
+            return jsonify({'message': 'Server error setting session token.'}), 500
+
         return jsonify({'message': 'Token set in session successfully'}), 200
     else:
+        logging.warning("No token provided to set_session_token.")
         return jsonify({'message': 'No token provided'}), 400
 
-# ... (rest of your routes.py code) ...
-# enrollment_services/routes.py (continued from Part 2)
-
 # --- Frontend-facing Routes (HTML Rendering) ---
-# These routes handle displaying HTML pages and simple user interactions that might
-# involve session data. They will be prefixed by the blueprint's url_prefix (e.g., /enrollment_services/)
-# when registered in run_es.py.
-# All these routes are now protected by the token_required decorator.
 
 @enrollment_bp.route('/')
 @enrollment_bp.route('/dashboard')
-@token_required # Protect the dashboard route
-def dashboard(current_user): # Add current_user parameter to receive user info from decorator
-    """Renders the dashboard page. Requires authentication."""
-    # You can now use current_user.username, current_user.role etc. in your dashboard.html template
-    # Example: return render_template('dashboard.html', user=current_user)
-    return render_template('dashboard.html')
+@token_required
+def dashboard(current_user):
+    if current_user.role == 'student':
+        has_active_hold = Hold.query.filter_by(StudentID=current_user.id, status='Active').first() is not None
+        logging.info(f"Rendering dashboard for student '{current_user.username}'. Has active hold: {has_active_hold}")
+        return render_template('dashboard.html', current_user=current_user, has_active_hold=has_active_hold)
+    else: # If not a student, or any other role, redirect to general dashboard
+        flash("Unauthorized access. This dashboard is for students only.", "error")
+        logging.warning(f"Unauthorized dashboard access attempt by user '{current_user.username}' with role '{current_user.role}'.")
+        return redirect(url_for('enrollment.login_page'))
+
+
+# REMOVED ADMIN DASHBOARD ROUTE: @enrollment_bp.route('/admin_dashboard')
+# REMOVED ADMIN DASHBOARD ROUTE: def admin_dashboard(current_user):
+# REMOVED ADMIN DASHBOARD ROUTE:    if current_user.role not in ['admin', 'sas_manager']:
+# REMOVED ADMIN REDIRECTION:        flash("Unauthorized access.", "error")
+# REMOVED ADMIN REDIRECTION:        return redirect(url_for('enrollment.dashboard'))
+# REMOVED ADMIN REDIRECTION:    return render_template('admin_dashboard.html', current_user=current_user)
 
 @enrollment_bp.route('/enroll', methods=['GET', 'POST'])
-@token_required # Protect the enroll route
-def enroll(current_user): # Add current_user parameter
-    """Handles course enrollment. Requires authentication."""
+@token_required
+def enroll(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access. Only students can enroll in courses.", "error")
+        logging.warning(f"Enrollment access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    # Check if student is on hold before allowing enrollment
+    active_hold = Hold.query.filter_by(StudentID=current_user.id, status='Active').first()
+    if active_hold:
+        course_reg_service = ServiceAccess.query.filter_by(service_name='course_registration').first()
+        if course_reg_service and not course_reg_service.is_available_on_hold:
+            flash(f"You have an active hold on your account ({active_hold.reason}). Course registration is currently restricted. Please resolve your hold.", "error")
+            logging.info(f"Enrollment restricted for student '{current_user.username}' due to active hold: {active_hold.reason}.")
+            return redirect(url_for('enrollment.student_hold_status'))
+
     try:
-        # Fetch only 'CS' courses from the database
-        # This filters courses where CourseID starts with 'CS'
-        all_cs_courses = Course.query.filter(Course.CourseID.like('CS%')).options(
-            joinedload(Course.subprogram),
-            joinedload(Course.course_availabilities).joinedload(CourseAvailability.semester)
-        ).all()
-
-        # Fetch courses the student has ALREADY completed or is currently enrolled in
-        student_completed_courses = set() # Placeholder for actual completed courses
         current_enrollments = Enrollment.query.filter_by(StudentID=current_user.id).all()
-        currently_enrolled_course_ids = {e.CourseID for e in current_enrollments}
+        currently_enrolled_course_codes = {e.CourseID for e in current_enrollments}
 
-        # Combine explicitly completed courses with currently enrolled ones for prerequisite checks
-        all_met_courses_for_prereq_check = student_completed_courses.union(currently_enrolled_course_ids)
+        all_met_courses_for_prereq_check = set()
+        completed_grades = Grade.query.filter_by(student_id=current_user.id).all()
+        for grade_record in completed_grades:
+            if grade_record.letter_grade.upper() in ['A+', 'A', 'B+', 'B', 'C+', 'C', 'P', 'CR', 'AEG', 'CMP']:
+                all_met_courses_for_prereq_check.add(grade_record.course.CourseID.split('(')[0].strip())
+        
+        for course_code in currently_enrolled_course_codes:
+            all_met_courses_for_prereq_check.add(course_code.split('(')[0].strip())
+
+
+        completed_years = set()
+        
+        year_1_unique_courses = get_unique_course_codes_for_year(PROGRAM_STRUCTURE['Year 1'])
+        if year_1_unique_courses.issubset(all_met_courses_for_prereq_check):
+            completed_years.add('Year 1')
+
+        if 'Year 1' in completed_years:
+            year_2_unique_courses = get_unique_course_codes_for_year(PROGRAM_STRUCTURE['Year 2'])
+            if year_2_unique_courses.issubset(all_met_courses_for_prereq_check):
+                completed_years.add('Year 2')
+
+        if 'Year 2' in completed_years:
+            year_3_unique_courses = get_unique_course_codes_for_year(PROGRAM_STRUCTURE['Year 3'])
+            if year_3_unique_courses.issubset(all_met_courses_for_prereq_check):
+                completed_years.add('Year 3')
+        
+        if 'Year 3' in completed_years:
+            year_4_unique_courses = get_unique_course_codes_for_year(PROGRAM_STRUCTURE['Year 4'])
+            if year_4_unique_courses.issubset(all_met_courses_for_prereq_check):
+                completed_years.add('Year 4')
 
         courses_for_template = []
-        for course_db in all_cs_courses: # Iterate through filtered CS courses
-            prerequisite_course_name = None
-            prereq_met = True
-            if course_db.PrerequisiteCourseID:
-                prereq_course_obj = Course.query.get(course_db.PrerequisiteCourseID)
-                if prereq_course_obj:
-                    prerequisite_course_name = prereq_course_obj.CourseName
-                    if prereq_course_obj.CourseID not in all_met_courses_for_prereq_check:
+        for year_name, year_data in PROGRAM_STRUCTURE.items():
+            year_unlocked = True
+            if year_name == 'Year 2' and 'Year 1' not in completed_years:
+                year_unlocked = False
+            elif year_name == 'Year 3' and 'Year 2' not in completed_years:
+                year_unlocked = False
+            elif year_name == 'Year 4' and 'Year 3' not in completed_years:
+                year_unlocked = False
+
+            for semester_name, semester_courses in year_data.items():
+                for course_info in semester_courses:
+                    course_code = course_info['code']
+                    base_course_code = course_code.split('(')[0].strip()
+
+                    prereq_met = True
+                    prereq_display_name = None
+
+                    if course_info['prereq']:
+                        prereq_course_code = course_info['prereq']
+                        prereq_course_obj = Course.query.get(prereq_course_code)
+                        if prereq_course_obj:
+                            prereq_display_name = prereq_course_obj.CourseName
+                        else:
+                            prereq_display_name = prereq_course_code
+
+                        if prereq_course_code not in all_met_courses_for_prereq_check:
+                            prereq_met = False
+                    
+                    if not year_unlocked:
                         prereq_met = False
-                else:
-                    # Prerequisite course ID exists but actual course object not found
-                    prerequisite_course_name = f"Unknown ({course_db.PrerequisiteCourseID})"
-                    prereq_met = False # Cannot verify if prerequisite is met
+                        if year_name == 'Year 2':
+                            prereq_display_name = prereq_display_name or "Completion of Year 1"
+                        elif year_name == 'Year 3':
+                            prereq_display_name = prereq_display_name or "Completion of Year 2"
+                        elif year_name == 'Year 4':
+                            prereq_display_name = prereq_display_name or "Completion of Year 3"
 
-            # Check if course is already enrolled
-            already_enrolled = course_db.CourseID in currently_enrolled_course_ids
 
-            courses_for_template.append({
-                'code': course_db.CourseID,
-                'title': course_db.CourseName,
-                'description': f"Offered in {', '.join([ca.semester.SemesterName for ca in course_db.course_availabilities if ca.isAvailable])}" if course_db.course_availabilities else 'Availability Unknown',
-                'prerequisites': {prerequisite_course_name} if prerequisite_course_name else set(),
-                'prereq_met': prereq_met,
-                'already_enrolled': already_enrolled
-            })
+                    already_enrolled = course_code in currently_enrolled_course_codes
+
+                    courses_for_template.append({
+                        'code': course_code,
+                        'title': course_info['title'],
+                        'units': course_info['units'],
+                        'semester_name': semester_name,
+                        'year_name': year_name,
+                        'prereq_met': prereq_met,
+                        'prerequisites_display': prereq_display_name,
+                        'already_enrolled': already_enrolled,
+                        'year_unlocked': year_unlocked
+                    })
 
         if request.method == 'POST':
             selected_codes = request.form.getlist('courses')
-            if len(selected_codes) > 4:
-                flash('You can select a maximum of 4 courses.', 'error')
+            
+            unit_count = 0.0
+            for code in selected_codes:
+                found_units = 0.0
+                for year_data in PROGRAM_STRUCTURE.values():
+                    for semester_data in year_data.values():
+                        for course_info in semester_data:
+                            if course_info['code'] == code:
+                                found_units = course_info['units']
+                                break
+                        if found_units > 0: break
+                    if found_units > 0: break
+                unit_count += found_units
+
+            # CUSTOM MESSAGE START
+            if unit_count > 4.0:
+                flash('You have exceeded the maximum enrollment limit of 4 full units. Please note that UU100A and CS001 each count as 0.5 units. Adjust your selection to proceed.', 'error')
+                logging.warning(f"Student '{current_user.username}' attempted to enroll in {unit_count} units, exceeding the 4.0 unit limit.")
                 return redirect(url_for('enrollment.enroll'))
+            # CUSTOM MESSAGE END
 
             unmet = []
             already_enrolled_in_selection = []
-            courses_to_enroll = []
+            courses_to_enroll_db_records = []
 
             for course_code in selected_codes:
-                course_obj = Course.query.get(course_code)
-                if not course_obj:
-                    flash(f"Error: Course '{course_code}' not found.", 'error')
+                course_info_selected = None
+                for year_data in PROGRAM_STRUCTURE.values():
+                    for semester_data in year_data.values():
+                        for c_info in semester_data:
+                            if c_info['code'] == course_code:
+                                course_info_selected = c_info
+                                break
+                        if course_info_selected: break
+                    if course_info_selected: break
+
+                if not course_info_selected:
+                    flash(f"Error: Course '{course_code}' not found in program structure.", 'error')
                     continue
 
-                # Re-check prerequisites for the selected course
-                prereq_met_for_selected = True
-                if course_obj.PrerequisiteCourseID:
-                    prereq_course_obj = Course.query.get(course_obj.PrerequisiteCourseID)
-                    if prereq_course_obj:
-                        prerequisite_course_name = prereq_course_obj.CourseName
-                        if prereq_course_obj.CourseID not in all_met_courses_for_prereq_check:
-                            prereq_met_for_selected = False
-                            # Fetch the actual prerequisite course name for the flash message
-                            prereq_course_for_msg = Course.query.get(course_obj.PrerequisiteCourseID)
-                            unmet_course_name = prereq_course_for_msg.CourseName if prereq_course_for_msg else course_obj.PrerequisiteCourseID
-                            unmet.append(f"{course_obj.CourseName} (requires {unmet_course_name})")
+                is_prereq_met_for_selected = True
+                prereq_message = ""
 
-                # Check if already enrolled
-                if course_code in currently_enrolled_course_ids:
-                    already_enrolled_in_selection.append(course_obj.CourseName)
+                selected_course_year_name = None
+                for year_name, year_data in PROGRAM_STRUCTURE.items():
+                    for semester_courses in year_data.values():
+                        if any(c['code'] == course_code for c in semester_courses):
+                            selected_course_year_name = year_name
+                            break
+                    if selected_course_year_name: break
 
-                if prereq_met_for_selected and not (course_code in currently_enrolled_course_ids):
-                    courses_to_enroll.append(course_obj)
+                year_index = list(PROGRAM_STRUCTURE.keys()).index(selected_course_year_name)
+                for i in range(year_index):
+                    prev_year_name = list(PROGRAM_STRUCTURE.keys())[i]
+                    prev_year_unique_courses = get_unique_course_codes_for_year(PROGRAM_STRUCTURE[prev_year_name])
+                    if not prev_year_unique_courses.issubset(all_met_courses_for_prereq_check):
+                        is_prereq_met_for_selected = False
+                        prereq_message = f"Completion of {prev_year_name}"
+                        break
+
+                if is_prereq_met_for_selected and course_info_selected['prereq']:
+                    prereq_code = course_info_selected['prereq']
+                    if prereq_code not in all_met_courses_for_prereq_check:
+                        is_prereq_met_for_selected = False
+                        prereq_course_obj = Course.query.get(prereq_code)
+                        prereq_display_name = prereq_course_obj.CourseName if prereq_course_obj else prereq_code
+                        prereq_message = prereq_display_name
+
+                if course_code in currently_enrolled_course_codes:
+                    already_enrolled_in_selection.append(course_info_selected['title'])
+                    continue
+
+                if not is_prereq_met_for_selected:
+                    unmet.append(f"{course_info_selected['title']} (requires {prereq_message})")
+                    continue
+
+                db_course_obj = Course.query.get(course_code)
+                if not db_course_obj:
+                    logging.warning(f"Course {course_code} from PROGRAM_STRUCTURE not found in DB. Creating a mock Course object for enrollment.")
+                    db_course_obj = Course(CourseID=course_code, CourseName=course_info_selected['title'], SubProgramID='SE', PrerequisiteCourseID=course_info_selected['prereq'])
+                    db.session.add(db_course_obj)
+                
+                courses_to_enroll_db_records.append(db_course_obj)
+
 
             if unmet:
                 flash(f"Cannot enroll in: {', '.join(unmet)} due to unmet prerequisites.", 'error')
             if already_enrolled_in_selection:
                 flash(f"You are already enrolled in: {', '.join(already_enrolled_in_selection)}.", 'info')
 
-            if courses_to_enroll:
+            if courses_to_enroll_db_records:
                 newly_enrolled_count = 0
-                for course_to_add in courses_to_enroll:
+                for course_to_add in courses_to_enroll_db_records:
                     try:
                         new_enrollment_id = str(uuid.uuid4())[:10]
-                        
-                        # Ensure ID is unique (though uuid4 makes it highly improbable to clash)
                         while db.session.get(Enrollment, new_enrollment_id):
                             new_enrollment_id = str(uuid.uuid4())[:10]
 
                         enrollment = Enrollment(
                             EnrollmentID=new_enrollment_id,
-                            StudentID=current_user.id, # Use the logged-in student's ID
+                            StudentID=current_user.id,
                             CourseID=course_to_add.CourseID,
                             EnrollmentDate=datetime.utcnow().date()
                         )
                         db.session.add(enrollment)
                         newly_enrolled_count += 1
-                        all_met_courses_for_prereq_check.add(course_to_add.CourseID) # Update for subsequent prereq checks in the same session
-                        currently_enrolled_course_ids.add(course_to_add.CourseID)
+                        all_met_courses_for_prereq_check.add(course_to_add.CourseID.split('(')[0].strip())
+                        currently_enrolled_course_codes.add(course_to_add.CourseID)
 
                     except IntegrityError:
                         db.session.rollback()
                         flash(f"Error: Duplicate enrollment or ID conflict for {course_to_add.CourseName}. Please try again.", "error")
                         logging.error(f"IntegrityError during enrollment for {current_user.id} in {course_to_add.CourseID}")
-                        return redirect(url_for('enrollment.enroll')) # Redirect to prevent re-submission issue
+                        return redirect(url_for('enrollment.enroll'))
                     except Exception as e:
                         db.session.rollback()
                         flash(f"An unexpected error occurred during enrollment for {course_to_add.CourseName}.", "error")
                         logging.error(f"Error enrolling student {current_user.id} in course {course_to_add.CourseID}: {e}")
-                        return redirect(url_for('enrollment.enroll')) # Redirect to prevent re-submission issue
+                        return redirect(url_for('enrollment.enroll'))
                 
-                db.session.commit() # Commit all new enrollments in one go
+                db.session.commit()
                 if newly_enrolled_count > 0:
                     flash(f'Successfully enrolled in {newly_enrolled_count} new course(s)! Please confirm your courses.', 'success')
                 return redirect(url_for('enrollment.display_courses'))
 
-        # Prepare courses for rendering again, with updated prereq_met status based on new enrollments
-        # This loop is slightly redundant if no POST occurred, but harmless.
-        # It ensures correct state if there was a partial enrollment or error.
-        updated_courses_for_template = []
-        for course_item in courses_for_template:
-            course_obj = Course.query.get(course_item['code'])
-            prerequisite_course_name = None
-            prereq_met_display = True
-            if course_obj.PrerequisiteCourseID:
-                prereq_course_obj = Course.query.get(course_obj.PrerequisiteCourseID)
-                if prereq_course_obj:
-                    prerequisite_course_name = prereq_course_obj.CourseName
-                    if prereq_course_obj.CourseID not in all_met_courses_for_prereq_check:
-                        prereq_met_display = False
-                else:
-                    prerequisite_course_name = f"Unknown ({course_obj.PrerequisiteCourseID})"
-                    prereq_met_display = False
+        final_courses_for_template = []
+        for year_name, year_data in PROGRAM_STRUCTURE.items():
+            year_unlocked = True
+            if year_name == 'Year 2' and 'Year 1' not in completed_years:
+                year_unlocked = False
+            elif year_name == 'Year 3' and 'Year 2' not in completed_years:
+                year_unlocked = False
+            elif year_name == 'Year 4' and 'Year 3' not in completed_years:
+                year_unlocked = False
 
-            course_item['prerequisites'] = {prerequisite_course_name} if prerequisite_course_name else set()
-            course_item['prereq_met'] = prereq_met_display
-            course_item['already_enrolled'] = course_item['code'] in currently_enrolled_course_ids
-            updated_courses_for_template.append(course_item)
+            for semester_name, semester_courses in year_data.items():
+                for course_info in semester_courses:
+                    course_code = course_info['code']
+                    base_course_code = course_code.split('(')[0].strip()
+
+                    prereq_met = True
+                    prereq_display_name = None
+
+                    if not year_unlocked:
+                        prereq_met = False
+                        if year_name == 'Year 2':
+                            prereq_display_name = "Completion of Year 1"
+                        elif year_name == 'Year 3':
+                            prereq_display_name = "Completion of Year 2"
+                        elif year_name == 'Year 4':
+                            prereq_display_name = "Completion of Year 3"
+                    
+                    if prereq_met and course_info['prereq']:
+                        prereq_code = course_info['prereq']
+                        if prereq_code not in all_met_courses_for_prereq_check:
+                            prereq_met = False
+                            prereq_course_obj = Course.query.get(prereq_code)
+                            prereq_display_name = prereq_course_obj.CourseName if prereq_course_obj else prereq_code
+
+                    already_enrolled = course_code in currently_enrolled_course_codes
+
+                    final_courses_for_template.append({
+                        'code': course_code,
+                        'title': course_info['title'],
+                        'units': course_info['units'],
+                        'semester_name': semester_name,
+                        'year_name': year_name,
+                        'prereq_met': prereq_met,
+                        'prerequisites_display': prereq_display_name,
+                        'already_enrolled': already_enrolled,
+                        'year_unlocked': year_unlocked
+                    })
 
 
-        return render_template('enroll.html', courses=updated_courses_for_template)
+        return render_template('enroll.html', courses=final_courses_for_template, program_structure=PROGRAM_STRUCTURE)
     except Exception as e:
-        logging.error(f"Error in /enroll: {e}")
-        db.session.rollback() # Ensure rollback on any unhandled exception
-        flash("An unexpected error occurred. Please try again.", "error")
+        logging.exception(f"Error in /enroll for student {current_user.id}: {e}")
+        db.session.rollback()
+        flash("An unexpected error occurred during enrollment. Please try again.", "error")
         return render_template('500.html'), 500
 
 @enrollment_bp.route('/display_courses')
-@token_required # Protect the display_courses route
-def display_courses(current_user): # Add current_user parameter
-    """Displays the courses currently selected/enrolled by the student (from session). Requires authentication."""
+@token_required
+def display_courses(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access. Only students can view their courses.", "error")
+        logging.warning(f"Display courses access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
     try:
-        # Fetch enrolled courses for the logged-in student from the database
-        # Eager load the 'course' relationship to get CourseName directly
-        enrolled_courses = Enrollment.query.filter_by(StudentID=current_user.id).options(joinedload(Enrollment.course)).all()
+        # Load enrollments and explicitly join with Course for course details
+        enrolled_courses_db = Enrollment.query.filter_by(StudentID=current_user.id).options(joinedload(Enrollment.course)).all()
         
-        # We need to transform this into a format compatible with your existing template
-        # The template expects 'code', 'title', 'semester'
         courses_for_template = []
-        for enrollment in enrolled_courses:
-            if enrollment.course: # Ensure the course relationship was loaded
+        
+        # Iterate through enrolled_courses_db to get details directly from the joined course object
+        for enrollment in enrolled_courses_db:
+            if enrollment.course: # Ensure the joined course object exists
                 courses_for_template.append({
                     'code': enrollment.course.CourseID,
                     'title': enrollment.course.CourseName,
-                    'semester': 'Semester 2, 2025' # You might want to get this dynamically from CourseAvailability/Semester
+                    # FIX: Get semester from CourseAvailability if available, or default
+                    'semester': 'Unknown Semester', # Default value
+                    'units': getattr(enrollment.course, 'credit_hours', 1.0) # Default to 1.0 if not on Course model
+                })
+                
+                # Try to find a CourseAvailability for the course and get its semester name
+                course_avail = CourseAvailability.query.filter_by(CourseID=enrollment.course.CourseID).first()
+                if course_avail and course_avail.semester:
+                    # Update the semester for the last added course_for_template entry
+                    courses_for_template[-1]['semester'] = course_avail.semester.SemesterName
+
+            else: # Fallback if course object is unexpectedly None (shouldn't happen with proper data integrity)
+                 logging.warning(f"Enrollment {enrollment.EnrollmentID} for student {current_user.id} refers to non-existent CourseID {enrollment.CourseID}.")
+                 courses_for_template.append({
+                    'code': enrollment.CourseID,
+                    'title': f"Unknown Course ({enrollment.CourseID})",
+                    'semester': 'Unknown Semester',
+                    'units': 0.0 # Default to 0.0 if course info is completely missing
                 })
 
+
+        logging.info(f"Displaying {len(courses_for_template)} enrolled courses for student '{current_user.username}'.")
         return render_template('display_courses.html', enrolled_courses=courses_for_template)
     except Exception as e:
-        logging.error(f"Error in /display_courses: {e}")
+        logging.exception(f"Error in /display_courses for student {current_user.id}: {e}")
         return render_template('500.html'), 500
 
 @enrollment_bp.route('/drop_course/<course_code>')
-@token_required # Protect the drop_course route
-def drop_course(current_user, course_code): # Add current_user parameter
-    """Allows a student to drop a course from their current session enrollment. Requires authentication."""
+@token_required
+def drop_course(current_user, course_code):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access. Only students can drop courses.", "error")
+        logging.warning(f"Drop course access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
     try:
-        # Find the enrollment record for the current student and the specified course
         enrollment_to_delete = Enrollment.query.filter_by(
             StudentID=current_user.id,
             CourseID=course_code
@@ -549,50 +933,68 @@ def drop_course(current_user, course_code): # Add current_user parameter
             db.session.delete(enrollment_to_delete)
             db.session.commit()
             flash(f'Course {course_code} dropped successfully.', 'success')
+            logging.info(f"Student '{current_user.username}' successfully dropped course '{course_code}'.")
         else:
             flash(f'Enrollment for course {course_code} not found.', 'error')
+            logging.warning(f"Student '{current_user.username}' attempted to drop non-existent enrollment for course '{course_code}'.")
             
         return redirect(url_for('enrollment.display_courses'))
     except Exception as e:
-        db.session.rollback() # Rollback in case of error
-        logging.error(f"Error in /drop_course/{course_code}: {e}")
+        db.session.rollback()
+        logging.exception(f"Error in /drop_course/{course_code}: {e}")
         flash(f"An error occurred while dropping course {course_code}.", "error")
         return render_template('500.html'), 500
 
 @enrollment_bp.route('/fees')
-@token_required # Protect the fees route
-def fees(current_user): # Add current_user parameter
-    """Renders the fees overview page, showing calculated invoice details. Requires authentication."""
+@token_required
+def fees(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access. Only students can view their fees.", "error")
+        logging.warning(f"Fees access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
     try:
-        # Fetch actual enrolled courses for the student
-        enrolled_courses_db = Enrollment.query.filter_by(StudentID=current_user.id).options(
-            joinedload(Enrollment.course).joinedload(Course.course_fees_records)
-        ).all()
+        general_services_fee = 50.00
+
+        enrolled_courses_db = Enrollment.query.filter_by(StudentID=current_user.id).all()
         
         invoice_items = []
         total_amount = 0
 
+        all_program_courses = {}
+        for year_data in PROGRAM_STRUCTURE.values():
+            for semester_data in year_data.values():
+                for course_info in semester_data:
+                    all_program_courses[course_info['code']] = course_info
+
         for enrollment in enrolled_courses_db:
-            course = enrollment.course
-            if course and course.course_fees_records:
-                # Assuming one fee per course for simplicity for now
-                course_fee = course.course_fees_records[0] 
-                subtotal = float(course_fee.amount) # Ensure subtotal is float
+            course_code = enrollment.CourseID
+            course_info = all_program_courses.get(course_code)
+            if course_info:
+                course_fee_amount = 0.0
+                db_course_fee = CourseFee.query.filter_by(CourseID=course_code).first()
+                if db_course_fee:
+                    course_fee_amount = float(db_course_fee.amount)
+                else:
+                    course_fee_amount = course_info['units'] * 100.00
+
+                subtotal = course_fee_amount
                 invoice_items.append({
-                    'code': course.CourseID,
-                    'title': course.CourseName,
-                    'fee': subtotal # Directly use the fee amount
+                    'code': course_code,
+                    'title': course_info['title'],
+                    'fee': subtotal
                 })
                 total_amount += subtotal
-            elif course:
-                # If no fee record found for the course, provide a default fee of 0.00
-                invoice_items.append({
-                    'code': course.CourseID,
-                    'title': course.CourseName,
-                    'fee': 0.00 # Default to 0.00 if no fee record
+            else:
+                 db_course = Course.query.get(course_code)
+                 invoice_items.append({
+                    'code': course_code,
+                    'title': db_course.CourseName if db_course else f"Unknown Course ({course_code})",
+                    'fee': 0.00
                 })
-
-        # Update student_details and invoice_details dynamically
+        
+        total_amount += general_services_fee
+        
         student_data = Student.query.get(current_user.id)
         if student_data:
             student_details['name'] = f"{student_data.FirstName} {student_data.LastName}"
@@ -601,12 +1003,9 @@ def fees(current_user): # Add current_user parameter
             student_details['name'] = current_user.username
             student_details['id'] = current_user.id
             
-        # Generate a random invoice number
-        invoice_details['number'] = f"INV-{uuid.uuid4().hex[:8].upper()}"  # Generate a random 8-character hex string
+        invoice_details['number'] = f"INV-{uuid.uuid4().hex[:8].upper()}"
         invoice_details['date'] = datetime.now().strftime('%B %d, %Y')
-        # This part ('Semester 2, 2025') is still hardcoded as your schema doesn't link enrollment to specific semester easily
         invoice_details['semester'] = 'Semester 2, 2025'
-        # Determine payment status (e.g., check StudentCourseFee status)
         student_fees_records = StudentCourseFee.query.filter_by(StudentID=current_user.id, status='Outstanding').first()
         if student_fees_records:
             invoice_details['payment_status'] = 'Pending'
@@ -614,48 +1013,70 @@ def fees(current_user): # Add current_user parameter
             invoice_details['payment_status'] = 'Paid'
 
 
+        logging.info(f"Displaying fees for student '{current_user.username}'. Total: ${total_amount:.2f}, Status: {invoice_details['payment_status']}.")
         return render_template(
             'fees.html',
             student=student_details,
             invoice=invoice_details,
             items=invoice_items,
-            total=total_amount
+            total=total_amount,
+            general_services_fee=general_services_fee
         )
     except Exception as e:
-        logging.error(f"Error in /fees: {e}")
+        logging.exception(f"Error in /fees for student {current_user.id}: {e}")
         return render_template('500.html'), 500
 
 @enrollment_bp.route('/download_invoice_pdf')
-@token_required # Protect the download_invoice_pdf route
-def download_invoice_pdf(current_user): # Add current_user parameter
-    """Generates and provides a PDF download of the invoice. Requires authentication."""
+@token_required
+def download_invoice_pdf(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access. Only students can download invoices.", "error")
+        logging.warning(f"Invoice download access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
     try:
-        # Fetch actual enrolled courses for the student
-        enrolled_courses_db = Enrollment.query.filter_by(StudentID=current_user.id).options(
-            joinedload(Enrollment.course).joinedload(Course.course_fees_records)
-        ).all()
+        general_services_fee = 50.00
+
+        enrolled_courses_db = Enrollment.query.filter_by(StudentID=current_user.id).all()
         
         invoice_items = []
         total_amount = 0
 
+        all_program_courses = {}
+        for year_data in PROGRAM_STRUCTURE.values():
+            for semester_data in year_data.values():
+                for course_info in semester_data:
+                    all_program_courses[course_info['code']] = course_info
+
         for enrollment in enrolled_courses_db:
-            course = enrollment.course
-            if course and course.course_fees_records:
-                course_fee = course.course_fees_records[0] # Assuming one fee per course
-                subtotal = float(course_fee.amount) # Ensure subtotal is float
+            course_code = enrollment.CourseID
+            course_info = all_program_courses.get(course_code)
+            if course_info:
+                course_fee_amount = 0.0
+                db_course_fee = CourseFee.query.filter_by(CourseID=course_code).first()
+                if db_course_fee:
+                    course_fee_amount = float(db_course_fee.amount)
+                else:
+                    course_fee_amount = course_info['units'] * 100.00
+
+                subtotal = course_fee_amount
                 invoice_items.append({
-                    'code': course.CourseID,
-                    'title': course.CourseName,
-                    'fee': subtotal # Directly use the fee amount
+                    'code': course_code,
+                    'title': course_info['title'],
+                    'credits': course_info['units'],
+                    'fee_per_credit': course_fee_amount,
+                    'subtotal': subtotal
                 })
                 total_amount += subtotal
-            elif course:
-                # If no fee record found for the course, provide a default fee of 0.00
-                invoice_items.append({
-                    'code': course.CourseID,
-                    'title': course.CourseName,
-                    'fee': 0.00 # Default to 0.00 if no fee record
+            else:
+                 db_course = Course.query.get(course_code)
+                 invoice_items.append({
+                    'code': course_code,
+                    'title': db_course.CourseName if db_course else f"Unknown Course ({course_code})",
+                    'fee': 0.00
                 })
+        
+        total_amount += general_services_fee
         
         student_data = Student.query.get(current_user.id)
         if student_data:
@@ -665,10 +1086,9 @@ def download_invoice_pdf(current_user): # Add current_user parameter
             student_details['name'] = current_user.username
             student_details['id'] = current_user.id
 
-        # Generate a random invoice number
         invoice_details['number'] = f"INV-{uuid.uuid4().hex[:8].upper()}"
         invoice_details['date'] = datetime.now().strftime('%B %d, %Y')
-        invoice_details['semester'] = 'Semester 2, 2025' # Still hardcoded
+        invoice_details['semester'] = 'Semester 2, 2025'
         student_fees_records = StudentCourseFee.query.filter_by(StudentID=current_user.id, status='Outstanding').first()
         if student_fees_records:
             invoice_details['payment_status'] = 'Pending'
@@ -677,691 +1097,960 @@ def download_invoice_pdf(current_user): # Add current_user parameter
 
 
         buffer = BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=letter)
+        doc = SimpleDocTemplate(buffer, pagesize=letter,
+                                rightMargin=inch/2, leftMargin=inch/2,
+                                topMargin=inch/2, bottomMargin=inch/2)
+        
+        styles = getSampleStyleSheet()
+
+        # Custom styles for PDF
+        title_style = ParagraphStyle(
+            'TitleStyle',
+            parent=styles['h1'],
+            fontSize=18,
+            spaceAfter=14,
+            alignment=1 # CENTER
+        )
+        header_style = ParagraphStyle(
+            'HeaderStyle',
+            parent=styles['h2'],
+            fontSize=14,
+            spaceAfter=10,
+            alignment=1 # CENTER
+        )
+        section_title_style = ParagraphStyle(
+            'SectionTitleStyle',
+            parent=styles['h3'],
+            fontSize=12,
+            spaceBefore=10,
+            spaceAfter=6
+        )
+        normal_style = styles['Normal']
+        normal_bold_style = ParagraphStyle(
+            'NormalBold',
+            parent=normal_style,
+            fontName='Helvetica-Bold'
+        )
+
         elements = []
-        styles = getSampleStyleSheet() # Corrected typo here
 
-        # Build PDF content
-        elements.append(Paragraph("Invoice", styles['h1']))
-        elements.append(Paragraph("University of the South Pacific", styles['h2']))
-        elements.append(Paragraph(f"Invoice Number: {invoice_details['number']}", styles['Normal']))
-        elements.append(Paragraph(f"Date: {invoice_details['date']}", styles['Normal']))
-        elements.append(Paragraph(f"Semester: {invoice_details['semester']}", styles['Normal']))
+        # University Header
+        elements.append(Paragraph("University of the South Pacific", title_style))
+        elements.append(Paragraph("Invoice", header_style))
+        elements.append(Paragraph("Registrar's Office | Suva, Fiji", normal_style))
+        elements.append(Paragraph("Phone: [Your University Phone] | Email: [Your University Email]", normal_style))
+        elements.append(Paragraph("Website: [Your University Website]", normal_style))
+        elements.append(Spacer(1, 0.2 * inch))
 
-        elements.append(Paragraph("Student Details", styles['h3']))
-        elements.append(Paragraph(f"Name: {student_details['name']}", styles['Normal']))
-        elements.append(Paragraph(f"ID: {student_details['id']}", styles['Normal']))
+        # Invoice Details
+        elements.append(Paragraph("Invoice Details:", section_title_style))
+        elements.append(Paragraph(f"<b>Invoice Number:</b> {invoice_details['number']}", normal_style))
+        elements.append(Paragraph(f"<b>Date:</b> {invoice_details['date']}", normal_style))
+        elements.append(Paragraph(f"<b>Semester:</b> {invoice_details['semester']}", normal_style))
+        elements.append(Spacer(1, 0.1 * inch))
 
-        # PDF Table data: Course Code, Course Title, Fee
-        data = [['Course Code', 'Course Title', 'Fee']]
+        # Student Details
+        elements.append(Paragraph("Student Details:", section_title_style))
+        elements.append(Paragraph(f"<b>Name:</b> {student_details['name']}", normal_style))
+        elements.append(Paragraph(f"<b>Student ID:</b> {student_details['id']}", normal_style))
+        elements.append(Spacer(1, 0.2 * inch))
+
+        # Line Items Table
+        elements.append(Paragraph("Charges:", section_title_style))
+        data = [['Description', 'Amount']]
         for item in invoice_items:
             fee_display = f"${item['fee']:.2f}" if isinstance(item['fee'], (int, float)) else str(item['fee'])
-            data.append([item['code'], item['title'], fee_display])
+            data.append([f"{item['title']} ({item['code']})", fee_display])
+        
+        data.append(['General Services Fee', f"${general_services_fee:.2f}"])
 
-        data.append(['', 'Total:', f"${total_amount:.2f}"]) # Adjust Total row
+        table_style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F2F2F2')), # Header background
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+            ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+            ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ])
+        
+        col_widths = [4.5 * inch, 1.5 * inch] # Adjust column widths as needed
+        invoice_table = Table(data, colWidths=col_widths)
+        invoice_table.setStyle(table_style)
+        elements.append(invoice_table)
+        elements.append(Spacer(1, 0.2 * inch))
 
-        table = Table(data)
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black)
-        ]))
-        elements.append(table)
+        # Total and Payment Status
+        summary_data = [
+            [Paragraph("<b>Total Amount Due:</b>", normal_bold_style), Paragraph(f"${total_amount:.2f}", normal_style)],
+            [Paragraph("<b>Payment Status:</b>", normal_bold_style), Paragraph(invoice_details['payment_status'], normal_style)],
+        ]
+        summary_table_style = TableStyle([
+            ('ALIGN', (0,0), (-1,-1), 'LEFT'),
+            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+            ('LEFTPADDING', (0,0), (-1,-1), 10),
+            ('RIGHTPADDING', (0,0), (-1,-1), 10),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+            ('TOPPADDING', (0,0), (-1,-1), 5),
+            ('GRID', (0,0), (-1,0), 0.5, colors.black), # Added grid for summary header
+            ('GRID', (0,1), (-1,-1), 0.5, colors.black), # Added grid for summary data
+            ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#EEEEEE')), # Header background
+        ])
+        summary_table = Table(summary_data, colWidths=[2*inch, 1.5*inch])
+        summary_table.setStyle(summary_table_style)
+        elements.append(summary_table)
+        elements.append(Spacer(1, 0.5 * inch))
 
-        elements.append(Paragraph(f"Payment Status: {invoice_details['payment_status']}", styles['Normal']))
+        # Footer/Disclaimer
+        elements.append(Paragraph("This is an official document of the University of the South Pacific. Any alteration or unauthorized duplication of this invoice may result in severe penalties.", normal_style))
+        elements.append(Paragraph(f"Document generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", normal_style))
+        elements.append(Paragraph("Accounts Department Signature: _________________________<br/><br/>", normal_style))
 
         doc.build(elements)
 
         buffer.seek(0)
         response = make_response(buffer.read())
         response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'attachment;filename=invoice.pdf'
+        response.headers['Content-Disposition'] = f'attachment;filename=invoice_{student_details['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf'
 
+        logging.info(f"Generated and sent invoice PDF for student '{current_user.username}'.")
         return response
-
     except Exception as e:
-        logging.error(f"Error in /download_invoice_pdf: {e}")
-        return render_template('500.html'), 500
+        logging.exception(f"Error in /download_invoice_pdf for student {current_user.id}: {e}")
+        flash(f"An error occurred while generating your PDF invoice: {str(e)}", "danger")
+        return redirect(url_for('enrollment.fees')) # Redirect back to fees page on error
 
-# Error handler for any 404 Not Found errors within this blueprint
+# --- New Routes: Grade Recheck (Manual Form Handling) ---
+
+# Helper function to generate dummy grades for a student
+def generate_dummy_grades_for_student(student_id):
+    student = Student.query.get(student_id)
+    if not student:
+        logging.warning(f"Attempted to generate dummy grades for non-existent student ID: {student_id}")
+        return False
+
+    # Check if student already has grades to avoid duplicates for testing
+    if Grade.query.filter_by(student_id=student_id).first():
+        logging.info(f"Student {student_id} already has grades. Skipping dummy grade generation.")
+        return False
+
+    grades_to_add = []
+    grade_options_passing = ['A+', 'A', 'B+', 'B', 'C+', 'C']
+    grade_options_failing = ['D', 'E', 'F', 'R'] # D can sometimes be a failing grade or conditional pass
+
+    # Get all courses the student is enrolled in or has previously taken.
+    # Prioritize currently enrolled courses, then fall back to program structure if needed.
+    student_enrollments = Enrollment.query.filter_by(StudentID=student_id).all()
+    courses_for_grades_info = [] # Store dictionaries with 'id', 'name', 'units'
+    
+    # Add courses from current enrollments
+    for enrollment in student_enrollments:
+        # Fetch the Course object to get its details
+        course_obj = Course.query.get(enrollment.CourseID)
+        if course_obj:
+            courses_for_grades_info.append({
+                'id': course_obj.CourseID,
+                'name': course_obj.CourseName,
+                'units': getattr(course_obj, 'credit_hours', 1.0) # Use actual units or default
+            })
+    
+    # If student has no enrollments or very few, supplement with courses from program structure
+    # to ensure enough grades for testing purposes.
+    if len(courses_for_grades_info) < 5: # Arbitrary number to ensure a few grades exist
+        program_courses_flat = []
+        for year_data in PROGRAM_STRUCTURE.values():
+            for semester_data in year_data.values():
+                for course_info in semester_data:
+                    program_courses_flat.append(course_info)
+        
+        # Add some courses from program structure that aren't already in enrollments
+        existing_course_ids = {c['id'] for c in courses_for_grades_info}
+        # Ensure we don't try to sample more than available unique courses
+        num_to_add = min(5 - len(courses_for_grades_info), len(available_for_sampling := [ # Fixed name clash
+            c_info for c_info in program_courses_flat if c_info['code'] not in existing_course_ids
+        ]))
+        
+        for course_info in random.sample(available_for_sampling, num_to_add): # Fixed sampling from correct list
+            courses_for_grades_info.append({
+                'id': course_info['code'],
+                'name': course_info['title'],
+                'units': course_info['units']
+            })
+            existing_course_ids.add(course_info['code'])
+
+    if not courses_for_grades_info:
+        logging.info(f"No courses found for student {student_id} to generate dummy grades for.")
+        return False
+
+    has_failing_grade_generated = False
+    
+    for i, course_info in enumerate(courses_for_grades_info):
+        course_id = course_info['id']
+        course_name = course_info['name']
+        course_units = course_info['units']
+
+        # Ensure the course exists in the database. If not, create a placeholder.
+        course_obj = Course.query.get(course_id)
+        if not course_obj:
+            logging.info(f"Course {course_id} from generated data not found in DB. Creating a mock Course object.")
+            course_obj = Course(CourseID=course_id, CourseName=course_name, SubProgramID='GEN', PrerequisiteCourseID=None)
+            if hasattr(course_obj, 'credit_hours'):
+                course_obj.credit_hours = course_units
+            db.session.add(course_obj)
+            try:
+                db.session.commit() # Commit mock course to allow linking
+            except IntegrityError:
+                db.session.rollback() # Course already exists, ignore
+                course_obj = Course.query.get(course_id) # Re-fetch if it already exists
+
+        numerical_grade = 0
+        letter_grade = ''
+
+        # Logic to ensure at least one failing grade (prefer to make first few a fail)
+        # and also include passed grades
+        if not has_failing_grade_generated and (len(courses_for_grades_info) > 1 and i == 0): # Guarantee first is a fail if multiple courses
+            letter_grade = random.choice(grade_options_failing)
+            numerical_grade = random.randint(0, 49) # Failing range
+            has_failing_grade_generated = True
+        elif not has_failing_grade_generated and random.random() < 0.3: # 30% chance of a fail for other courses
+            letter_grade = random.choice(grade_options_failing)
+            numerical_grade = random.randint(0, 49) # Failing range
+            has_failing_grade_generated = True
+        else:
+            letter_grade = random.choice(grade_options_passing)
+            numerical_grade = random.randint(70, 95) # Passing range
+
+        # Adjust numerical grade to roughly match letter grade
+        if letter_grade in ['A+', 'A']: numerical_grade = random.randint(90, 100)
+        elif letter_grade in ['B+', 'B']: numerical_grade = random.randint(80, 89)
+        elif letter_grade in ['C+', 'C']: numerical_grade = random.randint(70, 79)
+        elif letter_grade == 'D': numerical_grade = random.randint(50, 69) # D is usually conditional pass/fail
+        elif letter_grade in ['E', 'F', 'R']: numerical_grade = random.randint(0, 49)
+
+        grades_to_add.append(
+            Grade(
+                student_id=student.StudentID,
+                course_id=course_id,
+                letter_grade=letter_grade,
+                numerical_grade=numerical_grade,
+                year=random.choice([2023, 2024, 2025]), # Random year within recent range
+                semester=random.choice(['Semester 1', 'Semester 2'])
+            )
+        )
+    
+    # Final check: If no failing grade was generated (e.g., due to random chance or too few courses),
+    # ensure one is forced to fulfill the requirement.
+    if not has_failing_grade_generated and grades_to_add:
+        idx_to_fail = random.randint(0, len(grades_to_add) - 1)
+        grades_to_add[idx_to_fail].letter_grade = random.choice(grade_options_failing)
+        grades_to_add[idx_to_fail].numerical_grade = random.randint(0, 49)
+
+
+    for grade in grades_to_add:
+        db.session.add(grade)
+    try:
+        db.session.commit()
+        logging.info(f"Successfully generated {len(grades_to_add)} dummy grades for student {student_id}.")
+        return True
+    except IntegrityError:
+        db.session.rollback()
+        logging.warning(f"Could not commit dummy grades for {student_id} due to integrity error (e.g., duplicate grade for course). This means some grades might already exist for these courses/semesters for this student. Review existing data.")
+        return False
+    except Exception as e:
+        db.session.rollback()
+        logging.exception(f"Failed to generate dummy grades for student {student_id}: {e}")
+        return False
+
+# TEMPORARY: Route to generate dummy grades for the current logged-in student
+@enrollment_bp.route('/student/generate_grades', methods=['GET'])
+@token_required
+def generate_grades(current_user):
+    if current_user.role != 'student':
+        flash("Unauthorized access.", "error")
+        return redirect(url_for('enrollment.dashboard'))
+    
+    success = generate_dummy_grades_for_student(current_user.id)
+    if success:
+        flash("Dummy grades generated successfully for your account!", "success")
+    else:
+        flash("Could not generate dummy grades (they might already exist or an error occurred).", "info")
+    return redirect(url_for('enrollment.view_transcript'))
+
+
+@enrollment_bp.route('/student/apply_grade_recheck', methods=['GET', 'POST'])
+@token_required
+def apply_grade_recheck(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access. Only students can apply for grade recheck.", "error")
+        logging.warning(f"Grade recheck access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    active_hold = Hold.query.filter_by(StudentID=current_user.id, status='Active').first()
+    if active_hold:
+        grade_recheck_service = ServiceAccess.query.filter_by(service_name='apply_grade_recheck').first()
+        if grade_recheck_service and not grade_recheck_service.is_available_on_hold:
+            flash(f"You have an active hold on your account ({active_hold.reason}). Applying for grade recheck is currently restricted. Please resolve your hold.", "error")
+            logging.info(f"Grade recheck restricted for student '{current_user.username}' due to active hold: {active_hold.reason}.")
+            return redirect(url_for('enrollment.student_hold_status'))
+
+    errors = {}
+    current_reason = ""
+    current_selected_grade_id = ""
+
+    if request.method == 'POST':
+        selected_grade_id_str = request.form.get('course_grade')
+        reason = request.form.get('reason')
+
+        current_reason = reason
+        current_selected_grade_id = selected_grade_id_str
+
+        # Manual Validation for course_grade
+        if not selected_grade_id_str:
+            errors['course_grade'] = "Please select a course and grade."
+            grade_id = None
+        else:
+            try:
+                grade_id = int(selected_grade_id_str)
+                grade_to_recheck = Grade.query.get(grade_id)
+                if not grade_to_recheck or str(grade_to_recheck.student_id) != str(current_user.id):
+                    errors['course_grade'] = "Invalid course or grade selected."
+                    grade_id = None
+            except ValueError:
+                errors['course_grade'] = "Invalid grade selection."
+                grade_id = None
+
+        # Manual Validation for reason
+        if not reason:
+            errors['reason'] = "Please provide a detailed reason for your recheck request."
+        elif not (50 <= len(reason) <= 500):
+            errors['reason'] = "Reason must be between 50 and 500 characters."
+        
+        # If there are no errors yet, check for pending recheck
+        if not errors and grade_id is not None:
+            existing_recheck = GradeRecheck.query.filter_by(
+                student_id=current_user.id,
+                grade_id=grade_id,
+                status='Pending'
+            ).first()
+
+            if existing_recheck:
+                flash('A recheck request for this grade is already pending.', 'info')
+                logging.info(f"Student '{current_user.username}' attempted to submit duplicate grade recheck for grade ID {grade_id}.")
+                return redirect(url_for('enrollment.view_recheck_history'))
+
+        if errors:
+            for field, msg in errors.items():
+                flash(f"Error in {field.replace('_', ' ').title()}: {msg}", "danger")
+            logging.warning(f"Grade recheck submission failed for '{current_user.username}' due to validation errors: {errors}.")
+        else:
+            try:
+                new_recheck = GradeRecheck(
+                    student_id=current_user.id,
+                    grade_id=grade_to_recheck.id,
+                    course_id=grade_to_recheck.course_id,
+                    original_grade=grade_to_recheck.letter_grade,
+                    reason=reason,
+                    status='Pending',
+                    date_submitted=datetime.utcnow()
+                )
+                db.session.add(new_recheck)
+                db.session.commit()
+
+                flash('Your grade recheck request has been submitted successfully!', 'success')
+                logging.info(f"Student '{current_user.username}' submitted grade recheck request {new_recheck.id} for grade ID {grade_to_recheck.id}.")
+                return redirect(url_for('enrollment.grade_check_confirmation', recheck_id=new_recheck.id))
+
+            except Exception as e:
+                db.session.rollback()
+                logging.exception(f"Error submitting grade recheck for student {current_user.id}: {e}")
+                flash(f'An unexpected error occurred while submitting your request. Please try again. Error: {e}', 'danger')
+
+    # For GET request or re-rendering due to errors:
+    student_grades = Grade.query.filter_by(student_id=current_user.id).options(joinedload(Grade.course)).order_by(Grade.year.desc(), Grade.semester.desc()).all()
+    
+    grade_choices_html = [('', '--- Select a Course Grade to Recheck ---')]
+    for grade in student_grades:
+        if grade.course:
+            existing_recheck = GradeRecheck.query.filter_by(grade_id=grade.id, status='Pending').first()
+            # Only allow recheck if not already pending. Allow recheck for any grade.
+            if not existing_recheck:
+                grade_choices_html.append((grade.id, f"{grade.course.CourseID} - {grade.course.CourseName} (Grade: {grade.letter_grade})")) # Use CourseID and CourseName
+
+    return render_template('grade_recheck.html', # Matches your file name
+                           grade_choices=grade_choices_html,
+                           current_reason=current_reason,
+                           current_selected_grade_id=current_selected_grade_id,
+                           errors=errors)
+
+@enrollment_bp.route('/student/grade_check_confirmation/<int:recheck_id>')
+@token_required
+def grade_check_confirmation(current_user, recheck_id):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access.", "error")
+        logging.warning(f"Grade recheck confirmation access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    recheck = GradeRecheck.query.get_or_404(recheck_id)
+
+    if recheck.student_id != current_user.id:
+        flash('You do not have permission to view this grade recheck confirmation.', 'danger')
+        logging.warning(f"Unauthorized access attempt to grade recheck confirmation {recheck_id} by user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    student_data = Student.query.get(recheck.student_id)
+    course_data = Course.query.get(recheck.course_id)
+
+    student_name = f"{student_data.FirstName} {student_data.LastName}" if student_data else current_user.username
+    course_name = course_data.CourseName if course_data else "N/A" # Use CourseName
+    course_code = course_data.CourseID if course_data else "N/A" # Use CourseID
+    
+    confirmation_number = recheck.id 
+    logging.info(f"Displaying grade recheck confirmation {recheck_id} for student '{current_user.username}'.")
+    return render_template('grade_recheck_confirmation.html', # Matches your file name
+                           student_name=student_name,
+                           course_name=course_name,
+                           course_code=course_code,
+                           original_grade=recheck.original_grade,
+                           recheck_reason=recheck.reason,
+                           confirmation_number=confirmation_number)
+
+@enrollment_bp.route('/student/recheck_history')
+@token_required
+def view_recheck_history(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access.", "error")
+        logging.warning(f"Recheck history access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    recheck_requests = GradeRecheck.query.filter_by(student_id=current_user.id).options(joinedload(GradeRecheck.course)).order_by(GradeRecheck.date_submitted.desc()).all()
+    logging.info(f"Displaying {len(recheck_requests)} grade recheck requests for student '{current_user.username}'.")
+    return render_template('view_recheck_history.html', recheck_requests=recheck_requests)
+
+# REMOVED ADMIN ROUTES FOR GRADE RECHECK MANAGEMENT
+
+# --- New Routes: Special Applications (Graduation, Pass, Re-sit) (Manual Form Handling) ---
+
+@enrollment_bp.route('/student/apply_special_application', methods=['GET', 'POST'])
+@token_required
+def apply_special_application(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access. Only students can apply for special applications.", "error")
+        logging.warning(f"Special application access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    active_hold = Hold.query.filter_by(StudentID=current_user.id, status='Active').first()
+    if active_hold:
+        app_grad_service = ServiceAccess.query.filter_by(service_name='apply_graduation').first()
+        app_other_pass_resit_service = ServiceAccess.query.filter_by(service_name='apply_grade_recheck').first() # Using recheck as a placeholder
+        
+        is_restricted = False
+        if app_grad_service and not app_grad_service.is_available_on_hold:
+            is_restricted = True
+        elif app_other_pass_resit_service and not app_other_pass_resit_service.is_available_on_hold:
+            is_restricted = True
+
+        if is_restricted:
+            flash(f"You have an active hold on your account ({active_hold.reason}). Applying for special applications is currently restricted. Please resolve your hold.", "error")
+            logging.info(f"Special application restricted for student '{current_user.username}' due to active hold: {active_hold.reason}.")
+            return redirect(url_for('enrollment.student_hold_status'))
+
+    errors = {}
+    current_application_type = ""
+    current_course_id = ""
+    current_reason = ""
+
+    # Populate course choices for pass/re-sit applications
+    current_and_past_courses = []
+    enrolled_courses = Enrollment.query.filter_by(StudentID=current_user.id).all() # Fetch Enrollments
+    for enrollment in enrolled_courses:
+        db_course = Course.query.get(enrollment.CourseID) # Fetch Course separately
+        if db_course:
+            current_and_past_courses.append(db_course)
+
+    graded_courses = Grade.query.filter_by(student_id=current_user.id).options(joinedload(Grade.course)).all()
+    for grade_record in graded_courses:
+        if grade_record.course and grade_record.course not in current_and_past_courses:
+            current_and_past_courses.append(grade_record.course)
+
+    unique_courses = {c.CourseID: c for c in current_and_past_courses}.values()
+    
+    course_choices_html = [('', '--- Select a Course (if applicable) ---')]
+    for course in unique_courses:
+        course_choices_html.append((course.CourseID, f"{course.CourseID} - {course.CourseName}"))
+
+    if request.method == 'POST':
+        application_type = request.form.get('application_type')
+        course_id = request.form.get('course')
+        reason = request.form.get('reason')
+
+        current_application_type = application_type
+        current_course_id = course_id
+        current_reason = reason
+
+        # Manual Validation
+        if not application_type:
+            errors['application_type'] = "Please select an application type."
+        
+        if application_type != 'Graduation' and not course_id:
+            errors['course'] = "Please select a course for this application type."
+        elif application_type != 'Graduation' and course_id:
+            course_obj = Course.query.get(course_id)
+            if not course_obj or course_obj.CourseID not in [c[0] for c in course_choices_html if c[0]]:
+                errors['course'] = "Invalid course selected."
+
+        if not reason:
+            errors['reason'] = "Please provide a reason for your application."
+        elif not (50 <= len(reason) <= 1000):
+            errors['reason'] = "Reason must be between 50 and 1000 characters."
+        
+        if application_type == 'Graduation' and not errors:
+            pass # Placeholder for actual graduation eligibility check
+
+        if errors:
+            for field, msg in errors.items():
+                flash(f"Error in {field.replace('_', ' ').title()}: {msg}", "danger")
+            logging.warning(f"Special application submission failed for '{current_user.username}' due to validation errors: {errors}.")
+        else:
+            try:
+                new_application = SpecialApplication(
+                    student_id=current_user.id,
+                    application_type=application_type,
+                    course_id=course_id if application_type != 'Graduation' else None,
+                    reason=reason,
+                    status='Pending',
+                    date_submitted=datetime.utcnow(),
+                    external_form_path=None
+                )
+                db.session.add(new_application)
+                db.session.commit()
+
+                flash('Your application has been successfully submitted!', 'success')
+                logging.info(f"Student '{current_user.username}' submitted special application {new_application.id} of type '{application_type}'.")
+                # Removed redirection to history, redirect to dashboard instead
+                return redirect(url_for('enrollment.dashboard'))
+
+            except Exception as e:
+                db.session.rollback()
+                logging.exception(f"Error submitting special application for student {current_user.id}: {e}")
+                flash(f'An unexpected error occurred while submitting your application. Please try again. Error: {e}', 'danger')
+
+    # For GET request or re-rendering due to errors:
+    return render_template('apply_special_application.html',
+                           application_type_choices=[
+                               ('', '--- Select an Application Type ---'),
+                               ('Graduation', 'Application for Graduation'),
+                               ('Compassionate Pass', 'Application for Compassionate Pass'),
+                               ('Aegrotat Pass', 'Application for Aegrotat Pass'),
+                               ('Re-sit', 'Application for Course Re-sit')
+                           ],
+                           course_choices=course_choices_html,
+                           current_application_type=current_application_type,
+                           current_course_id=current_course_id,
+                           current_reason=current_reason,
+                           errors=errors)
+
+
+@enrollment_bp.route('/student/special_application_confirmation/<int:application_id>')
+@token_required
+def special_application_confirmation(current_user, application_id):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access.", "error")
+        logging.warning(f"Special application confirmation access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    application = SpecialApplication.query.get_or_404(application_id)
+
+    if application.student_id != current_user.id:
+        flash('You do not have permission to view this application confirmation.', 'danger')
+        logging.warning(f"Unauthorized access attempt to special application confirmation {application_id} by user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    if application.course_id:
+        # Using Course.query.get() instead of assuming application.course is loaded
+        application.course = Course.query.get(application.course_id) 
+    
+    logging.info(f"Displaying special application confirmation {application_id} for student '{current_user.username}'.")
+    return render_template('special_application_confirmation.html', application=application)
+
+@enrollment_bp.route('/student/applications_history')
+@token_required
+def view_special_applications_history(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access.", "error")
+        logging.warning(f"Special applications history access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+    
+    applications = SpecialApplication.query.filter_by(student_id=current_user.id).options(joinedload(SpecialApplication.course)).order_by(SpecialApplication.date_submitted.desc()).all()
+    logging.info(f"Displaying {len(applications)} special applications for student '{current_user.username}'.")
+    return render_template('view_special_applications_history.html', applications=applications)
+
+# REMOVED ADMIN ROUTES FOR SPECIAL APPLICATION MANAGEMENT
+
+# --- New Routes: Student Hold Status ---
+
+@enrollment_bp.route('/student/hold_status')
+@token_required
+def student_hold_status(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access.", "error")
+        logging.warning(f"Hold status access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    active_hold = Hold.query.filter_by(
+        StudentID=current_user.id,
+        status='Active'
+    ).first()
+
+    restricted_services = []
+    if active_hold:
+        restricted_services = ServiceAccess.query.filter_by(is_available_on_hold=False).all()
+        
+        if active_hold.imposed_by_user_id:
+            active_hold.imposed_by_user = User.query.get(active_hold.imposed_by_user_id)
+    
+    logging.info(f"Displaying hold status for student '{current_user.username}'. Active hold: {bool(active_hold)}.")
+    return render_template('student_hold_status.html',
+                           hold_status=active_hold,
+                           restricted_services=restricted_services)
+
+# REMOVED ADMIN ROUTES FOR MANAGE STUDENT HOLDS AND SERVICE ACCESS
+
+# --- New Routes: Academic Transcript ---
+
+# Helper function to convert letter grade to GPA points
+def convert_grade_to_gpa_points(letter_grade):
+    """Simple mapping for GPA calculation based on new grading scale."""
+    gpa_map = {
+        'A+': 4.5, 'A': 4.0,
+        'B+': 3.5, 'B': 3.0,
+        'C+': 2.5, 'C': 2.0,
+        'R': 1.5,
+        'D': 1.0, 'DX': 1.0,
+        'E': 0.0, 'EX': 0.0,
+        'F': 0.0,
+        'W': 0.0, 'P': 0.0, 'CR': 0.0,
+        'S': 0.0, 'U': 0.0, 'AUD': 0.0,
+        'I': 0.0, 'AEG': 0.0, 'CMP': 0.0
+    }
+    return gpa_map.get(letter_grade.upper(), 0.0)
+
+def get_student_academic_data(student_id):
+    """
+    Fetches all necessary data for the academic transcript of a given student.
+    Includes student details, program, and all completed grades with GPA calculation.
+    """
+    student = Student.query.get(student_id)
+    if not student:
+        logging.warning(f"Student with ID {student_id} not found for academic data retrieval.")
+        return None
+
+    grades = Grade.query.filter_by(student_id=student_id).options(joinedload(Grade.course)).order_by(Grade.year, Grade.semester).all()
+
+    total_grade_points_sum = 0.0
+    total_gpa_credit_hours_sum = 0.0
+    transcript_courses = []
+
+    for grade_record in grades:
+        course = grade_record.course
+        if course:
+            gpa_points = convert_grade_to_gpa_points(grade_record.letter_grade)
+            
+            credit_hours_for_gpa = 0.0
+            # Only count credit hours for GPA if the grade is a standard graded one
+            # and not a withdrawal, pass/fail, audit, incomplete, or certain non-GPA grades
+            if grade_record.letter_grade.upper() not in ['W', 'P', 'CR', 'S', 'U', 'AUD', 'I', 'AEG', 'CMP']:
+                 # Assuming 'credit_hours' attribute exists on the Course model
+                credit_hours_for_gpa = getattr(course, 'credit_hours', 1.0) # Default to 1.0 if not found
+
+            total_grade_points_sum += (gpa_points * credit_hours_for_gpa)
+            total_gpa_credit_hours_sum += credit_hours_for_gpa
+
+            transcript_courses.append({
+                'year': grade_record.year,
+                'semester': grade_record.semester,
+                'course_code': course.CourseID,
+                'course_name': course.CourseName,
+                'credit_hours': getattr(course, 'credit_hours', 1.0), # Default to 1.0 if not found
+                'letter_grade': grade_record.letter_grade,
+                'gpa_points_earned': gpa_points * credit_hours_for_gpa
+            })
+        else:
+            logging.warning(f"Course not found for grade record ID {grade_record.id} (CourseID: {grade_record.course_id}). Skipping for transcript.")
+
+
+    cumulative_gpa = total_grade_points_sum / total_gpa_credit_hours_sum if total_gpa_credit_hours_sum > 0 else 0.0
+
+    # Total credits earned should only count successfully completed courses (passing grades)
+    total_credits_earned = sum(course['credit_hours'] for course in transcript_courses if course['letter_grade'].upper() not in ['F', 'E', 'EX', 'W', 'U', 'AUD', 'I', 'R', 'D', 'DX'])
+
+    program_name = student.program_obj.ProgramName if student.program_obj else "N/A"
+    subprogram_name = student.subprogram_obj.SubProgramName if student.subprogram_obj else "N/A"
+
+    logging.debug(f"Academic data fetched for student {student_id}: GPA={cumulative_gpa:.2f}, Credits={total_credits_earned}.")
+    return {
+        'student_full_name': f"{student.FirstName} {student.LastName}",
+        'student_id_number': student.StudentID,
+        'date_of_birth': student.DateOfBirth.strftime('%Y-%m-%d') if student.DateOfBirth else 'N/A',
+        'program_enrolled': f"{program_name} - {subprogram_name}",
+        'date_generated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'cumulative_gpa': f"{cumulative_gpa:.2f}",
+        'total_credits_earned': total_credits_earned,
+        'courses': transcript_courses
+    }
+
+@enrollment_bp.route('/student/view_transcript', methods=['GET'])
+@token_required
+def view_transcript(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access. Only students can view their transcript.", "error")
+        logging.warning(f"Transcript view access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    active_hold = Hold.query.filter_by(StudentID=current_user.id, status='Active').first()
+    if active_hold:
+        view_grades_service = ServiceAccess.query.filter_by(service_name='view_course_grades').first()
+        if view_grades_service and not view_grades_service.is_available_on_hold:
+            flash(f"You have an active hold on your account ({active_hold.reason}). Viewing your academic transcript is currently restricted. Please resolve your hold.", "error")
+            logging.info(f"Transcript view restricted for student '{current_user.username}' due to active hold: {active_hold.reason}.")
+            return redirect(url_for('enrollment.student_hold_status'))
+
+    student_data = get_student_academic_data(current_user.id) # Fetch data first
+
+    # Check if student has grades; if not, generate dummy ones for testing
+    if not student_data or not student_data['courses']: # No grades found in the fetched data
+        logging.info(f"Student {current_user.id} has no grades. Attempting to generate dummy grades.")
+        generate_dummy_grades_for_student(current_user.id)
+        
+        # Re-fetch data after attempting to generate grades
+        student_data = get_student_academic_data(current_user.id) 
+
+        if not student_data or not student_data['courses']: # Re-check if generation failed or still no grades
+             flash("No academic record found for you. Please contact administration or try generating dummy grades (if applicable).", "info")
+             logging.warning(f"Dummy grade generation failed for student {current_user.id} or still no grades found after generation attempt.")
+             # Render with empty data if still no grades.
+             return render_template('view_transcript.html', student=None) # Pass None or empty dict if no data
+
+    logging.info(f"Rendering transcript view for student '{current_user.username}'.")
+    return render_template('view_transcript.html', student=student_data) # Pass student_data to the template
+
+@enrollment_bp.route('/student/download_transcript_pdf', methods=['GET'])
+@token_required
+def download_transcript_pdf(current_user):
+    # Student role check
+    if current_user.role != 'student':
+        flash("Unauthorized access.", "error")
+        logging.warning(f"Transcript download access denied for non-student user '{current_user.username}'.")
+        return redirect(url_for('enrollment.dashboard'))
+
+    active_hold = Hold.query.filter_by(StudentID=current_user.id, status='Active').first()
+    if active_hold:
+        view_grades_service = ServiceAccess.query.filter_by(service_name='view_course_grades').first()
+        if view_grades_service and not view_grades_service.is_available_on_hold:
+            flash(f"Your academic transcript download is currently restricted due to an active hold ({active_hold.reason}). Please resolve your hold.", "error")
+            logging.info(f"Transcript download restricted for student '{current_user.username}' due to active hold: {active_hold.reason}.")
+            return redirect(url_for('enrollment.student_hold_status'))
+
+    student_data = get_student_academic_data(current_user.id)
+
+    if not student_data or not student_data['courses']: # Added check for empty courses list
+        flash("Could not retrieve your academic record for transcript generation. Please contact administration.", "danger")
+        logging.error(f"Failed to retrieve academic data for student {current_user.id} for transcript generation (no courses found).")
+        return redirect(url_for('enrollment.view_transcript'))
+
+    # --- ReportLab PDF Generation Logic ---
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter,
+                            rightMargin=inch/2, leftMargin=inch/2,
+                            topMargin=inch/2, bottomMargin=inch/2)
+    
+    styles = getSampleStyleSheet()
+    elements = []
+
+    # Custom styles
+    title_style = ParagraphStyle(
+        'TitleStyle',
+        parent=styles['h1'],
+        fontSize=18,
+        spaceAfter=14,
+        alignment=1 # CENTER
+    )
+    header_style = ParagraphStyle(
+        'HeaderStyle',
+        parent=styles['h2'],
+        fontSize=14,
+        spaceAfter=10,
+        alignment=1 # CENTER
+    )
+    section_title_style = ParagraphStyle(
+        'SectionTitleStyle',
+        parent=styles['h3'],
+        fontSize=12,
+        spaceBefore=10,
+        spaceAfter=6
+    )
+    normal_style = styles['Normal']
+    normal_bold_style = ParagraphStyle(
+        'NormalBold',
+        parent=normal_style,
+        fontName='Helvetica-Bold'
+    )
+
+    # University Header
+    elements.append(Paragraph("UNIVERSITY OF THE SOUTH PACIFIC", title_style))
+    elements.append(Paragraph("Official Academic Transcript", header_style))
+    elements.append(Paragraph("Registrar's Office | Suva, Fiji", normal_style))
+    elements.append(Paragraph("Phone: [Your University Phone] | Email: [Your University Email]", normal_style))
+    elements.append(Paragraph("Website: [Your University Website]", normal_style))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    # Student Information
+    elements.append(Paragraph("Student Information:", section_title_style))
+    elements.append(Paragraph(f"<b>Name:</b> {student_data['student_full_name']}", normal_style))
+    elements.append(Paragraph(f"<b>Student ID:</b> {student_data['student_id_number']}", normal_style))
+    elements.append(Paragraph(f"<b>Date of Birth:</b> {student_data['date_of_birth']}", normal_style))
+    elements.append(Paragraph(f"<b>Program Enrolled:</b> {student_data['program_enrolled']}", normal_style))
+    elements.append(Paragraph(f"<b>Date Generated:</b> {student_data['date_generated']}", normal_style))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    # Academic Record Table
+    elements.append(Paragraph("Academic Record:", section_title_style))
+    table_data = [
+        ['Year', 'Sem', 'Course Code', 'Course Name', 'Credits', 'Grade', 'GPA Points']
+    ]
+
+    for course in student_data['courses']:
+        table_data.append([
+            str(course['year']),
+            str(course['semester']),
+            course['course_code'],
+            course['course_name'],
+            str(course['credit_hours']),
+            course['letter_grade'],
+            f"{course['gpa_points_earned']:.2f}"
+        ])
+
+    table_style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#F2F2F2')), # Header background
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ])
+
+    col_widths = [
+        0.7 * inch, # Year
+        0.5 * inch, # Sem
+        1.0 * inch, # Course Code
+        2.5 * inch, # Course Name
+        0.7 * inch, # Credits
+        0.7 * inch, # Grade
+        0.8 * inch  # GPA Points
+    ]
+    
+    academic_table = Table(table_data, colWidths=col_widths)
+    academic_table.setStyle(table_style)
+    elements.append(academic_table)
+    elements.append(Spacer(1, 0.2 * inch))
+
+    # Summary Information
+    elements.append(Paragraph("Summary:", section_title_style))
+    summary_data = [
+        [Paragraph("<b>Cumulative GPA:</b>", normal_bold_style), Paragraph(f"{student_data['cumulative_gpa']}", normal_style)],
+        [Paragraph("<b>Total Credits Earned:</b>", normal_bold_style), Paragraph(f"{student_data['total_credits_earned']}", normal_style)],
+    ]
+    summary_table_style = TableStyle([
+        ('ALIGN', (0,0), (-1,-1), 'LEFT'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('LEFTPADDING', (0,0), (-1,-1), 10),
+        ('RIGHTPADDING', (0,0), (-1,-1), 10),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+        ('GRID', (0,0), (-1,0), 0.5, colors.black), # Added grid for summary header
+        ('GRID', (0,1), (-1,-1), 0.5, colors.black), # Added grid for summary data
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#EEEEEE')), # Header background
+    ])
+    summary_table = Table(summary_data, colWidths=[2*inch, 1.5*inch])
+    summary_table.setStyle(summary_table_style)
+    elements.append(summary_table)
+    elements.append(Spacer(1, 0.5 * inch))
+
+    # Footer/Disclaimer
+    elements.append(Paragraph("This is an official document of the University of the South Pacific. Any alteration or unauthorized duplication of this transcript may result in severe penalties.", normal_style))
+    elements.append(Paragraph(f"Document generated on: {student_data['date_generated']}", normal_style))
+    elements.append(Paragraph("Registrar's Signature: _________________________<br/><br/>", normal_style))
+
+    try:
+        doc.build(elements)
+        pdf_file = buffer.getvalue()
+        buffer.close()
+
+        response = make_response(pdf_file)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment;filename=Academic_Transcript_{student_data["student_id_number"]}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf'
+
+        logging.info(f"Generated and sent transcript PDF for student '{current_user.username}'.")
+        return response
+    except Exception as e:
+        logging.exception(f"Error generating PDF transcript for student {current_user.id} with ReportLab: {e}")
+        flash(f"An error occurred while generating your PDF transcript: {str(e)}", "danger")
+        return redirect(url_for('enrollment.view_transcript'))
+
+
+# --- API Endpoints for listing data ---
+# These are added to fix the BuildError in dashboard.html
+@enrollment_bp.route('/api/courses', methods=['GET'])
+@token_required
+def get_courses_api(current_user):
+    """API endpoint to list all courses."""
+    try:
+        courses = Course.query.all()
+        # Ensure serialize_course can handle Course objects even if not fully linked
+        return jsonify([{'CourseID': c.CourseID, 'CourseName': c.CourseName} for c in courses]), 200
+    except Exception as e:
+        logging.exception("Error fetching courses via API:")
+        return jsonify({"message": f"Error fetching courses: {str(e)}"}), 500
+
+@enrollment_bp.route('/api/students', methods=['GET'])
+@token_required
+def get_students_api(current_user):
+    """API endpoint to list all students."""
+    try:
+        students = Student.query.all()
+        return jsonify([{'StudentID': s.StudentID, 'FirstName': s.FirstName, 'LastName': s.LastName} for s in students]), 200
+    except Exception as e:
+        logging.exception("Error fetching students via API:")
+        return jsonify({"message": f"Error fetching students: {str(e)}"}), 500
+
+@enrollment_bp.route('/api/enrollments', methods=['GET'])
+@token_required
+def get_enrollments_api(current_user):
+    """API endpoint to list all enrollments."""
+    try:
+        enrollments = Enrollment.query.all() # Avoid joinedload for API simplicity unless fully serialized
+        return jsonify([{'EnrollmentID': e.EnrollmentID, 'StudentID': e.StudentID, 'CourseID': e.CourseID} for e in enrollments]), 200
+    except Exception as e:
+        logging.exception("Error fetching enrollments via API:")
+        return jsonify({"message": f"Error fetching enrollments: {str(e)}"}), 500
+
+
+# --- Error Handler (kept for completeness) ---
 @enrollment_bp.errorhandler(404)
 def page_not_found(e):
-    """Custom 404 error handler for blueprint routes."""
-    # This error handler does not take current_user as it's for 404s,
-    # which can happen before or after authentication.
+    logging.warning(f"404 Not Found: {request.url}")
     return render_template('404.html'), 404
-
-
-# enrollment_services/routes.py (continued from Part 5)
-
-# --- API Endpoints (JSON Responses) continued ---
-
-# Enrollment Endpoints
-@enrollment_bp.route('/enrollments_api', methods=['GET'])
-@token_required # Protect this route
-def get_enrollments_api(current_user): # Add current_user parameter
-    """Retrieves all enrollments with related student and course details. Requires authentication."""
-    # Example: Students can only view their own enrollments; others can view all
-    if current_user.role == 'student':
-        enrollments = Enrollment.query.options(db.joinedload(Enrollment.student), db.joinedload(Enrollment.course)).filter_by(StudentID=current_user.id).all()
-    else: # admin, sas_manager
-        enrollments = Enrollment.query.options(db.joinedload(Enrollment.student), db.joinedload(Enrollment.course)).all()
-    return jsonify([serialize_enrollment(e) for e in enrollments])
-
-@enrollment_bp.route('/enrollments_api/<string:enrollment_id>', methods=['GET'])
-@token_required # Protect this route
-def get_enrollment_api(current_user, enrollment_id): # Add current_user parameter
-    """Retrieves a single enrollment by its ID. Requires authentication."""
-    enrollment = Enrollment.query.options(db.joinedload(Enrollment.student), db.joinedload(Enrollment.course)).get(enrollment_id)
-    if not enrollment:
-        return jsonify({"message": "Enrollment not found"}), 404
-
-    # Students can only view their own specific enrollment
-    if current_user.role == 'student' and enrollment.StudentID != current_user.id:
-        return jsonify({'message': 'Unauthorized: You can only view your own enrollments'}), 403
-
-    return jsonify(serialize_enrollment(enrollment))
-
-@enrollment_bp.route('/enrollments_api', methods=['POST'])
-@token_required # Protect this route
-def create_enrollment_api(current_user): # Add current_user parameter
-    """Creates a new enrollment record. Requires authentication."""
-    # Only students can enroll themselves; admins/managers can enroll anyone
-    if current_user.role == 'student' and request.json.get('StudentID') and request.json.get('StudentID') != current_user.id:
-        return jsonify({'message': 'Unauthorized: Students can only create enrollments for themselves'}), 403
-    if current_user.role not in ['admin', 'sas_manager', 'student']:
-         return jsonify({'message': 'Unauthorized: Insufficient privileges to create enrollment'}), 403
-
-    data = request.json
-    if not data or not all(k in data for k in ['EnrollmentID', 'StudentID', 'CourseID']):
-        return jsonify({"message": "Missing enrollment data (requires EnrollmentID, StudentID, CourseID)"}), 400
-
-    student = Student.query.get(data['StudentID'])
-    course = Course.query.get(data['CourseID'])
-    if not student:
-        return jsonify({"message": "Student not found"}), 404
-    if not course:
-        return jsonify({"message": "Course not found"}), 404
-
-    # Prevent duplicate enrollments for the same student in the same course
-    existing_enrollment = Enrollment.query.filter_by(StudentID=data['StudentID'], CourseID=data['CourseID']).first()
-    if existing_enrollment:
-        return jsonify({"message": "Student already enrolled in this course"}), 409
-
-    new_enrollment = Enrollment(
-        EnrollmentID=data['EnrollmentID'],
-        StudentID=data['StudentID'],
-        CourseID=data['CourseID'],
-        EnrollmentDate=datetime.strptime(data['EnrollmentDate'], '%Y-%m-%d').date() if 'EnrollmentDate' in data and data['EnrollmentDate'] else datetime.utcnow().date()
-    )
-    db.session.add(new_enrollment)
-    try:
-        db.session.commit()
-        return jsonify({"message": "Enrollment created successfully", "enrollment_id": new_enrollment.EnrollmentID}), 201
-    except IntegrityError: # Catches if EnrollmentID is duplicated
-        db.session.rollback()
-        return jsonify({"message": "Enrollment with this ID already exists"}), 409
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error creating enrollment: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/enrollments_api/<string:enrollment_id>', methods=['PUT'])
-@token_required # Protect this route
-def update_enrollment_api(current_user, enrollment_id): # Add current_user parameter
-    """Updates an existing enrollment record. Requires authentication."""
-    # Only admins/managers can update enrollments
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update enrollments'}), 403
-
-    enrollment = Enrollment.query.get(enrollment_id)
-    if not enrollment:
-        return jsonify({"message": "Enrollment not found"}), 404
-
-    data = request.json
-    if not data:
-        return jsonify({"message": "No data provided for update"}), 400
-
-    if 'EnrollmentDate' in data:
-        enrollment.EnrollmentDate = datetime.strptime(data['EnrollmentDate'], '%Y-%m-%d').date() if data['EnrollmentDate'] else None
-    # Typically, StudentID and CourseID are not updated for an existing enrollment.
-
-    try:
-        db.session.commit()
-        return jsonify({"message": "Enrollment updated successfully", "enrollment_id": enrollment.EnrollmentID}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error updating enrollment {enrollment_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/enrollments_api/<string:enrollment_id>', methods=['DELETE'])
-@token_required # Protect this route
-def delete_enrollment_api(current_user, enrollment_id): # Add current_user parameter
-    """Deletes an enrollment record. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can delete enrollments'}), 403
-
-    enrollment = Enrollment.query.get(enrollment_id)
-    if not enrollment:
-        return jsonify({"message": "Enrollment not found"}), 404
-
-    db.session.delete(enrollment)
-    try:
-        db.session.commit()
-        return jsonify({"message": "Enrollment deleted successfully"}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error deleting enrollment {enrollment_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-
-# Course Fees Endpoints
-@enrollment_bp.route('/course_fees_api', methods=['GET'])
-@token_required # Protect this route
-def get_course_fees_api(current_user): # Add current_user parameter
-    """Retrieves all course fees with related course details. Requires authentication."""
-    fees = CourseFee.query.options(db.joinedload(CourseFee.course)).all()
-    return jsonify([serialize_course_fee(f) for f in fees])
-
-@enrollment_bp.route('/course_fees_api/<string:fee_id>', methods=['GET']) # Changed to string as FeeID is string
-@token_required # Protect this route
-def get_course_fee_api(current_user, fee_id): # Add current_user parameter
-    """Retrieves a single course fee by its ID. Requires authentication."""
-    fee = CourseFee.query.options(db.joinedload(CourseFee.course)).get(fee_id)
-    if not fee:
-        return jsonify({"message": "Course fee not found"}), 404
-    return jsonify(serialize_course_fee(fee))
-
-@enrollment_bp.route('/course_fees_api', methods=['POST'])
-@token_required # Protect this route
-def add_course_fee_api(current_user): # Add current_user parameter
-    """Adds a new course fee record. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can add course fees'}), 403
-
-    data = request.json
-    if not data or not all(k in data for k in ['FeeID', 'amount', 'CourseID']): # Added FeeID to required fields
-        return jsonify({"message": "Missing course fee data (requires FeeID, amount, CourseID)"}), 400
-
-    course = Course.query.get(data['CourseID'])
-    if not course:
-        return jsonify({"message": "Course not found"}), 404
-    
-    # Check if FeeID already exists
-    existing_fee = CourseFee.query.get(data['FeeID'])
-    if existing_fee:
-        return jsonify({"message": "Course fee with this ID already exists"}), 409
-
-    new_fee = CourseFee(
-        FeeID=data['FeeID'], # Use the provided FeeID
-        amount=data['amount'],
-        description=data.get('description'), # description is optional
-        CourseID=data['CourseID']
-    )
-    db.session.add(new_fee)
-    try:
-        db.session.commit()
-        return jsonify({"message": "Course fee added successfully", "fee_id": new_fee.FeeID}), 201
-    except IntegrityError: # Catch if FeeID conflicts
-        db.session.rollback()
-        return jsonify({"message": "Course fee with this ID already exists"}), 409
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error adding course fee: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/course_fees_api/<string:fee_id>', methods=['PUT']) # Changed to string as FeeID is string
-@token_required # Protect this route
-def update_course_fee_api(current_user, fee_id): # Add current_user parameter
-    """Updates an existing course fee record. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update course fees'}), 403
-
-    fee = CourseFee.query.get(fee_id)
-    if not fee:
-        return jsonify({"message": "Course fee not found"}), 404
-
-    data = request.json
-    if not data:
-        return jsonify({"message": "No data provided for update"}), 400
-
-    if 'amount' in data:
-        fee.amount = data['amount']
-    if 'description' in data:
-        fee.description = data['description']
-    if 'CourseID' in data:
-        course = Course.query.get(data['CourseID'])
-        if not course:
-            return jsonify({"message": "New CourseID for fee does not exist"}), 404
-        fee.CourseID = data['CourseID']
-
-    try:
-        db.session.commit()
-        return jsonify({"message": "Course fee updated successfully", "fee_id": fee.FeeID}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error updating course fee {fee_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/course_fees_api/<string:fee_id>', methods=['DELETE']) # Changed to string as FeeID is string
-@token_required # Protect this route
-def delete_course_fee_api(current_user, fee_id): # Add current_user parameter
-    """Deletes a course fee record. Requires authentication."""
-    if current_user.role != 'admin':
-        return jsonify({'message': 'Unauthorized: Only administrators can delete course fees'}), 403
-
-    fee = CourseFee.query.get(fee_id)
-    if not fee:
-        return jsonify({"message": "Course fee not found"}), 404
-
-    try:
-        if StudentCourseFee.query.filter_by(FeeID=fee_id).first():
-            return jsonify({"message": "Cannot delete course fee; existing student course fees depend on it. Delete related student fees first."}), 409
-
-        db.session.delete(fee)
-        db.session.commit()
-        return jsonify({"message": "Course fee deleted successfully"}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error deleting course fee {fee_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-# Student Course Fees Endpoints
-@enrollment_bp.route('/student_course_fees_api', methods=['GET'])
-@token_required # Protect this route
-def get_student_course_fees_api(current_user): # Add current_user parameter
-    """Retrieves all student course fee records with related student, course, and course fee details. Requires authentication."""
-    if current_user.role == 'student':
-        # Students can only see their own assigned fees
-        student_fees = StudentCourseFee.query.options(
-            db.joinedload(StudentCourseFee.student),
-            db.joinedload(StudentCourseFee.course),
-            db.joinedload(StudentCourseFee.course_fee)
-        ).filter_by(StudentID=current_user.id).all()
-    else: # admin, sas_manager can see all
-        student_fees = StudentCourseFee.query.options(
-            db.joinedload(StudentCourseFee.student),
-            db.joinedload(StudentCourseFee.course),
-            db.joinedload(StudentCourseFee.course_fee)
-        ).all()
-    return jsonify([serialize_student_course_fee(sf) for sf in student_fees])
-
-@enrollment_bp.route('/student_course_fees_api/<string:scf_id>', methods=['GET']) # Changed to string as StudentCourseFeeID is string
-@token_required # Protect this route
-def get_student_course_fee_api(current_user, scf_id): # Add current_user parameter
-    """Retrieves a single student course fee record by its ID. Requires authentication."""
-    student_fee = StudentCourseFee.query.options(
-        db.joinedload(StudentCourseFee.student),
-        db.joinedload(StudentCourseFee.course),
-        db.joinedload(StudentCourseFee.course_fee)
-    ).get(scf_id)
-    if not student_fee:
-        return jsonify({"message": "Student course fee not found"}), 404
-
-    # Students can only view their own fees
-    if current_user.role == 'student' and student_fee.StudentID != current_user.id:
-        return jsonify({'message': 'Unauthorized: You can only view your own student course fees'}), 403
-
-    return jsonify(serialize_student_course_fee(student_fee))
-
-@enrollment_bp.route('/student_course_fees_api', methods=['POST'])
-@token_required # Protect this route
-def assign_student_course_fee_api(current_user): # Add current_user parameter
-    """Assigns a course fee to a specific student for a specific course. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can assign student course fees'}), 403
-
-    data = request.json
-    if not data or not all(k in data for k in ['StudentCourseFeeID', 'StudentID', 'CourseID', 'amount', 'due_date']): # Added StudentCourseFeeID and amount
-        return jsonify({"message": "Missing student course fee data (requires StudentCourseFeeID, StudentID, CourseID, amount, due_date)"}), 400
-
-    student = Student.query.get(data['StudentID'])
-    course = Course.query.get(data['CourseID'])
-    if not student:
-        return jsonify({"message": "Student not found"}), 404
-    if not course:
-        return jsonify({"message": "Course not found"}), 404
-
-    fee_id = data.get('FeeID')
-    if fee_id:
-        course_fee = CourseFee.query.get(fee_id)
-        if not course_fee:
-            return jsonify({"message": "Provided FeeID does not exist"}), 404
-        if course_fee.CourseID != course.CourseID:
-            return jsonify({"message": "Provided FeeID does not belong to the specified CourseID"}), 400
-
-    existing_assignment = StudentCourseFee.query.filter_by(StudentID=data['StudentID'], CourseID=data['CourseID']).first()
-    if existing_assignment:
-        return jsonify({"message": "Student already has a fee assigned for this course"}), 409
-    
-    # Check if StudentCourseFeeID already exists
-    existing_scf_id = StudentCourseFee.query.get(data['StudentCourseFeeID'])
-    if existing_scf_id:
-        return jsonify({"message": "Student Course Fee with this ID already exists"}), 409
-
-
-    new_student_fee = StudentCourseFee(
-        StudentCourseFeeID=data['StudentCourseFeeID'], # Use the provided ID
-        StudentID=data['StudentID'],
-        CourseID=data['CourseID'],
-        amount=data['amount'], # Use the provided amount
-        due_date=datetime.strptime(data['due_date'], '%Y-%m-%d').date(),
-        paid_date=datetime.strptime(data['paid_date'], '%Y-%m-%d').date() if 'paid_date' in data and data['paid_date'] else None,
-        status=data.get('status', 'Outstanding'),
-        FeeID=fee_id
-    )
-    db.session.add(new_student_fee)
-    try:
-        db.session.commit()
-        return jsonify({"message": "Student course fee assigned successfully", "student_course_fee_id": new_student_fee.StudentCourseFeeID}), 201
-    except IntegrityError:
-        db.session.rollback()
-        return jsonify({"message": "Failed to assign student course fee due to data conflict"}), 409
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error assigning student course fee: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/student_course_fees_api/<string:scf_id>', methods=['PUT']) # Changed to string as StudentCourseFeeID is string
-@token_required # Protect this route
-def update_student_course_fee_api(current_user, scf_id): # Add current_user parameter
-    """Updates an existing student course fee record. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update student course fees'}), 403
-
-    student_fee = StudentCourseFee.query.get(scf_id)
-    if not student_fee:
-        return jsonify({"message": "Student course fee not found"}), 404
-
-    data = request.json
-    if not data:
-        return jsonify({"message": "No data provided for update"}), 400
-
-    if 'amount' in data: # Allow amount to be updated
-        student_fee.amount = data['amount']
-    if 'due_date' in data:
-        student_fee.due_date = datetime.strptime(data['due_date'], '%Y-%m-%d').date()
-    if 'paid_date' in data:
-        student_fee.paid_date = datetime.strptime(data['paid_date'], '%Y-%m-%d').date() if data['paid_date'] else None
-    if 'status' in data:
-        student_fee.status = data['status']
-    if 'FeeID' in data: # Allow FeeID to be updated
-        course_fee = CourseFee.query.get(data['FeeID'])
-        if not course_fee:
-            return jsonify({"message": "New FeeID for student course fee does not exist"}), 404
-        student_fee.FeeID = data['FeeID']
-
-    try:
-        db.session.commit()
-        return jsonify({"message": "Student course fee updated successfully", "student_course_fee_id": student_fee.StudentCourseFeeID}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error updating student course fee {scf_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/student_course_fees_api/<string:scf_id>', methods=['DELETE']) # Changed to string as StudentCourseFeeID is string
-@token_required # Protect this route
-def delete_student_course_fee_api(current_user, scf_id): # Add current_user parameter
-    """Deletes a student course fee record. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can delete student course fees'}), 403
-
-    student_fee = StudentCourseFee.query.get(scf_id)
-    if not student_fee:
-        return jsonify({"message": "Student course fee not found"}), 404
-
-    db.session.delete(student_fee)
-    try:
-        db.session.commit()
-        return jsonify({"message": "Student course fee deleted successfully"}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error deleting student course fee {scf_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-# enrollment_services/routes.py (continued from Part 6)
-
-# --- API Endpoints (JSON Responses) continued ---
-
-# Hold Endpoints
-@enrollment_bp.route('/holds', methods=['GET'])
-@token_required # Protect this route
-def get_holds(current_user): # Add current_user parameter
-    """Retrieves all hold records with related student details. Requires authentication."""
-    if current_user.role == 'student':
-        # Students can only view their own holds
-        holds = Hold.query.options(db.joinedload(Hold.student)).filter_by(StudentID=current_user.id).all()
-    else: # admin, sas_manager
-        holds = Hold.query.options(db.joinedload(Hold.student)).all()
-    return jsonify([serialize_hold(h) for h in holds])
-
-@enrollment_bp.route('/holds/<string:hold_id>', methods=['GET']) # Changed to string as HoldID is string
-@token_required # Protect this route
-def get_hold(current_user, hold_id): # Add current_user parameter
-    """Retrieves a single hold record by its ID. Requires authentication."""
-    hold = Hold.query.options(db.joinedload(Hold.student)).get(hold_id)
-    if not hold:
-        return jsonify({"message": "Hold not found"}), 404
-
-    # Students can only view their own specific hold
-    if current_user.role == 'student' and hold.StudentID != current_user.id:
-        return jsonify({'message': 'Unauthorized: You can only view your own holds'}), 403
-
-    return jsonify(serialize_hold(hold))
-
-@enrollment_bp.route('/holds', methods=['POST'])
-@token_required # Protect this route
-def add_hold(current_user): # Add current_user parameter
-    """Adds a new hold record for a student. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can add holds'}), 403
-
-    data = request.json
-    if not data or not all(k in data for k in ['HoldID', 'StudentID', 'reason']): # Added HoldID
-        return jsonify({"message": "Missing hold data (requires HoldID, StudentID, reason)"}), 400
-
-    student = Student.query.get(data['StudentID'])
-    if not student:
-        return jsonify({"message": "Student not found"}), 404
-    
-    # Check if HoldID already exists
-    existing_hold = Hold.query.get(data['HoldID'])
-    if existing_hold:
-        return jsonify({"message": "Hold with this ID already exists"}), 409
-
-
-    new_hold = Hold(
-        HoldID=data['HoldID'], # Use the provided HoldID
-        StudentID=data['StudentID'],
-        reason=data['reason'],
-        holdDate=datetime.strptime(data['holdDate'], '%Y-%m-%d').date() if 'holdDate' in data and data['holdDate'] else datetime.utcnow().date(),
-        liftDate=datetime.strptime(data['liftDate'], '%Y-%m-%d').date() if 'liftDate' in data and data['liftDate'] else None,
-        status=data.get('status', 'Active')
-    )
-    db.session.add(new_hold)
-    try:
-        db.session.commit()
-        return jsonify({"message": "Hold added successfully", "hold_id": new_hold.HoldID}), 201
-    except IntegrityError: # Catch if HoldID conflicts
-        db.session.rollback()
-        return jsonify({"message": "Hold with this ID already exists"}), 409
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error adding hold: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/holds/<string:hold_id>', methods=['PUT']) # Changed to string as HoldID is string
-@token_required # Protect this route
-def update_hold(current_user, hold_id): # Add current_user parameter
-    """Updates an existing hold record. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update holds'}), 403
-
-    hold = Hold.query.get(hold_id)
-    if not hold:
-        return jsonify({"message": "Hold not found"}), 404
-
-    data = request.json
-    if not data:
-        return jsonify({"message": "No data provided for update"}), 400
-
-    if 'reason' in data:
-        hold.reason = data['reason']
-    if 'holdDate' in data:
-        hold.holdDate = datetime.strptime(data['holdDate'], '%Y-%m-%d').date() if data['holdDate'] else None
-    if 'liftDate' in data:
-        hold.liftDate = datetime.strptime(data['liftDate'], '%Y-%m-%d').date() if data['liftDate'] else None
-    if 'status' in data:
-        hold.status = data['status']
-    if 'StudentID' in data: # Allow updating StudentID if necessary (though generally not recommended for existing records)
-        student = Student.query.get(data['StudentID'])
-        if not student:
-            return jsonify({"message": "New StudentID for hold does not exist"}), 404
-        hold.StudentID = data['StudentID']
-
-    try:
-        db.session.commit()
-        return jsonify({"message": "Hold updated successfully", "hold_id": hold.HoldID}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error updating hold {hold_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/holds/<string:hold_id>', methods=['DELETE']) # Changed to string as HoldID is string
-@token_required # Protect this route
-def delete_hold(current_user, hold_id): # Add current_user parameter
-    """Deletes a hold record. Requires authentication."""
-    if current_user.role != 'admin':
-        return jsonify({'message': 'Unauthorized: Only administrators can delete holds'}), 403
-
-    hold = Hold.query.get(hold_id)
-    if not hold:
-        return jsonify({"message": "Hold not found"}), 404
-
-    db.session.delete(hold)
-    try:
-        db.session.commit()
-        return jsonify({"message": "Hold deleted successfully"}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error deleting hold {hold_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-# Student Level Endpoints
-@enrollment_bp.route('/student_levels', methods=['GET'])
-@token_required # Protect this route
-def get_student_levels(current_user): # Add current_user parameter
-    """Retrieves all student level records with related student details. Requires authentication."""
-    if current_user.role == 'student':
-        # Students can only view their own student levels
-        student_levels = StudentLevel.query.options(db.joinedload(StudentLevel.student)).filter_by(StudentID=current_user.id).all()
-    else: # admin, sas_manager
-        student_levels = StudentLevel.query.options(db.joinedload(StudentLevel.student)).all()
-    return jsonify([serialize_student_level(sl) for sl in student_levels])
-
-@enrollment_bp.route('/student_levels/<string:student_level_id>', methods=['GET'])
-@token_required # Protect this route
-def get_student_level(current_user, student_level_id): # Add current_user parameter
-    """Retrieves a single student level record by its ID. Requires authentication."""
-    student_level = StudentLevel.query.options(db.joinedload(StudentLevel.student)).get(student_level_id)
-    if not student_level:
-        return jsonify({"message": "Student level not found"}), 404
-
-    # Students can only view their own specific student level
-    if current_user.role == 'student' and student_level.StudentID != current_user.id:
-        return jsonify({'message': 'Unauthorized: You can only view your own student levels'}), 403
-
-    return jsonify(serialize_student_level(student_level))
-
-@enrollment_bp.route('/student_levels', methods=['POST'])
-@token_required # Protect this route
-def add_student_level(current_user): # Add current_user parameter
-    """Adds a new student level record. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can add student levels'}), 403
-
-    data = request.json
-    if not data or not all(k in data for k in ['StudentLevelID', 'StudentID']):
-        return jsonify({"message": "Missing student level data (requires StudentLevelID, StudentID)"}), 400
-
-    student = Student.query.get(data['StudentID'])
-    if not student:
-        return jsonify({"message": "Student not found"}), 404
-    
-    # Check if StudentLevelID already exists
-    existing_level = StudentLevel.query.get(data['StudentLevelID'])
-    if existing_level:
-        return jsonify({"message": "Student level with this ID already exists"}), 409
-
-    new_student_level = StudentLevel(
-        StudentLevelID=data['StudentLevelID'],
-        StudentID=data['StudentID'],
-        LevelName=data.get('LevelName'), # Added LevelName
-        AttributeName1=data.get('AttributeName1'),
-        AttributeName2=data.get('AttributeName2')
-    )
-    db.session.add(new_student_level)
-    try:
-        db.session.commit()
-        return jsonify({"message": "Student level added successfully", "student_level_id": new_student_level.StudentLevelID}), 201
-    except IntegrityError:
-        db.session.rollback()
-        return jsonify({"message": "Student level with this ID already exists"}), 409
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error adding student level: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/student_levels/<string:student_level_id>', methods=['PUT'])
-@token_required # Protect this route
-def update_student_level(current_user, student_level_id): # Add current_user parameter
-    """Updates an existing student level record. Requires authentication."""
-    if current_user.role not in ['admin', 'sas_manager']:
-        return jsonify({'message': 'Unauthorized: Only administrators or SAS managers can update student levels'}), 403
-
-    student_level = StudentLevel.query.get(student_level_id)
-    if not student_level:
-        return jsonify({"message": "Student level not found"}), 404
-
-    data = request.json
-    if not data:
-        return jsonify({"message": "No data provided for update"}), 400
-
-    if 'LevelName' in data: # Allow LevelName to be updated
-        student_level.LevelName = data['LevelName']
-    if 'AttributeName1' in data:
-        student_level.AttributeName1 = data['AttributeName1']
-    if 'AttributeName2' in data:
-        student_level.AttributeName2 = data['AttributeName2']
-    if 'StudentID' in data:
-        student = Student.query.get(data['StudentID'])
-        if not student:
-            return jsonify({"message": "New StudentID for student level does not exist"}), 404
-        student_level.StudentID = data['StudentID']
-
-    try:
-        db.session.commit()
-        return jsonify({"message": "Student level updated successfully", "student_level_id": student_level.StudentLevelID}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error updating student level {student_level_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500
-
-@enrollment_bp.route('/student_levels/<string:student_level_id>', methods=['DELETE'])
-@token_required # Protect this route
-def delete_student_level(current_user, student_level_id): # Add current_user parameter
-    """Deletes a student level record. Requires authentication."""
-    if current_user.role != 'admin':
-        return jsonify({'message': 'Unauthorized: Only administrators can delete student levels'}), 403
-
-    student_level = StudentLevel.query.get(student_level_id)
-    if not student_level:
-        return jsonify({"message": "Student level not found"}), 404
-
-    db.session.delete(student_level)
-    try:
-        db.session.commit()
-        return jsonify({"message": "Student level deleted successfully"}), 200
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error deleting student level {student_level_id}: {e}")
-        return jsonify({"message": "Internal server error: " + str(e)}), 500

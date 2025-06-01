@@ -42,12 +42,12 @@ def seed_single_student_and_enrollment(db_instance):
     # !! DOUBLE-CHECK THIS ID if you intend to create s00000001 !!
     # If s00000001 already exists from previous runs (e.g., in your image),
     # change this ID to something unique like "s00000005" to see a new entry.
-    student_id = "s11206969" # Or change to "s00000005" if s00000001 is already there
-    first_name = "Aaron"
-    last_name = "smith"
-    email = f"{first_name.lower()}.{last_name.lower()}@example.com"
+    student_id = "s11207070" # Or change to "s00000005" if s00000001 is already there
+    first_name = "Yash"
+    last_name = "Prasad"
+    email = f"{first_name.lower()}.{last_name.lower()}@gmail.com"
     username = f"{first_name.lower()}{last_name.lower()}"
-    password = "password123" # This will be hashedS
+    password = "psw123" # This will be hashedS
 
     # --- Course to Enroll In ---
     # As per previous discussions, ensure this CourseID actually exists

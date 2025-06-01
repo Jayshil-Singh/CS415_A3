@@ -23,7 +23,11 @@ Set-Location $tempDir
 
 # Step 5: Git add, commit, and push just the Excel file
 git add "$excelFileName"
+<<<<<<< HEAD
 git commit -m "Add/update progress report for 29/05/2025 thur by Shivya"
+=======
+git commit -m "Updated progress report for May 29 for Avichal"
+>>>>>>> df4288a706912d9a7afaa825249e7e176b4c5391
 git push origin main
 
 # Step 6: Done, optional cleanup message

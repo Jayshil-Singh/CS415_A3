@@ -11,6 +11,8 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f4f6f8;
+            padding-bottom: 60px; /* Added: Ensures content doesn't get hidden behind the fixed footer */
         }
 
         .flash-message {
@@ -146,53 +148,146 @@
             /* gray-500 */
             color: white;
         }
+
+        /* Custom Warning Modal Styles */
+        #warningModal {
+            display: none;
+            position: fixed;
+            z-index: 1001; /* Higher than other modals */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #warningModal .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+        }
+
+        #warningModal .modal-content h3 {
+            color: #ef4444; /* Red for warning */
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        #warningModal .modal-content p {
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        #warningModal .modal-content button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+
+        #warningModal .modal-content button:hover {
+            background-color: #0056b3;
+        }
+
+
+        /* Tree Structure Specific Styles */
+        .tree-node {
+            margin-left: 1.5rem;
+            position: relative;
+        }
+
+        .tree-node::before {
+            content: '';
+            position: absolute;
+            left: -1rem;
+            top: 0.75rem;
+            width: 0.75rem;
+            height: 1px;
+            background-color: #d1d5db;
+        }
+
+        .tree-node.year::before {
+            height: calc(100% - 0.75rem);
+            border-left: 1px solid #d1d5db;
+            top: 0;
+            left: -1.5rem;
+        }
+
+        .tree-node.semester::before {
+            height: calc(100% - 0.75rem);
+            border-left: 1px solid #d1d5db;
+            top: 0;
+            left: -1rem;
+        }
+
+        .tree-node.course::before {
+            height: 1px;
+            top: 0.75rem;
+            left: -0.75rem;
+            width: 0.75rem;
+        }
+
+        /* Specific adjustment for tree lines to avoid extending past last child */
+        .tree-node.year>.semester-container>.tree-node.semester:last-of-type::before,
+        .tree-node.semester>.course-group>.tree-node.course:last-of-type::before {
+            height: 0.75rem;
+        }
+
+        /* Footer styles (uniform) */
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: white;
+            background-color: teal;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 15px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
     </style>
 </head>
 
-<body class="bg-gray-100">
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
+<body>
+    <nav class="bg-teal-600 shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
                     <a href="{{ url_for('enrollment.dashboard') }}" class="flex-shrink-0">
-                        <img class="h-10 w-auto" src="https://placehold.co/150x50/003366/FFFFFF?text=USP+Enroll"
-                            alt="USP Logo">
+                        <img class="h-10 w-auto" src="https://placehold.co/150x50/003366/FFFFFF?text=USP+Enroll" alt="USP Logo">
                     </a>
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="{{ url_for('enrollment.dashboard') }}"
-                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                            <a href="{{ url_for('enrollment.enroll') }}"
-                                class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium"
-                                aria-current="page">Enroll</a>
-                            <a href="{{ url_for('enrollment.display_courses') }}"
-                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My
-                                Enrollment</a>
-                            <a href="{{ url_for('enrollment.fees') }}"
-                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
-                            <a href="programmes.html"
-                                class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Programmes</a>
+                            <a href="{{ url_for('enrollment.dashboard') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="{{ url_for('enrollment.enroll') }}" class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Enroll</a>
+                            <a href="{{ url_for('enrollment.display_courses') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My Enrollment</a>
+                            <a href="{{ url_for('enrollment.fees') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
+                            <a href="{{ url_for('enrollment.view_transcript') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Transcript</a>
+                            <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Grades</a>
+                            <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
+                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
                         </div>
                     </div>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-4 flex items-center md:ml-6">
-                        <a href="profile.html"
-                            class="p-1 rounded-full text-gray-500 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
-                            title="Profile">
-                            <span class="sr-only">View profile</span>
-                            <i class="fas fa-user-circle fa-lg"></i>
-                        </a>
-                        <a href="login.html"
-                            class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <a href="{{ url_for('enrollment.logout') }}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </a>
                     </div>
                 </div>
                 <div class="-mr-2 flex md:hidden">
-                    <button type="button" id="mobile-menu-button"
-                        class="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                        aria-controls="mobile-menu" aria-expanded="false">
+                    <button type="button" id="mobile-menu-button" class="bg-teal-500 inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
                         <i class="fas fa-bars fa-lg"></i>
                     </button>
@@ -201,37 +296,18 @@
         </div>
         <div class="md:hidden hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="{{ url_for('enrollment.dashboard') }}"
-                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
-                <a href="{{ url_for('enrollment.enroll') }}"
-                    class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium"
-                    aria-current="page">Enroll</a>
-                <a href="{{ url_for('enrollment.display_courses') }}"
-                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My
-                    Enrollment</a>
-                <a href="{{ url_for('enrollment.fees') }}"
-                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
-                <a href="programmes.html"
-                    class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Programmes</a>
+                <a href="{{ url_for('enrollment.dashboard') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="{{ url_for('enrollment.enroll') }}" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Enroll</a>
+                <a href="{{ url_for('enrollment.display_courses') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My Enrollment</a>
+                <a href="{{ url_for('enrollment.fees') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
+                <a href="{{ url_for('enrollment.view_transcript') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Transcript</a>
+                <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Grades</a>
+                <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
+                <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
             </div>
-            <div class="pt-4 pb-3 border-t border-gray-200">
-                <div class="flex items-center px-5">
-                    <div class="flex-shrink-0">
-                        <img class="h-10 w-10 rounded-full" src="https://placehold.co/40x40/E0E0E0/757575?text=S"
-                            alt="User Avatar">
-                    </div>
-                    <div class="ml-3">
-                        <div class="text-base font-medium leading-none text-gray-800">Ratu Epeli Nailatikau</div>
-                        <div class="text-sm font-medium leading-none text-gray-500">s11223344@student.usp.ac.fj</div>
-                    </div>
-                </div>
+            <div class="pt-4 pb-3 border-t border-teal-500">
                 <div class="mt-3 px-2 space-y-1">
-                    <a href="profile.html"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i
-                            class="fas fa-user-edit mr-2"></i>Your Profile</a>
-                    <a href="login.html"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i
-                            class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
+                    <a href="{{ url_for('enrollment.logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-indigo-700 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
                 </div>
             </div>
         </div>
@@ -246,6 +322,7 @@
     <main>
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <div class="bg-white p-6 rounded-lg shadow-md">
+                {# Flash Messages Display Block #}
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                 <div class="space-y-2 mb-4">
@@ -262,7 +339,8 @@
                     <label for="semester" class="block text-sm font-medium text-gray-700 mb-1">Select Semester:</label>
                     <select id="semester" name="semester"
                         class="w-full md:w-1/2 lg:w-1/3 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white">
-                        <option value="sem2_2025">Semester 2, 2025</option>
+                        <option value="Semester 1">Semester 1</option>
+                        <option value="Semester 2" selected>Semester 2</option>
                     </select>
                     <p class="text-sm text-gray-500 mt-2">Courses will load based on your programme and selected
                         semester.</p>
@@ -274,50 +352,69 @@
                 </div>
 
                 <div id="course-list-container">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Available Courses for Bachelor of Science in
-                        Computer Science</h3>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Available Courses for Bachelor of Software
+                        Engineering</h3>
                     <p class="mb-4 text-sm text-indigo-600"><i class="fas fa-info-circle mr-1"></i> You can select a
-                        maximum of 4 courses.</p>
+                        maximum of 4 full units (UU100A and CS001 count as 0.5 units each).</p>
 
                     <form id="enrollment-form" action="{{ url_for('enrollment.enroll') }}" method="POST">
-                        <div class="space-y-4">
-                            {% for course in courses %}
-                            <div
-                                class="p-4 border rounded-lg hover:shadow-md transition-shadow 
-                                {% if not course.prereq_met or course.already_enrolled %}course-disabled{% endif %}">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="font-semibold text-lg text-gray-800">{{ course.code }}: {{ course.title
-                                            }}</h4>
-                                        <p class="text-sm text-gray-500">{{ course.description }}</p>
+                        <div class="space-y-6">
+                            {# Iterate through the program_structure sent from Flask #}
+                            {% for year_name, year_data in program_structure.items() %}
+                            <div class="border border-gray-200 rounded-lg p-4 year-block" data-year-name="{{ year_name }}">
+                                <h2 class="text-2xl font-semibold text-gray-700 mb-4">
+                                    {{ year_name }}
+                                    {% if year_name != 'Year 1' and not (courses|selectattr('year_name', 'equalto', year_name)|first).year_unlocked %}
+                                        <span class="text-sm text-red-500">(Requires completion of previous years)</span>
+                                    {% endif %}
+                                </h2>
+                                <div class="tree-node year">
+                                    {# Iterate through semesters within each year #}
+                                    <div class="semester-container">
+                                        {% for semester_name, semester_courses_info in year_data.items() %}
+                                        <div class="mb-4 semester-block" data-semester-name="{{ semester_name }}">
+                                            <h3 class="text-xl font-medium text-gray-600 mb-3">{{ semester_name }}</h3>
+                                            <div class="tree-node semester">
+                                                <div class="space-y-2 course-group">
+                                                    {# Iterate through courses for the current semester #}
+                                                    {% for course_info_from_structure in semester_courses_info %}
+                                                        {# Find the corresponding course object from the 'courses' list passed from Flask #}
+                                                        {% set course = (courses|selectattr('code', 'equalto', course_info_from_structure.code)|first) %}
+                                                        {% if course %}
+                                                        <label class="flex items-center tree-node course
+                                                            {% if not course.prereq_met or course.already_enrolled or not course.year_unlocked %}course-disabled{% endif %}"
+                                                            data-course-id="{{ course.code }}"
+                                                            data-semester-name="{{ course.semester_name }}"
+                                                            data-prereq-met="{{ 'true' if course.prereq_met else 'false' }}"
+                                                            data-already-enrolled="{{ 'true' if course.already_enrolled else 'false' }}"
+                                                            data-units="{{ course.units }}"
+                                                            data-year-unlocked="{{ 'true' if course.year_unlocked else 'false' }}">
+                                                            <input type="checkbox" name="courses" value="{{ course.code }}"
+                                                                data-unit="{{ course.units }}"
+                                                                class="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 course-checkbox"
+                                                                {% if not course.prereq_met or course.already_enrolled or not course.year_unlocked %}disabled{% endif %}
+                                                                {% if course.already_enrolled %}checked{% endif %}>
+                                                            <span class="ml-2 text-gray-700">{{ course.code }} - {{ course.title }}</span>
+                                                            {% if not course.prereq_met %}
+                                                                <span class="text-xs text-red-500 ml-1">(Requires: {{ course.prerequisites_display }})</span>
+                                                            {% elif course.already_enrolled %}
+                                                                <span class="text-xs text-gray-500 ml-1">(Already Enrolled)</span>
+                                                            {% endif %}
+                                                        </label>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
                                     </div>
-                                    <input type="checkbox" name="courses" value="{{ course.code }}"
-                                        class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 course-checkbox"
-                                        {% if not course.prereq_met or course.already_enrolled %}disabled{% endif %}>
                                 </div>
-                                <p class="text-xs mt-1">
-                                    Prerequisites:
-                                    {% if course.prerequisites %}
-                                    {{ ', '.join(course.prerequisites) }}
-                                    {% if course.prereq_met %}
-                                    <span class="course-prereq-met"> (<i class="fas fa-check-circle mr-1"></i>Met)</span>
-                                    {% else %}
-                                    <span class="course-prereq-unmet"> (<i class="fas fa-times-circle mr-1"></i>Not
-                                        Met)</span>
-                                    {% endif %}
-                                    {% else %}
-                                    None
-                                    {% endif %}
-                                </p>
-                                {% if course.already_enrolled %}
-                                    <p class="text-xs mt-1 text-blue-600">Already Enrolled</p>
-                                {% endif %}
                             </div>
                             {% endfor %}
                         </div>
 
                         <div class="mt-8 text-right">
-                            <p class="text-sm text-gray-600 mb-2">Selected courses: <span id="selected-count">0</span>/4
+                            <p class="text-sm text-gray-600 mb-2">Selected units: <span id="selected-units">0.0</span>/<span id="max-units-display">4.0</span>
                             </p>
                             <button type="button" id="enroll-button"
                                 class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
@@ -346,15 +443,17 @@
         </div>
     </main>
 
-    <footer class="bg-white border-t mt-12">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-            &copy;
-            <script>
-                document.write(new Date().getFullYear())
-            </script>
-            USP Enrollment System. All rights reserved.
+    <div id="warningModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Warning!</h3>
+            <p id="warningMessage"></p>
+            <button id="closeWarningModal">OK</button>
         </div>
-    </footer>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 The University of the South Pacific. All rights reserved.</p>
+    </div>
     <script>
         // Basic mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -365,20 +464,60 @@
             });
         }
 
-        // Course selection limit and button enable/disable
+        // Course selection unit counting and button enable/disable
         const checkboxes = document.querySelectorAll('.course-checkbox');
-        const selectedCountSpan = document.getElementById('selected-count');
+        const selectedUnitsSpan = document.getElementById('selected-units');
+        const maxUnitsDisplay = document.getElementById('max-units-display');
         const enrollButton = document.getElementById('enroll-button');
         const enrollConfirmationModal = document.getElementById('enrollConfirmationModal');
         const cancelEnrollButton = document.getElementById('cancelEnroll');
         const confirmEnrollButton = document.getElementById('confirmEnroll');
-        const maxCourses = 4;
+        const semesterSelect = document.getElementById('semester');
 
-        function updateSelectedCount() {
-            const checkedCount = document.querySelectorAll('.course-checkbox:checked').length;
-            selectedCountSpan.textContent = checkedCount;
+        // Custom Warning Modal Elements
+        const warningModal = document.getElementById('warningModal');
+        const warningMessage = document.getElementById('warningMessage');
+        const closeWarningModalButton = document.getElementById('closeWarningModal');
 
-            if (checkedCount > 0 && checkedCount <= maxCourses) {
+        let baseMaxUnits = 4.0;
+        let currentMaxUnits = baseMaxUnits; // Initialize with base max units
+
+        function showWarningModal(message) {
+            warningMessage.textContent = message;
+            warningModal.style.display = 'flex'; // Use flex to center
+        }
+
+        closeWarningModalButton.addEventListener('click', () => {
+            warningModal.style.display = 'none';
+        });
+
+        function updateSelectedUnits() {
+            let totalUnits = 0.0;
+            let hasSpecialCourse = false;
+
+            checkboxes.forEach(checkbox => {
+                // Only count checked and visible (not hidden by semester filter) courses
+                if (checkbox.checked && !checkbox.closest('label').classList.contains('hidden')) {
+                    const units = parseFloat(checkbox.dataset.unit);
+                    totalUnits += units;
+                    const courseId = checkbox.value;
+                    if (courseId === 'CS001' || courseId === 'UU100A') {
+                        hasSpecialCourse = true;
+                    }
+                }
+            });
+
+            // Determine current maximum units based on special courses
+            currentMaxUnits = baseMaxUnits;
+            if (hasSpecialCourse) {
+                currentMaxUnits = 4.5;
+            }
+
+            selectedUnitsSpan.textContent = totalUnits.toFixed(1); // Display with one decimal place
+            maxUnitsDisplay.textContent = currentMaxUnits.toFixed(1); // Update max units display
+
+            // Enable/disable the enroll button based on total units and if any course is selected
+            if (totalUnits > 0 && totalUnits <= currentMaxUnits) {
                 enrollButton.disabled = false;
                 enrollButton.classList.remove('disabled:opacity-50');
             } else {
@@ -389,17 +528,57 @@
 
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', () => {
-                const checkedCount = document.querySelectorAll('.course-checkbox:checked').length;
-                if (checkedCount > maxCourses) {
-                    alert(`You can select a maximum of ${maxCourses} courses.`);
-                    checkbox.checked = false; // Revert the last check
+                // Recalculate units and check against currentMaxUnits after each change
+                let tempTotalUnits = 0.0;
+                let tempHasSpecialCourse = false;
+                checkboxes.forEach(cb => {
+                    if (cb.checked && !cb.closest('label').classList.contains('hidden')) {
+                        tempTotalUnits += parseFloat(cb.dataset.unit);
+                        const courseId = cb.value;
+                        if (courseId === 'CS001' || courseId === 'UU100A') {
+                            tempHasSpecialCourse = true;
+                        }
+                    }
+                });
+
+                let effectiveMaxUnits = baseMaxUnits;
+                if (tempHasSpecialCourse) {
+                    effectiveMaxUnits = 4.5;
                 }
-                updateSelectedCount(); // Update count and button state
+
+                if (tempTotalUnits > effectiveMaxUnits) {
+                    checkbox.checked = false; // Revert the last selection
+                    showWarningModal(`Maximum limit for enrollment reached! You can select a maximum of ${effectiveMaxUnits.toFixed(1)} units. Please adjust your selection.`);
+                }
+                updateSelectedUnits(); // Always update to reflect the correct state
             });
         });
 
-        // Initialize count and button state on page load
-        updateSelectedCount();
+        function filterCoursesBySemester() {
+            const selectedSemester = semesterSelect.value;
+            const semesterBlocks = document.querySelectorAll('.semester-block');
+
+            semesterBlocks.forEach(block => {
+                const semesterName = block.dataset.semesterName;
+                if (semesterName === selectedSemester) {
+                    block.classList.remove('hidden');
+                } else {
+                    block.classList.add('hidden');
+                    // Uncheck any checkboxes within hidden semester blocks
+                    block.querySelectorAll('.course-checkbox').forEach(cb => {
+                        cb.checked = false;
+                    });
+                }
+            });
+            updateSelectedUnits(); // Recalculate units after filtering
+        }
+
+        // Initialize unit count and button state on page load
+        updateSelectedUnits();
+        filterCoursesBySemester(); // Initial filter based on default selected semester (Semester 2 is default)
+
+        // Event listener for semester dropdown change
+        semesterSelect.addEventListener('change', filterCoursesBySemester);
 
         // Show enrollment confirmation modal
         enrollButton.addEventListener('click', (event) => {
@@ -417,20 +596,6 @@
             enrollConfirmationModal.style.display = 'none';
             document.getElementById('enrollment-form').submit(); // Submit the form
         });
-
-        // The semester selection loading simulation is commented out as it's not needed with direct DB interaction
-        // document.getElementById('semester').addEventListener('change', () => {
-        //     document.getElementById('course-list-container').classList.add('hidden');
-        //     document.getElementById('loading-courses').classList.remove('hidden');
-        //     setTimeout(() => {
-        //         document.getElementById('loading-courses').classList.add('hidden');
-        //         document.getElementById('course-list-container').classList.remove('hidden');
-        //         // Here you would dynamically update the course list based on the selected semester
-        //         // This would likely involve fetching data from your microservice.
-        //         // For now, we'll just keep the existing list.
-        //         // You might need to reset checkboxes and counts here as well.
-        //     }, 1500);
-        // });
     </script>
 </body>
 

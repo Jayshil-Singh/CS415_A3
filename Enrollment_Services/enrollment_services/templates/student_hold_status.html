@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - USP Enrollment System</title>
+    <title>Student Hold Status - USP Enrollment System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -11,37 +11,53 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
             display: flex;
-            flex-direction: column; /* Changed to column for nav/footer stacking */
-            justify-content: flex-start; /* Align items to the start for nav at top */
-            align-items: center;
+            flex-direction: column;
             min-height: 100vh;
-            margin: 0; /* Ensure no default body margin */
             padding-bottom: 60px; /* Added: Ensures content doesn't get hidden behind the fixed footer */
         }
-        .login-container {
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
             background-color: #fff;
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 0.5rem;
-            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            margin-top: 20px; /* Added margin-top to push it below the nav */
-            margin-bottom: auto; /* Pushes it towards the top, above the footer */
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
         }
-        .flash-message {
-            padding: 0.75rem;
-            margin-bottom: 1rem;
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .hold-info {
+            background-color: #fee2e2; /* red-100 */
+            border-left: 4px solid #ef4444; /* red-500 */
+            color: #991b1b; /* red-800 */
+            padding: 1rem;
             border-radius: 0.375rem;
-            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
         }
-        .flash-error {
-            background-color: #fee2e2;
-            color: #991b1b;
+        .hold-info.no-hold {
+            background-color: #d1fae5; /* green-100 */
+            border-left: 4px solid #22c55e; /* green-500 */
+            color: #065f46; /* green-800 */
         }
-        .flash-success {
-            background-color: #d1fae5;
-            color: #065f46;
+        .hold-info p {
+            margin-bottom: 0.5rem;
+        }
+        .hold-info p:last-child {
+            margin-bottom: 0;
+        }
+        .restricted-services-list {
+            list-style: disc;
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+            color: #4b5563;
+        }
+        .restricted-services-list li {
+            margin-bottom: 0.5rem;
         }
         /* Footer styles (uniform) */
         .footer {
@@ -59,7 +75,7 @@
     </style>
 </head>
 <body>
-    <nav class="bg-teal-600 shadow-lg sticky top-0 z-50 w-full">
+    <nav class="bg-teal-600 shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
@@ -75,7 +91,7 @@
                             <a href="{{ url_for('enrollment.view_transcript') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Transcript</a>
                             <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Grades</a>
                             <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
-                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
+                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Holds</a>
                         </div>
                     </div>
                 </div>
@@ -103,7 +119,7 @@
                 <a href="{{ url_for('enrollment.view_transcript') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Transcript</a>
                 <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Grades</a>
                 <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
-                <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-white hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
+                <a href="{{ url_for('enrollment.student_hold_status') }}" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Holds</a>
             </div>
             <div class="pt-4 pb-3 border-t border-teal-500">
                 <div class="mt-3 px-2 space-y-1">
@@ -113,104 +129,55 @@
         </div>
     </nav>
 
-    <div class="login-container">
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Login to Enrollment Services</h2>
+    <div class="container">
+        <h1>Your Student Hold Status</h1>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="space-y-2 mb-4">
-            {% for category, message in messages %}
-            <div class="flash-message flash-{{ category }}">
-                {{ message }}
+        {% if hold_status %}
+            <div class="hold-info">
+                <p class="font-bold text-lg">You have an ACTIVE HOLD on your account!</p>
+                <p><strong>Reason:</strong> {{ hold_status.reason }}</p>
+                <p><strong>Hold Date:</strong> {{ hold_status.holdDate.strftime('%Y-%m-%d') }}</p>
+                {% if hold_status.liftDate %}
+                    <p><strong>Lift Date:</strong> {{ hold_status.liftDate.strftime('%Y-%m-%d') }}</p>
+                {% else %}
+                    <p><strong>Lift Date:</strong> To be determined</p>
+                {% endif %}
+                {% if hold_status.imposed_by_user %}
+                    <p><strong>Imposed By:</strong> {{ hold_status.imposed_by_user.username }} ({{ hold_status.imposed_by_user.role }})</p>
+                {% endif %}
+                <p class="mt-4">
+                    Please resolve this hold with the relevant department to regain full access to all services.
+                </p>
+                {% if restricted_services %}
+                    <p class="mt-4 font-bold">Currently Restricted Services:</p>
+                    <ul class="restricted-services-list">
+                        {% for service in restricted_services %}
+                            <li>{{ service.service_name.replace('_', ' ').title() }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
-            {% endfor %}
-        </div>
+        {% else %}
+            <div class="hold-info no-hold">
+                <p class="font-bold text-lg">No Active Holds Found</p>
+                <p>Your account currently has no active holds. You have full access to all student services.</p>
+            </div>
         {% endif %}
-        {% endwith %}
-
-        <form id="loginForm" class="space-y-4">
-            <div>
-                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-                <input type="text" id="username" name="username" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </div>
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" required
-                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            </div>
-            <button type="submit"
-                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Login
-            </button>
-        </form>
-
-        <p class="mt-6 text-center text-sm text-gray-600">
-            Forgot your password? <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">Reset it</a>
-        </p>
     </div>
 
     <div class="footer">
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> The University of the South Pacific. All rights reserved.</p>
+        &copy; <script>document.write(new Date().getFullYear())</script> USP Enrollment System. All rights reserved.</p>
     </div>
 
     <script>
-        // This JavaScript block should appear only ONCE.
-        document.getElementById('loginForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent default form submission
-
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            try {
-                // Send login request to your Flask backend
-                const response = await fetch('/enrollment_services/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Login successful
-                    console.log('Login successful:', data);
-                    // Store the token (e.g., in localStorage or sessionStorage)
-                    localStorage.setItem('jwt_token', data.token);
-
-                    // Send token to Flask session for HTML route authentication
-                    const session_response = await fetch('/enrollment_services/auth/set_session_token', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ token: data.token })
-                    });
-
-                    if (session_response.ok) {
-                        // Token successfully set in Flask session, now redirect
-                        window.location.href = '/enrollment_services/dashboard';
-                    } else {
-                        const session_error_data = await session_response.json();
-                        console.error('Failed to set token in Flask session:', session_error_data);
-                        // Using a custom modal or message box would be better than alert() here
-                        alert('Login successful, but failed to set session. Please try again or contact support.');
-                    }
-
-                } else {
-                    // Login failed
-                    console.error('Login failed:', data);
-                    // Using a custom modal or message box would be better than alert() here
-                    alert('Login failed: ' + (data.message || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error during login fetch:', error);
-                // Using a custom modal or message box would be better than alert() here
-                alert('An error occurred during login. Please try again.');
-            }
-        });
+        // Basic mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
     </script>
 </body>
 </html>
