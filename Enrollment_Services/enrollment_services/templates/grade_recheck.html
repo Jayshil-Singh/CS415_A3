@@ -3,131 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apply for Grade Recheck</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Apply for Grade Recheck - USP Enrollment System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f8;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
             min-height: 100vh;
         }
         .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
+            max-width: 700px;
+            margin: 2rem auto;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
         }
         h1 {
-            color: #333;
             text-align: center;
-            margin-bottom: 25px;
+            color: #333;
+            margin-bottom: 1.5rem;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 1.25rem;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
         }
-        select,
-        textarea {
+        select, textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1em;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            color: #374151;
+            background-color: #fff;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+        }
+        select:focus, textarea:focus {
+            border-color: #4f46e5;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
         }
         textarea {
-            resize: vertical;
             min-height: 120px;
+            resize: vertical;
         }
         .form-actions {
-            text-align: center;
-            margin-top: 30px;
+            text-align: right;
+            margin-top: 2rem;
         }
         .btn {
-            background-color: #007bff;
+            padding: 0.75rem 1.5rem;
+            background-color: #4f46e5;
             color: white;
-            padding: 12px 25px;
             border: none;
-            border-radius: 5px;
+            border-radius: 0.375rem;
             cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
         }
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #4338ca;
         }
-        .alert {
-            background-color: #ffeeba;
-            color: #856404;
-            border: 1px solid #ffeeba;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        .flash-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .flash-error, .flash-danger { /* Combined error and danger for consistency */
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .flash-info {
+            background-color: #dbeafe;
+            color: #1e40af;
         }
         .errors {
-            color: red;
-            font-size: 0.9em;
-            margin-top: 5px;
-            list-style-type: none;
-            padding: 0;
+            color: #dc2626; /* red-600 */
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            list-style: none;
+            padding-left: 0;
         }
         .form-group.required label:after {
             content: " *";
             color: red;
         }
-        .important-note {
-            background-color: #e6f7ff;
-            border-left: 5px solid #2196f3;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            color: #333;
+        .footer {
+            margin-top: auto; /* Pushes footer to the bottom */
+            background-color: #fff;
+            border-top: 1px solid #e5e7eb;
+            padding: 1.5rem 0;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
         }
     </style>
 </head>
 <body>
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{{ url_for('enrollment.dashboard') }}" class="flex-shrink-0">
+                        <img class="h-10 w-auto" src="https://placehold.co/150x50/003366/FFFFFF?text=USP+Enroll" alt="USP Logo">
+                    </a>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="{{ url_for('enrollment.dashboard') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="{{ url_for('enrollment.enroll') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
+                            <a href="{{ url_for('enrollment.display_courses') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My Enrollment</a>
+                            <a href="{{ url_for('enrollment.fees') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
+                            <a href="{{ url_for('enrollment.view_transcript') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Transcript</a>
+                            <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Grades</a>
+                            <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
+                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <a href="{{ url_for('enrollment.logout') }}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-button" class="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="{{ url_for('enrollment.dashboard') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="{{ url_for('enrollment.enroll') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
+                <a href="{{ url_for('enrollment.display_courses') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My Enrollment</a>
+                <a href="{{ url_for('enrollment.fees') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
+                <a href="{{ url_for('enrollment.view_transcript') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Transcript</a>
+                <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Grades</a>
+                <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
+                <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="mt-3 px-2 space-y-1">
+                    <a href="{{ url_for('enrollment.logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
         <h1>Apply for Grade Recheck</h1>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="flash-messages">
+                <div class="space-y-2 mb-4">
                     {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                        <div class="flash-message flash-{{ category }}">{{ message }}</div>
                     {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
 
-        <div class="important-note">
-            <p><strong>Please read carefully before submitting:</strong></p>
-            <ul>
-                <li>A grade recheck involves a review of your marked assessment components for calculation errors or omissions.</li>
-                <li>This is NOT a re-marking of your work.</li>
-                <li>There may be a fee associated with grade rechecks. This fee will be refunded if a grade change occurs.</li>
-                <li>Recheck requests must typically be submitted within a specified period after results are released.</li>
-            </ul>
-        </div>
-
         <form method="POST" action="{{ url_for('enrollment.apply_grade_recheck') }}">
             <div class="form-group required">
-                <label for="course_grade">Course and Grade to Recheck *</label>
-                <select id="course_grade" name="course_grade" class="form-control">
+                <label for="course_grade">Select Course Grade to Recheck *</label>
+                <select id="course_grade" name="course_grade">
                     {% for value, label in grade_choices %}
-                        <option value="{{ value }}" {% if value == current_selected_grade_id %}selected{% endif %}>{{ label }}</option>
+                        <option value="{{ value }}" {% if value|string == current_selected_grade_id|string %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                 </select>
                 {% if errors.course_grade %}
@@ -137,8 +199,9 @@
 
             <div class="form-group required">
                 <label for="reason">Reason for Recheck *</label>
-                <textarea id="reason" name="reason" class="form-control" rows="5"
-                    placeholder="e.g., 'I believe there was a calculation error in my final mark.', 'A specific component of my assessment seems to be missing from the final calculation.'">{{ current_reason }}</textarea>
+                <textarea id="reason" name="reason"
+                          placeholder="Please provide a detailed reason for your recheck request (50-500 characters)."
+                          required minlength="50" maxlength="500">{{ current_reason }}</textarea>
                 {% if errors.reason %}
                     <ul class="errors"><li>{{ errors.reason }}</li></ul>
                 {% endif %}
@@ -149,5 +212,20 @@
             </div>
         </form>
     </div>
+
+    <footer class="footer">
+        &copy; <script>document.write(new Date().getFullYear())</script> USP Enrollment System. All rights reserved.
+    </footer>
+
+    <script>
+        // Basic mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
 </body>
 </html>

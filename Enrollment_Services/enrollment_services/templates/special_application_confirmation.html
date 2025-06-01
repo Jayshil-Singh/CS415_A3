@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Special Application Confirmed</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Basic styling for the confirmation page */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
             min-height: 100vh;
         }
         .container {
@@ -25,6 +25,7 @@
             text-align: center;
             max-width: 600px;
             width: 100%;
+            margin: 20px auto; /* Add margin for spacing below nav */
         }
         h1 {
             color: #28a745; /* Green for success */
@@ -52,20 +53,23 @@
         }
         .button-group {
             margin-top: 30px;
+            display: flex; /* Use flexbox for button alignment */
+            justify-content: center; /* Center buttons */
+            gap: 20px; /* Space between buttons */
         }
         .button-group a {
             display: inline-block;
             padding: 10px 20px;
-            margin: 0 10px;
             text-decoration: none;
             border-radius: 5px;
             transition: background-color 0.3s ease;
+            font-weight: 600;
         }
-        .button-group a.dashboard {
+        .button-group a.dashboard-btn { /* Changed class name for clarity */
             background-color: #007bff;
             color: white;
         }
-        .button-group a.dashboard:hover {
+        .button-group a.dashboard-btn:hover {
             background-color: #0056b3;
         }
         .button-group a.view-history {
@@ -85,6 +89,60 @@
     </style>
 </head>
 <body>
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{{ url_for('enrollment.dashboard') }}" class="flex-shrink-0">
+                        <img class="h-10 w-auto" src="https://placehold.co/150x50/003366/FFFFFF?text=USP+Enroll" alt="USP Logo">
+                    </a>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="{{ url_for('enrollment.dashboard') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="{{ url_for('enrollment.enroll') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Enroll</a>
+                            <a href="{{ url_for('enrollment.display_courses') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">My Enrollment</a>
+                            <a href="{{ url_for('enrollment.fees') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fees</a>
+                            <a href="{{ url_for('enrollment.view_transcript') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Transcript</a>
+                            <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Grades</a>
+                            <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Special Apps</a>
+                            <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Holds</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-4 flex items-center md:ml-6">
+                        <a href="{{ url_for('enrollment.logout') }}" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-button" class="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="{{ url_for('enrollment.dashboard') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="{{ url_for('enrollment.enroll') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Enroll</a>
+                <a href="{{ url_for('enrollment.display_courses') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">My Enrollment</a>
+                <a href="{{ url_for('enrollment.fees') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Fees</a>
+                <a href="{{ url_for('enrollment.view_transcript') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Transcript</a>
+                <a href="{{ url_for('enrollment.apply_grade_recheck') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Grades</a>
+                <a href="{{ url_for('enrollment.apply_special_application') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Special Apps</a>
+                <a href="{{ url_for('enrollment.student_hold_status') }}" class="text-gray-700 hover:bg-indigo-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Holds</a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="mt-3 px-2 space-y-1">
+                    <a href="{{ url_for('enrollment.logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-500 hover:text-white"><i class="fas fa-sign-out-alt mr-2"></i>Sign out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div class="container">
         <h1>Application Submitted Successfully!</h1>
         <p>Thank you for submitting your <strong>{{ application.application_type }}</strong> application.</p>
@@ -94,7 +152,6 @@
             <p><strong>Application ID:</strong> {{ application.id }}</p>
             <p><strong>Application Type:</strong> {{ application.application_type }}</p>
             {% if application.course %}
-                {# FIX: Accessing course code and name from the 'course' object directly #}
                 <p><strong>Course:</strong> {{ application.course.CourseID }} - {{ application.course.CourseName }}</p>
             {% endif %}
             <p><strong>Reason Provided:</strong> {{ application.reason }}</p>
@@ -108,11 +165,19 @@
         </p>
 
         <div class="button-group">
-            {# FIX: Changed url_for to point to the correct blueprint endpoint #}
-            <a href="{{ url_for('enrollment.dashboard') }}" class="dashboard">Go to Dashboard</a>
-            {# FIX: Changed url_for to point to the correct blueprint endpoint #}
+            <a href="{{ url_for('enrollment.dashboard') }}" class="dashboard-btn">Go to Dashboard</a>
             <a href="{{ url_for('enrollment.view_special_applications_history') }}" class="view-history">View My Applications History</a>
         </div>
     </div>
+    <script>
+        // Basic mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
 </body>
 </html>
