@@ -220,3 +220,39 @@ class StudentCourseFee(db.Model):
 
     def __repr__(self):
         return f"<StudentCourseFee {self.StudentCourseFeeID} Student:{self.StudentID} Course:{self.CourseID} Status:{self.status}>"
+
+# Document Models
+class BirthCertificate(db.Model):
+    __tablename__ = 'BirthCertificate'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(512), nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    verified = db.Column(db.Boolean, default=False)
+    
+    student = db.relationship('Student', backref=db.backref('birth_certificate', uselist=False))
+
+class ValidID(db.Model):
+    __tablename__ = 'ValidID'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(512), nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    verified = db.Column(db.Boolean, default=False)
+    id_type = db.Column(db.String(50), nullable=False)
+    
+    student = db.relationship('Student', backref=db.backref('valid_id', uselist=False))
+
+class AcademicTranscript(db.Model):
+    __tablename__ = 'AcademicTranscript'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(50), db.ForeignKey('Student.StudentID'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(512), nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    verified = db.Column(db.Boolean, default=False)
+    year_level = db.Column(db.String(20), nullable=False)  # Year 12 or Year 13
+    
+    student = db.relationship('Student', backref=db.backref('academic_transcript', uselist=False))

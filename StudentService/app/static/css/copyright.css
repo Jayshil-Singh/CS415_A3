@@ -1,0 +1,47 @@
+/*─────────────────────────────────────────────────────────────────
+  app/static/css/info.css
+─────────────────────────────────────────────────────────────────*/
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background-color: #F6F0FB;
+}
+
+.content-wrapper {
+  max-width: 1040px;
+  margin: 0.5rem auto;
+  padding-bottom: 0rem;    /* ensure footer sits below */
+}
+
+main.info-page {
+  background: #FFFFFF;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+
+  /* bigger vertical padding for more breathing room */
+  padding: 3rem 2rem;
+
+  /* force a minimum height so it’s always tall */
+  min-height: 400px;
+
+  margin-bottom: 0.5rem;
+}
+
+main.info-page h1 {
+  font-size: 2rem;
+  color: #082D57;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+}
+
+main.info-page p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 1rem;
+}
+main.info-page p:last-of-type {
+  margin-bottom: 0;
+}

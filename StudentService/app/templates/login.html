@@ -45,12 +45,13 @@
           <!-- hidden role for now -->
           <input type="hidden" id="role" value="student" />
 
-          <!-- Email -->
+          <!-- Student Email -->
           <input
             id="email"
-            type="email"
+            type="text"
             class="input-field"
             placeholder="Student Email"
+            title="Please enter your USP student email"
             required
           />
 
@@ -82,7 +83,6 @@
     </div>
   </div>
 
-  <!-- Inline JS: toggle eye, handle JSON login, show/hide banner -->
   <script>
     // Close error banner when × clicked
     document.querySelector('.close-banner').addEventListener('click', () => {
@@ -91,28 +91,38 @@
 
     // Toggle password field visibility
     document.getElementById('togglePassword').addEventListener('click', () => {
-      const pwd  = document.getElementById('password');
+      const pwd = document.getElementById('password');
       const icon = document.getElementById('toggleIcon');
       const hidden = pwd.type === 'password';
       pwd.type = hidden ? 'text' : 'password';
       icon.textContent = hidden ? 'visibility' : 'visibility_off';
     });
 
-    // Submit login via JSON POST
+    // Submit login via JSON POST with USP email validation
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email    = document.getElementById('email').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value;
-      const role     = document.getElementById('role').value;
-      const banner   = document.getElementById('errorBanner');
-      const msg      = document.getElementById('errorMsg');
+      const role = document.getElementById('role').value;
+      const banner = document.getElementById('errorBanner');
+      const msg = document.getElementById('errorMsg');
 
       // reset banner
       banner.style.display = 'none';
-      msg.textContent      = '';
+      msg.textContent = '';
+
+      // Validate USP student email format
+      const validDomain = '@student.usp.ac.fj';
+      if (!email.includes('@')) {
+        email = email + validDomain;
+      } else if (!email.endsWith(validDomain)) {
+        msg.textContent = 'Please enter a valid USP student email address ending with @student.usp.ac.fj';
+        banner.style.display = 'flex';
+        return;
+      }
 
       try {
-        const resp = await fetch('{{ url_for("auth.login_post") }}', {
+        const resp = await fetch('{{ url_for("auth.login") }}', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password, role })

@@ -44,7 +44,7 @@
         <div id="registration-form-container" class="registration-form-container" style="display: block;"> <div class="form-card">
                 <h2>Student Registration Details</h2>
                 {# MODIFIED: Added method="POST" and action attribute #}
-                <form id="student-registration-form" method="POST" action="{{ url_for('sas_staff_register_student') }}" novalidate>
+                <form id="student-registration-form" method="POST" action="{{ url_for('sas_staff_register_student') }}" enctype="multipart/form-data" novalidate>
                     <fieldset>
                         <legend>Personal Details</legend>
                         <div class="form-row">
@@ -76,9 +76,9 @@
                                 <label for="gender">Gender <span class="required">*</span></label>
                                 <select id="gender" name="gender" required aria-required="true">
                                     <option value="">Select Gender</option>
-                                    <option value="Male" {% if form_data and form_data.gender == 'Male' %}selected{% endif %}>Male</option>
-                                    <option value="Female" {% if form_data and form_data.gender == 'Female' %}selected{% endif %}>Female</option>
-                                    <option value="Other" {% if form_data and form_data.gender == 'Other' %}selected{% endif %}>Other</option>
+                                    <option value="MALE" {% if form_data and form_data.gender == 'MALE' %}selected{% endif %}>Male</option>
+                                    <option value="FEMALE" {% if form_data and form_data.gender == 'FEMALE' %}selected{% endif %}>Female</option>
+                                    <option value="OTHER" {% if form_data and form_data.gender == 'OTHER' %}selected{% endif %}>Other</option>
                                 </select>
                                 <span class="validation-error" role="alert"></span>
                             </div>
@@ -111,10 +111,29 @@
                         <legend>Contact Information</legend>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="address">Address <span class="required">*</span></label>
+                                <label for="address">Street Address <span class="required">*</span></label>
                                 <input type="text" id="address" name="address" value="{{ form_data.address if form_data else '' }}" required aria-required="true">
                                 <span class="validation-error" role="alert"></span>
                             </div>
+                            <div class="form-group">
+                                <label for="province">Province/State <span class="required">*</span></label>
+                                <input type="text" id="province" name="province" value="{{ form_data.province if form_data else '' }}" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="country">Country <span class="required">*</span></label>
+                                <input type="text" id="country" name="country" value="{{ form_data.country if form_data else '' }}" required aria-required="true">
+                                <span class="validation-error" role="alert"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="zipcode">Zip/Postal Code</label>
+                                <input type="text" id="zipcode" name="zipcode" value="{{ form_data.zipcode if form_data else '' }}">
+                                <span class="validation-error" role="alert"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="contact">Contact (e.g., 679-1234567) <span class="required">*</span></label>
                                 <input type="tel" id="contact" name="contact" value="{{ form_data.contact if form_data else '' }}" placeholder="679-XXXXXXX" required aria-required="true">
@@ -191,6 +210,73 @@
                                 </select>
                                 <span class="validation-error" role="alert"></span>
                             </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Personal Documents</legend>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="birth-certificate">Birth Certificate <span class="required">*</span></label>
+                                <input type="file" 
+                                       id="birth-certificate" 
+                                       name="birth_certificate" 
+                                       accept=".pdf,.docx"
+                                       required 
+                                       aria-required="true"
+                                       class="file-input">
+                                <span class="validation-error" role="alert"></span>
+                                <small class="file-help-text">Accepted formats: PDF, DOCX</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="valid-id">Valid ID <span class="required">*</span></label>
+                                <select id="id-type" 
+                                        name="id_type" 
+                                        required 
+                                        aria-required="true"
+                                        class="id-type-select">
+                                    <option value="">Select ID Type</option>
+                                    <option value="National ID">National ID</option>
+                                    <option value="Passport">Passport</option>
+                                    <option value="Driver's License">Driver's License</option>
+                                    <option value="Student ID">Student ID</option>
+                                </select>
+                                <input type="file" 
+                                       id="valid-id" 
+                                       name="valid_id" 
+                                       accept=".pdf,.docx,.jpg,.jpeg,.png"
+                                       required 
+                                       aria-required="true"
+                                       class="file-input">
+                                <span class="validation-error" role="alert"></span>
+                                <small class="file-help-text">Accepted formats: PDF, DOCX, JPG, JPEG, PNG</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="academic-transcript">Academic Transcript <span class="required">*</span></label>
+                                <select id="transcript-type" 
+                                        name="transcript_type" 
+                                        required 
+                                        aria-required="true"
+                                        class="transcript-type-select">
+                                    <option value="">Select Transcript Type</option>
+                                    <option value="Year12">Year 12</option>
+                                    <option value="Year13">Year 13</option>
+                                </select>
+                                <input type="file" 
+                                       id="academic-transcript" 
+                                       name="academic_transcript" 
+                                       accept=".pdf,.docx"
+                                       required 
+                                       aria-required="true"
+                                       class="file-input">
+                                <span class="validation-error" role="alert"></span>
+                                <small class="file-help-text">Accepted formats: PDF, DOCX</small>
+                            </div>
+                        </div>
+                        <div class="document-notice">
+                            <p><strong>Important:</strong> Please ensure all documents are clear and legible. Maximum file size for each document is 5MB.</p>
                         </div>
                     </fieldset>
 

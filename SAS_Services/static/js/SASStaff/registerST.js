@@ -70,8 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
             filteredPrograms = allProgramsData.filter(program => 
                 program.toLowerCase().startsWith('diploma'));
         } else if (levelLower.includes('bachelor') || levelLower.includes('degree')) {
-            filteredPrograms = allProgramsData.filter(program => 
-                program.toLowerCase().startsWith('bachelor'));
+            filteredPrograms = allProgramsData.filter(program => {
+                const lowerProgram = program.toLowerCase();
+                return lowerProgram.startsWith('bachelor of') || 
+                       lowerProgram.startsWith('bachelor in') ||
+                       lowerProgram.startsWith('bachelors of') ||
+                       lowerProgram.startsWith('bachelors in');
+            });
         } else if (levelLower.includes('postgraduate')) {
             filteredPrograms = allProgramsData.filter(program => 
                 program.toLowerCase().startsWith('postgraduate'));
@@ -248,7 +253,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isEffectivelyRequired && String(inputElement.value).trim() === '') {
             isValid = false;
+            if (inputElement.id === 'program') {
+                errorMessage = "Program name must start with 'Bachelor/Bachelors of/in...' for the selected student level.";
+            } else {
             errorMessage = "This field is required.";
+            }
         }
 
         if (isValid && inputElement.id === 'contact' && inputElement.value.trim() !== '') {
@@ -261,6 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isValid && inputElement.type === 'date' && inputElement.value) {
             const selectedDate = new Date(inputElement.value);
+            
+            // Different validation for date of birth vs visa expiry
+            if (inputElement.id === 'date-of-birth') {
             const minBirthYear = new Date().getFullYear() - 100; // e.g., no one older than 100
             const maxBirthYear = new Date().getFullYear() - 15;  // e.g., at least 15 years old
             const minDate = new Date(minBirthYear, 0, 1);
@@ -273,6 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
                  isValid = false;
                 errorMessage = "Date of birth is too far in the past.";
             }
+            }
+            // No validation for visa expiry date - it can be any future date
         }
 
         if (errorElement) {
@@ -455,4 +469,95 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("JS FATAL: Essential page containers not found. Cannot initialize.");
         if (document.body) document.body.innerHTML = "<p style='color:red; text-align:center; margin-top: 50px;'>Critical page error. Please contact support.</p>";
     }
+
+    // Document upload handling
+    function handleDocumentUpload(event, docType) {
+        event.preventDefault();
+        const fileInput = document.getElementById(`${docType}File`);
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            showError('Please select a file to upload');
+            return;
+        }
+        
+        // File size validation (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showError('File size must not exceed 5MB');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        if (docType === 'validId') {
+            const idType = document.getElementById('idType').value;
+            formData.append('id_type', idType);
+        }
+        
+        if (docType === 'academicTranscript') {
+            const yearLevel = document.getElementById('transcriptType').value;
+            formData.append('year_level', yearLevel);
+        }
+        
+        const studentId = document.getElementById('studentId').value;
+        
+        fetch(`/upload_document/${docType}/${studentId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                showError(data.error);
+            } else {
+                showSuccess('Document uploaded successfully');
+                updateDocumentStatus(docType, true);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('An error occurred while uploading the document');
+        });
+    }
+
+    function updateDocumentStatus(docType, uploaded) {
+        const statusElement = document.getElementById(`${docType}Status`);
+        if (statusElement) {
+            statusElement.textContent = uploaded ? 'Uploaded' : 'Not uploaded';
+            statusElement.className = uploaded ? 'status-uploaded' : 'status-not-uploaded';
+        }
+    }
+
+    function showError(message) {
+        const errorContainer = document.getElementById('error-message-container');
+        const errorText = document.getElementById('error-text');
+        errorText.textContent = message;
+        errorContainer.style.display = 'block';
+        setTimeout(() => {
+            errorContainer.style.display = 'none';
+        }, 5000);
+    }
+
+    function showSuccess(message) {
+        // You can implement a success message display similar to error
+        alert(message);  // For now, using alert
+    }
+
+    // Add event listeners for file inputs
+    document.addEventListener('DOMContentLoaded', function() {
+        const birthCertInput = document.getElementById('birthCertificateFile');
+        const validIdInput = document.getElementById('validIdFile');
+        const transcriptInput = document.getElementById('academicTranscriptFile');
+        
+        if (birthCertInput) {
+            birthCertInput.addEventListener('change', (e) => handleDocumentUpload(e, 'birthCertificate'));
+        }
+        if (validIdInput) {
+            validIdInput.addEventListener('change', (e) => handleDocumentUpload(e, 'validId'));
+        }
+        if (transcriptInput) {
+            transcriptInput.addEventListener('change', (e) => handleDocumentUpload(e, 'academicTranscript'));
+        }
+    });
 });

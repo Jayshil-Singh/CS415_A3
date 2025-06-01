@@ -1,83 +1,114 @@
-/* footer_style.css */
-/* force our footer wrapper to span edge-to-edge */
+/* static/css/footer_style.css */
+/*─────────────────────────────────────────────────────────────────
+  force our footer wrapper to span edge-to-edge
+─────────────────────────────────────────────────────────────────*/
 #footer-container {
   width: 100%;
 }
 
-/* Footer Styles */
+/*─────────────────────────────────────────────────────────────────
+  Base footer styles (with fluid typography & padding)
+─────────────────────────────────────────────────────────────────*/
 .custom-footer {
   background-color: #009999;
   color: white;
-  padding: 2rem 0;
-  margin-top: auto;
-  width: 100%;
+  font-family: sans-serif;
+  /* font scales between 0.75rem and 0.9rem as viewport goes from 300px to 1200px */
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+  /* vertical padding scales between 0.3rem and 0.5rem */
+  padding: clamp(0.3rem, 1.5vw, 0.5rem) 0;
+  line-height: 1.2;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
+/*─────────────────────────────────────────────────────────────────
+  Layout container—allows wrapping on very small widths
+─────────────────────────────────────────────────────────────────*/
 .footer-content {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
 }
 
+/*─────────────────────────────────────────────────────────────────
+  Left block: links + copyright
+─────────────────────────────────────────────────────────────────*/
 .footer-left {
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.15rem, 0.8vw, 0.25rem);
 }
 
-.footer-center {
-  text-align: center;
+.footer-left .links-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.3rem, 1vw, 0.5rem);
 }
 
-.footer-right {
-  text-align: right;
-}
-
-.footer-logo {
-  height: 60px;
-  width: auto;
-  filter: brightness(0) invert(1);
-}
-
-.footer-link {
+.footer-left a {
   color: white;
   text-decoration: none;
-  transition: color 0.3s ease;
 }
 
-.footer-link:hover {
-  color: #4a90e2;
+.footer-left a:hover {
+  text-decoration: underline;
 }
 
-.separator {
-  color: white;
-  margin: 0 0.5rem;
+.footer-left .separator {
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.footer-line {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-  opacity: 0.8;
+.footer-left .footer-line {
+  margin: 0;
+  /* copyright line a bit smaller */
+  font-size: clamp(0.65rem, 1.2vw, 0.8rem);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/*─────────────────────────────────────────────────────────────────
+  Center block: USP logo scales fluidly
+─────────────────────────────────────────────────────────────────*/
+.footer-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-center .footer-logo {
+  /* logo height scales between 40px and 57px */
+  height: clamp(40px, 5vw, 57px);
+  object-fit: contain;
+  margin: clamp(0.2rem, 1vw, 0.25rem) 0;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  Right block: contact info
+─────────────────────────────────────────────────────────────────*/
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: clamp(0.15rem, 0.8vw, 0.25rem);
+}
+
+.footer-right p {
+  margin: 0;
+}
+
+/*─────────────────────────────────────────────────────────────────
+  On very narrow screens, center everything
+─────────────────────────────────────────────────────────────────*/
+@media (max-width: 400px) {
   .footer-content {
     flex-direction: column;
+    align-items: center;
     text-align: center;
-    gap: 1.5rem;
   }
-
   .footer-left,
   .footer-right {
-    text-align: center;
-  }
-
-  .footer-logo {
-    height: 50px;
+    align-items: center;
   }
 }

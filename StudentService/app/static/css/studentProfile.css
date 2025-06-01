@@ -34,7 +34,7 @@ body {
 /* Main content area */
 main {
     flex-grow: 1;
-    padding: 16px;
+    padding: 0px 16px;
     display: flex;
     justify-content: center;
     align-items: flex-start; /* Align content to the top */
@@ -57,7 +57,7 @@ main {
     color: #333;
 }
 
-/* Your original label-value-row styles (kept for emergency contact) */
+/* Emergency‐contact helper rows */
 .label-value-row {
     display: flex;
     margin-bottom: 8px;
@@ -82,80 +82,83 @@ main {
     margin-bottom: 16px;
     padding-bottom: 16px;
     border-bottom: 1px solid #ccc;
-    text-align: left; /* Ensure overall section content is left-aligned */
+    text-align: left; /* Ensure overall section content is left‐aligned */
 }
 
-.photo-and-info-row { /* Container to align avatar and upload info horizontally */
+.photo-and-info-row {
     display: flex;
-    align-items: flex-start; /* Align items to the top (avatar and upload-info-group) */
-    margin-bottom: 15px; /* Space below this row */
+    align-items: flex-start; /* Align avatar + upload‐info at top */
+    margin-bottom: 15px;
 }
 
-.avatar-display { /* Avatar display container for the image */
-    width: 100px; /* Square size */
-    height: 100px; /* Square size */
-    border: 1px solid #656565; /* A darker border for the grey box */
-    background-color: #757575; /* This is the grey background you want */
-    margin-right: 20px; /* Space between avatar and text/buttons */
-    flex-shrink: 0; /* Prevent the avatar from shrinking */
-    display: flex; /* For centering the image inside if it's smaller */
+.avatar-display {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #656565;
+    background-color: #757575;
+    margin-right: 20px;
+    flex-shrink: 0;
+    display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* Hide parts of image if it overflows the square container */
+    overflow: hidden;
 }
 
-/* This targets the <img> tag directly */
 #profile-avatar {
-    width: 100%; /* Make the image fill its parent container */
-    height: 100%; /* Make the image fill its parent container */
-    object-fit: cover; /* Ensures the image covers the area without distortion */
-    border-radius: 0; /* Ensure it's square */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
 }
 
-.upload-info-group { /* Group for "Upload Passport Size Photo" text and button/span div */
-    flex-grow: 1; /* Allow it to take up available space */
+.upload-info-group {
+    flex-grow: 1;
 }
 
-.upload-info-group p { /* "Upload Passport Size Photo" text */
+.upload-info-group p {
     font-weight: bold;
     color: #333;
-    margin-bottom: 8px; /* Space below the text */
-    text-align: left; /* Ensure text is left-aligned */
-    display: block; /* Ensure it takes its own line */
+    margin-bottom: 8px;
+    text-align: left;
+    display: block;
 }
 
-.upload-button { /* "Change Profile Photo" button */
-    background-color: #919494; /* Grey background */
+.upload-button {
+    background-color: #919494;
     color: white;
     padding: 5px 10px;
     border: none;
-    border-radius: 0; /* Square corners */
+    border-radius: 4px;
     cursor: pointer;
     font-size: 1em;
-    margin-top: 5px; /* Space between text and button */
-    display: block; /* Make the button take its own line */
-    width: fit-content; /* Ensure button only takes content width */
+    margin-top: 5px;
+    display: block;
+    width: fit-content;
 }
 
-#file-name-display-container { /* Paragraph wrapping the span */
-    margin-top: 8px; /* Space between button and file name */
+#file-name-display-container {
+    margin-top: 8px;
     text-align: left;
-    display: block; /* Ensure it takes its own line */
+    display: block;
 }
 
-.remove-photo-button { /* Style for the Remove Photo button */
-    background-color: #dc3545; /* Red color for removal action */
-    color: white;
-    padding: 5px 10px; /* Adjusted padding for consistency */
-    border: none;
-    border-radius: 0; /* Square corners */
-    cursor: pointer;
-    font-size: 1em;
-    margin-top: 8px; /* Space above this button */
-    display: block; /* Make it take its own line */
-    width: fit-content; /* Adjust width to content */
+/* Make both Save + Remove part of the same “button-row” */
+.photo-upload-section .button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    align-items: center;
 }
 
+/* override previous block display on these */
+.save-button,
+.remove-photo-button {
+    display: inline-block;
+    margin-top: 0;
+    width: auto;
+}
+
+/* Save */
 .save-button {
     background-color: #009999; /* headerTeal */
     color: white;
@@ -164,44 +167,31 @@ main {
     cursor: pointer;
     font-size: 1em;
     border-radius: 4px;
-    margin-top: 15px; /* Space below error text */
-    display: inline-block; /* Ensure it respects left alignment */
-    margin-left: 0; /* Ensure left alignment */
 }
 
-.verification-notice {
-    background-color: #802323;
+/* Server-side “Remove Photo” */
+.remove-photo-button {
+    background-color: #dc3545; /* red */
     color: white;
-    padding: 9px;
-    margin-top: 10px;
+    padding: 5px 10px;
+    border: none;
     border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
 }
 
-.verification-notice strong {
-    font-weight: bold;
-}
-
-.verification-notice p {
-    margin-top: 8px;
-    margin-bottom: 0;
-    font-size: 0.9em;
-}
-
+/* error text below file uploader */
 .error-text {
     color: red;
     margin-top: 8px;
     font-size: 0.9em;
-    text-align: left; /* Ensure error text is left-aligned */
-    display: block; /* Ensure it takes its own line */
+    text-align: left;
+    display: block;
 }
 
 /* --------------------------------------------------------------------------------------------------
-  Styles for Profile Field Sections (from Jayshil's Profile Page Code)
-  These styles are for the new HTML structures like profile-view-card, profile-info-grid, etc.
-  They are included here as they are essential for the visual presentation of the copied fields.
-  --------------------------------------------------------------------------------------------------
-*/
-
+  Profile cards styling 
+-------------------------------------------------------------------------------------------------- */
 .profile-view-card {
     background-color: #fff;
     border: 1px solid #e0e0e0;
@@ -245,14 +235,14 @@ main {
     border-radius: 4px;
     color: #333;
     font-size: 1em;
-    word-break: break-word; /* Prevents long words from overflowing */
+    word-break: break-word;
 }
 
 .profile-actions {
     margin-top: 20px;
     padding-top: 15px;
     border-top: 1px solid #eee;
-    text-align: left; /* Adjusted for consistency with current layout */
+    text-align: left;
 }
 
 .form-text {
@@ -271,18 +261,102 @@ main {
 }
 
 .notice-header {
-    color: #802323; /* Matching your existing verification-notice color */
+    color: #802323;
 }
 
 .verification-notice-card {
-    background-color: #ffe6e6; /* Light red background for warning */
+    background-color: #ffe6e6;
     border-color: #ffcccc;
 }
 
 /* --------------------------------------------------------------------------------------------------
-  Responsive adjustments
-  --------------------------------------------------------------------------------------------------
-*/
+  Custom Confirmation Modal Styles
+-------------------------------------------------------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top of other content */
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    transform: translateY(-50px); /* Small animation effect */
+    animation: fadeInSlideUp 0.3s ease-out forwards;
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-title {
+    font-size: 1.5em;
+    color: #082d57;
+    margin-bottom: 15px;
+}
+
+.modal-content p {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Space between buttons */
+}
+
+.modal-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.modal-button.confirm {
+    background-color: #dc3545; /* Red for destructive action */
+    color: white;
+}
+
+.modal-button.confirm:hover {
+    background-color: #c82333;
+}
+
+.modal-button.cancel {
+    background-color: #6c757d; /* Gray for cancel */
+    color: white;
+}
+
+.modal-button.cancel:hover {
+    background-color: #5a6268;
+}
+
+
+/* --------------------------------------------------------------------------------------------------
+  Responsive tweaks
+-------------------------------------------------------------------------------------------------- */
 @media (max-width: 768px) {
     .horizontal-nav {
         padding: 8px;
@@ -299,46 +373,53 @@ main {
         padding: 16px;
     }
     .photo-and-info-row {
-        flex-direction: column; /* Stack avatar and info vertically on smaller screens */
-        align-items: center; /* Center them when stacked */
+        flex-direction: column;
+        align-items: center;
     }
     .avatar-display {
         margin-right: 0;
-        margin-bottom: 15px; /* Add space below avatar when stacked */
+        margin-bottom: 15px;
     }
     .upload-info-group {
-        align-items: center; /* Center content when stacked */
+        align-items: center;
     }
     .upload-info-group p {
-        text-align: center; /* Center text when stacked */
+        text-align: center;
     }
-    /* This target was for the div containing button and span, but they are now block elements */
     .photo-upload-section > div > div {
-        justify-content: center; /* Center buttons if they were in a row */
+        justify-content: center;
     }
-    .upload-button, .remove-photo-button { /* Responsive adjustment for both buttons */
-        width: auto; /* Allow button to resize */
-        margin-left: auto;
-        margin-right: auto; /* Center button */
-    }
-    #file-name-display-container {
-        text-align: center; /* Center text when stacked */
-    }
-    .save-button {
-        display: block; /* Make save button a block to center it more easily */
+    .upload-button,
+    .remove-photo-button {
         margin-left: auto;
         margin-right: auto;
     }
-
-    /* Responsive adjustments for profile-info-grid */
+    #file-name-display-container {
+        text-align: center;
+    }
+    .photo-upload-section .button-row {
+        justify-content: center;
+    }
     .profile-info-grid {
-        grid-template-columns: 1fr; /* Stack items vertically on smaller screens */
+        grid-template-columns: 1fr;
     }
     .profile-actions {
-        text-align: center; /* Center actions on small screens */
+        text-align: center;
+    }
+    .modal-content {
+        padding: 20px;
+    }
+    .modal-title {
+        font-size: 1.3em;
     }
 }
 
 @media (max-width: 576px) {
-    /* No specific extra rules needed here, handled by above */
+    /* handled above */
+    .modal-buttons {
+        flex-direction: column;
+    }
+    .modal-button {
+        width: 100%;
+    }
 }

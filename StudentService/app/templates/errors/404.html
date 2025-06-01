@@ -1,55 +1,32 @@
-{# templates/errors/404.html #}
-{% extends "base.html" %}
-
-{% block head %}
-    {{ super() }}
-    <title>404 - Lost in the Digital Jungle! | SAS Portal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/error_pages.css') }}">
-{% endblock %}
-
-{% block body_class %}error-page-active{% endblock %}
-
-{% block header %}{% endblock %}
-
-{% block body %}
-<div class="error-page-container error-404">
-    <div class="error-content">
-        <div class="error-character-container">
-            <img src="{{ url_for('static', filename='images/confused.gif') }}" alt="Lost Explorer Animation" class="error-character" id="error-animation-404">
-        </div>
-        <h1 class="error-title">Crikey! Where Did That Page Go?!</h1>
-        <p class="error-message">Our digital explorer seems to have misplaced this map coordinate. Probably distracted by a shiny button.</p>
-        <p class="error-suggestion">Perhaps it's hiding, or maybe it never existed! Let's try a known path.</p>
-        <div class="error-actions">
-            <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Base Camp!</a>
-        </div>
-        {% if config.DEBUG and error %}
-            <div class="error-details">
-                <strong>Error Details (Development Mode):</strong>
-                <pre>{{ error }}</pre>
-            </div>
-        {% endif %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page Not Found (404) – USP Enrollment System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style> body { font-family: 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen text-center px-4">
+  <div class="max-w-md w-full">
+    <!-- IMAGE REMOVED -->
+    <h1 class="text-6xl font-extrabold text-indigo-600">404</h1>
+    <h2 class="mt-2 text-3xl font-bold text-gray-800">Page Not Found</h2>
+    <p class="mt-4 text-gray-600">
+      Oops! The page you're looking for doesn't seem to exist. 
+      It might have been moved, deleted, or you might have typed the address incorrectly.
+    </p>
+    <div class="mt-8">
+      <a href="{{ url_for('home') }}"
+         class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
+        <i class="fas fa-home mr-2"></i> Go to Home
+      </a>
     </div>
-</div>
-{% endblock %}
-
-{% block footer %}{% endblock %}
-
-{% block scripts %}
-    {{ super() }}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const messages = [
-                "Is this the page you're looking for? ...Nope.",
-                "Our explorer reports: 'Nothing here but digital tumbleweeds.'",
-                "This page must be on vacation. In Fiji, maybe?",
-                "404: Page Not Found. Our bad."
-            ];
-            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            const messageElement = document.querySelector('.error-404 .error-message');
-            if (messageElement) {
-                // messageElement.textContent = randomMessage; // Uncomment to make message dynamic
-            }
-        });
-    </script>
-{% endblock %}
+    <p class="mt-10 text-sm text-gray-500">
+      &copy; <script>document.write(new Date().getFullYear())</script> USP Enrollment System
+    </p>
+  </div>
+</body>
+</html>

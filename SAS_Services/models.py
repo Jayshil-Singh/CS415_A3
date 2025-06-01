@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 import enum
+from datetime import datetime
 
 # Define the SQLAlchemy instance HERE
 # This 'db' instance will be imported by app.py and init_dp.py
@@ -7,9 +8,9 @@ db = SQLAlchemy()
 
 # --- Enums ---
 class GenderEnum(enum.Enum):
-    MALE = "Male"
-    FEMALE = "Female"
-    OTHER = "Other"
+    MALE = "MALE"
+    FEMALE = "FEMALE"
+    OTHER = "OTHER"
 
 class StudentLevelEnum(enum.Enum):
     CERTIFICATE = "Certificate"
@@ -140,3 +141,82 @@ class Student_Level(db.Model):
 
     def __repr__(self):
         return f'<Student_Level ID={self.StudentLevelID} Student={self.StudentID} Level={self.StudentLevel.value}>'
+
+# Document Models
+class BirthCertificate(db.Model):
+    __tablename__ = 'BirthCertificate'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(20), db.ForeignKey('Student.StudentID'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(512), nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    verified = db.Column(db.Boolean, default=False)
+    
+    student = db.relationship('Student', backref=db.backref('birth_certificate', uselist=False))
+
+class ValidID(db.Model):
+    __tablename__ = 'ValidID'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(20), db.ForeignKey('Student.StudentID'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(512), nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    verified = db.Column(db.Boolean, default=False)
+    id_type = db.Column(db.String(50), nullable=False)
+    
+    student = db.relationship('Student', backref=db.backref('valid_id', uselist=False))
+
+class AcademicTranscript(db.Model):
+    __tablename__ = 'AcademicTranscript'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(20), db.ForeignKey('Student.StudentID'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(512), nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    verified = db.Column(db.Boolean, default=False)
+    year_level = db.Column(db.String(20), nullable=False)
+    
+    student = db.relationship('Student', backref=db.backref('academic_transcript', uselist=False))
+
+class Addressing_Student(db.Model):
+    __tablename__ = 'Addressing_Student'
+
+    ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    StudentID = db.Column(db.String(20), db.ForeignKey('Student.StudentID', ondelete='CASCADE'), nullable=False)
+    Province = db.Column(db.String(100), nullable=False)
+    Country = db.Column(db.String(100), nullable=False)
+    ZipCode = db.Column(db.String(20))
+
+    # Relationship with Student
+    student = db.relationship('Student', backref=db.backref('address_info', uselist=False))
+
+    def to_dict(self):
+        """Convert the model instance to a dictionary."""
+        return {
+            'ID': self.ID,
+            'StudentID': self.StudentID,
+            'Province': self.Province,
+            'Country': self.Country,
+            'ZipCode': self.ZipCode
+        }
+
+    def __repr__(self):
+        return f'<Addressing_Student ID={self.ID} StudentID={self.StudentID}>'
+
+# --- Student Related Models ---
+
+class Emergency_Contact(db.Model):
+    __tablename__ = 'Emergency_Contact'
+    ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    StudentID = db.Column(db.String(20), db.ForeignKey('Student.StudentID', ondelete='CASCADE'), nullable=False)
+    FirstName = db.Column(db.String(100), nullable=False)
+    MiddleName = db.Column(db.String(100))
+    LastName = db.Column(db.String(100), nullable=False)
+    Relationship = db.Column(db.String(50), nullable=False)
+    ContactPhone = db.Column(db.String(20), nullable=False)
+
+    # Relationship with Student
+    student = db.relationship('Student', backref=db.backref('emergency_contact', uselist=False))
+
+    def __repr__(self):
+        return f'<Emergency Contact {self.FirstName} {self.LastName} for Student {self.StudentID}>'
