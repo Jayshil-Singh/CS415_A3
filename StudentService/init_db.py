@@ -1,26 +1,43 @@
-# init_db.py
+# File: StudentService/init_db.py
 
-from run_ss import app           # ← your Flask() instance from run_ss.py
-from app.Core.model import db, User
+from flask import Flask
+from app.API.config import Config
+from app.Core.models import db, User
+import os
 
 def init_db():
-    """Create tables (users, login_attempts, user_photos) and seed one test user."""
+    """
+    Create any missing tables and, if the 'users' table is empty, insert one test user.
+    We do NOT seed any Student rows here (since your studentservice.db already
+    contains actual registered students).
+    """
+    # --- Initialize a minimal Flask app just to pull in your config ---
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    # --- Hook up SQLAlchemy with this app ---
+    db.init_app(app)
+
     with app.app_context():
+        # 1) Create all tables that do not yet exist:
         db.create_all()
 
-        if not User.query.first():
-            u = User(
-                id='s12345678',
-                username='student1',
+        # 2) If the 'users' table has zero rows, insert one test user:
+        if User.query.count() == 0:
+            test_user = User(
+                id='S12345678',
+                username='test_student',
                 email='s12345678@student.usp.ac.fj',
                 role='student'
             )
-            u.set_password('student123')
-            db.session.add(u)
+            test_user.set_password('password123')
+            db.session.add(test_user)
             db.session.commit()
-            print("Seeded default student: s12345678 / student123")
+            print("Created test user:")
+            print(f"  Email:    {test_user.email}")
+            print(f"  Password: password123")
         else:
-            print("Users already exist in the database.")
+            print("Database already contains users. Skipping test user creation.")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     init_db()
